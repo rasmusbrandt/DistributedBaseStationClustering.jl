@@ -34,6 +34,8 @@ simulation_params = [
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
+        RobustChen2014_MaxSINR,
+        NaiveChen2014_MaxSINR,
         Shi2011_WMMSE,
         Eigenprecoding,
     ],

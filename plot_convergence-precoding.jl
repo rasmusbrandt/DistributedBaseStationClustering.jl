@@ -52,8 +52,16 @@ plot_params = [
         ],
 
         "NaiveIntraclusterWMMSE" => [
-            ("logdet_rates", [ :color => "y", :linestyle => "-", :label => "NaiveIntraclusterWMMSE" ]),
-            # ("utilities", [ :color => "y", :linestyle => "--", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
+            ("logdet_rates", [ :color => "m", :linestyle => ":", :label => "NaiveIntraclusterWMMSE" ]),
+            # ("utilities", [ :color => "m", :linestyle => ".", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
+        ],
+
+        "RobustChen2014_MaxSINR" => [
+            ("logdet_rates", [ :color => "y", :linestyle => "-", :label => "RobustChen2014_MaxSINR" ]),
+        ],
+
+        "NaiveChen2014_MaxSINR" => [
+            ("logdet_rates", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR" ]),
         ],
 
         "Shi2011_WMMSE" => [

@@ -16,6 +16,7 @@ export
     GrandCoalitionClustering, NeighbourClustering, RandomClustering,
 
     # precoding
+    RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("assignment/assignment.jl")
@@ -25,6 +26,7 @@ include("assignment/GrandCoalitionClustering.jl")
 include("assignment/NeighbourClustering.jl")
 include("assignment/RandomClustering.jl")
 
+include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterWMMSE.jl")
 
 include("feasibility.jl")
