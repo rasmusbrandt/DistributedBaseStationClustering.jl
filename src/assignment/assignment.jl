@@ -1,5 +1,5 @@
 function partition_to_assignment_matrix(partition, K)
-    assignment_matrix = eye(K, K)
+    assignment_matrix = eye(Int, K, K)
 
     # Loop over IA clusters, which are described by
     # the blocks in the set partition.
