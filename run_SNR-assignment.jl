@@ -26,7 +26,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params = [
     "simulation_name" => "SNR_$(start_time)-assignment",
     "I" => 6, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 2,
+    "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "assignment_methods" => [
         GrandCoalitionClustering,

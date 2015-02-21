@@ -25,8 +25,8 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "convergence_$(start_time)-precoding",
-    "I" => 4, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 2,
+    "I" => 6, "Kc" => 1, "N" => 2, "M" => 2,
+    "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "assignment_methods" => [
         ExhaustiveSearchClustering,
