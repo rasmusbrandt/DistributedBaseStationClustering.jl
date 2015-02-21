@@ -1,6 +1,10 @@
 function GrandCoalitionClustering(channel, network)
-    K = get_no_MSs(network)
+    I = get_no_BSs(network)
 
-    assign_cells_by_id!(network)
-    network.assignment = Assignment(network.assignment.cell_assignment, ones(K,K))
+    # Perform cell selection
+    assign_cells_by_large_scale_fading!(channel, network)
+    temp_assignment = get_assignment(network)
+
+    # Store cluster assignment together with existing cell assignment
+    network.assignment = Assignment(temp_assignment.cell_assignment, ones(I, I))
 end

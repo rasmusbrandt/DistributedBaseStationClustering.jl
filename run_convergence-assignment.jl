@@ -32,7 +32,6 @@ simulation_params = [
         GrandCoalitionClustering,
         ExhaustiveSearchClustering,
         Chen2014_LinearObjClustering_Exhaustive,
-        NeighbourClustering,
         # RandomClustering,
     ],
     "precoding_methods" => [

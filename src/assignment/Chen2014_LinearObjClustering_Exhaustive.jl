@@ -1,25 +1,31 @@
 function Chen2014_LinearObjClustering_Exhaustive(channel, network)
-    K = get_no_MSs(network)
+    I = get_no_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
     ds = get_no_streams(network)
 
-    W = zeros(Float64, K, K)
-    for k = 1:K; for l = 1:K
-        if k == l
+    # Perform cell selection
+    assign_cells_by_large_scale_fading!(channel, network)
+    temp_assignment = get_assignment(network)
+
+    W = zeros(Float64, I, I)
+    for i = 1:I; for j = 1:I
+        if i == j
             continue
         end
 
-        desired_power = channel.large_scale_fading_factor[k,k]^2*Ps[k]*channel.large_scale_fading_factor[k,l]^2*Ps[l]
-        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[k,l]^2*Ps[l] + channel.large_scale_fading_factor[k,k]^2*Ps[k]
-        W[k,l] = log2(1 + desired_power/int_noise_power)
+        k = collect(served_MS_ids(i, temp_assignment))[1]
+        desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]*channel.large_scale_fading_factor[k,j]^2*Ps[j]
+        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[k,j]^2*Ps[j] + channel.large_scale_fading_factor[k,i]^2*Ps[i]
+        W[i,j] = log2(1 + desired_power/int_noise_power)
 
-        desired_power = channel.large_scale_fading_factor[l,l]^2*Ps[l]*channel.large_scale_fading_factor[l,k]^2*Ps[k]
-        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[l,k]^2*Ps[k] + channel.large_scale_fading_factor[l,l]^2*Ps[l]
-        W[k,l] += log2(1 + desired_power/int_noise_power)
+        l = collect(served_MS_ids(j, temp_assignment))[1]
+        desired_power = channel.large_scale_fading_factor[l,j]^2*Ps[j]*channel.large_scale_fading_factor[l,i]^2*Ps[i]
+        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[l,i]^2*Ps[i] + channel.large_scale_fading_factor[l,j]^2*Ps[j]
+        W[i,j] += log2(1 + desired_power/int_noise_power)
     end; end
 
-    partitions = all_partitions(1:K)
+    partitions = all_partitions(1:I)
 
     # Exhaustive search over partitions
     objective = 0.
@@ -36,9 +42,9 @@ function Chen2014_LinearObjClustering_Exhaustive(channel, network)
 
             # Calculate objective for this cluster
             objective = 0.
-            for k in block.elements
-                for l in block.elements
-                    objective += W[k,l]
+            for i in block.elements
+                for j in block.elements
+                    objective += W[i,j]
                 end
             end
         end
@@ -53,9 +59,8 @@ function Chen2014_LinearObjClustering_Exhaustive(channel, network)
     end
 
     # Build cluster assignment matrix
-    assignment_matrix = partition_to_assignment_matrix(best_partition, K)
-    # println(assignment_matrix)
+    assignment_matrix = partition_to_assignment_matrix(best_partition, I)
 
-    assign_cells_by_id!(network)
+    # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(network.assignment.cell_assignment, assignment_matrix)
 end

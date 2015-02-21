@@ -1,13 +1,16 @@
 function ExhaustiveSearchClustering(channel, network)
-    K = get_no_MSs(network)
+    I = get_no_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
     ds = get_no_streams(network)
 
-    partitions = all_partitions(1:K)
+    # Perform cell selection
+    assign_cells_by_large_scale_fading!(channel, network)
+    temp_assignment = get_assignment(network)
 
-    # Exhaustive search over partitions
-    rates = Array(Float64, K)
+    # Exhaustive search over all partitions
+    rates = Array(Float64, I)
+    partitions = all_partitions(1:I)
     best_partition = Partition(); best_sum_rate = 0.
     for partition in partitions
         feasible = true
@@ -20,12 +23,13 @@ function ExhaustiveSearchClustering(channel, network)
             end
 
             # Calculate rates
-            intercluster_interferers = setdiff(1:K, block.elements)
-            for k in block.elements
-                desired_power = channel.large_scale_fading_factor[k,k]^2*Ps[k]
+            intercluster_interferers = setdiff(1:I, block.elements)
+            for i in block.elements
+                k = collect(served_MS_ids(i, temp_assignment))[1]
+                desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]
                 int_noise_power = sigma2s[k]
-                for l in intercluster_interferers
-                    int_noise_power += channel.large_scale_fading_factor[k,l]^2*Ps[l]
+                for j in intercluster_interferers
+                    int_noise_power += channel.large_scale_fading_factor[k,j]^2*Ps[j]
                 end
                 rho = 1 + desired_power/int_noise_power
 
@@ -44,9 +48,8 @@ function ExhaustiveSearchClustering(channel, network)
     end
 
     # Build cluster assignment matrix
-    assignment_matrix = partition_to_assignment_matrix(best_partition, K)
-    # println(assignment_matrix)
+    assignment_matrix = partition_to_assignment_matrix(best_partition, I)
 
-    assign_cells_by_id!(network)
-    network.assignment = Assignment(network.assignment.cell_assignment, assignment_matrix)
+    # Store cluster assignment together with existing cell assignment
+    network.assignment = Assignment(temp_assignment.cell_assignment, assignment_matrix)
 end
