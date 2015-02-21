@@ -17,7 +17,7 @@ function ExhaustiveSearchClustering(channel, network)
 
         for block in partition.blocks
             # IA feasibility check for this cluster
-            if !feasibility_IA(partition, channel.Ns, channel.Ms, ds)
+            if !is_IA_feasible(partition, channel.Ns, channel.Ms, ds)
                 feasible = false
                 break
             end
