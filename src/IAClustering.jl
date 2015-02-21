@@ -28,8 +28,8 @@ include("assignment/RandomClustering.jl")
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterWMMSE.jl")
 
-include("feasibility.jl")
-include("partitions.jl")
+include("utils/feasibility.jl")
+include("utils/partitions.jl")
 
 ##########################################################################
 # Logging defaults
