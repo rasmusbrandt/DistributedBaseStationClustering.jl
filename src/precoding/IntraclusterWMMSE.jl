@@ -8,7 +8,7 @@ end
 NaiveIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=false)
 RobustIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=true)
 
-function IntraclusterWMMSE(channel::SinglecarrierChannel, network::Network; robustness=true)
+function IntraclusterWMMSE(channel, network; robustness=true)
     assignment = get_assignment(network)
 
     K = get_no_MSs(network)
@@ -86,8 +86,8 @@ function IntraclusterWMMSE(channel::SinglecarrierChannel, network::Network; robu
     return results
 end
 
-function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChannel,
-    Ps::Vector{Float64}, sigma2s::Vector{Float64}, assignment::Assignment, robustness)
+function update_MSs!(state::IntraclusterWMMSEState,
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
 
     ds = [ size(state.Z[k], 1) for k = 1:channel.K ]
 
@@ -125,10 +125,10 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
     end; end
 end
 
-function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChannel, 
-    Ps::Vector{Float64}, assignment::Assignment, aux_params, robustness)
+function update_BSs!(state::IntraclusterWMMSEState,
+    channel::SinglecarrierChannel, Ps, assignment, aux_params, robustness)
 
-    for i = 1:channel.I
+    for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
 
         # Virtual uplink covariance
@@ -154,9 +154,8 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
     end
 end
 
-function optimal_mu(i::Int, Gamma::Hermitian{Complex128},
-    state::IntraclusterWMMSEState, channel::SinglecarrierChannel,
-    Ps::Vector{Float64}, assignment::Assignment, aux_params)
+function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
+    channel::SinglecarrierChannel, Ps, assignment, aux_params)
 
     # Build bisector function
     bis_M = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))

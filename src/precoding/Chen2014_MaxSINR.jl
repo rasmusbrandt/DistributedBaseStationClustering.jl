@@ -7,7 +7,7 @@ end
 NaiveChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=false)
 RobustChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=true)
 
-function Chen2014_MaxSINR(channel::SinglecarrierChannel, network::Network; robustness=true)
+function Chen2014_MaxSINR(channel, network; robustness=true)
     assignment = get_assignment(network)
 
     K = get_no_MSs(network)
@@ -76,8 +76,7 @@ function Chen2014_MaxSINR(channel::SinglecarrierChannel, network::Network; robus
 end
 
 function update_MSs!(state::Chen2014_MaxSINRState,
-    channel::SinglecarrierChannel, Ps, sigma2s::Vector{Float64},
-    assignment::Assignment, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
 
     ds = [ size(state.W[k], 1) for k = 1:channel.K ]
 
@@ -121,13 +120,12 @@ function update_MSs!(state::Chen2014_MaxSINRState,
 end
 
 function update_BSs!(state::Chen2014_MaxSINRState,
-    channel::SinglecarrierChannel, Ps::Vector{Float64},
-    sigma2s::Vector{Float64}, assignment::Assignment,
-    aux_params::AuxPrecodingParams, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s,
+    assignment,aux_params,robustness)
 
     ds = [ size(state.W[k], 1) for k = 1:channel.K ]
 
-    for i = 1:channel.I
+    for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
 
         # Virtual uplink covariance
