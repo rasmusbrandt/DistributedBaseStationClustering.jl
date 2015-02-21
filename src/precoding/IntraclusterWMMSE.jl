@@ -50,9 +50,9 @@ function IntraclusterWMMSE(channel, network; robustness=true)
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"]
                 Lumberjack.debug("IntraclusterWMMSE converged.",
-                    { :no_iters => iters, :final_objective => objective[end],
+                    [ :no_iters => iters, :final_objective => objective[end],
                       :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
-                      :max_iters => aux_params["max_iters"] })
+                      :max_iters => aux_params["max_iters"] ])
                 break
             end
         end
@@ -64,9 +64,9 @@ function IntraclusterWMMSE(channel, network; robustness=true)
     end
     if iters == aux_params["max_iters"]
         Lumberjack.debug("IntraclusterWMMSE did NOT converge.",
-            { :no_iters => iters, :final_objective => objective[end],
+            [ :no_iters => iters, :final_objective => objective[end],
               :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
-              :max_iters => aux_params["max_iters"] })
+              :max_iters => aux_params["max_iters"] ])
     end
 
     results = PrecodingResults()
@@ -170,7 +170,7 @@ function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
     # mu lower bound
     if abs(maximum(Gamma_eigen.values))/abs(minimum(Gamma_eigen.values)) < aux_params["IntraclusterWMMSE:bisection_Gamma_cond"]
         # Gamma is invertible
-        mu_lower = 0
+        mu_lower = 0.
     else
         mu_lower = aux_params["IntraclusterWMMSE:bisection_singular_Gamma_mu_lower_bound"]
     end
@@ -207,7 +207,7 @@ function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
         end
 
         if no_iters == aux_params["IntraclusterWMMSE:bisection_max_iters"]
-            println("Power bisection: reached max iterations.")
+            Lumberjack.warn("Power bisection: reached max iterations.")
         end
 
         # The upper point is always feasible, therefore we use it
