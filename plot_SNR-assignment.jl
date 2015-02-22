@@ -47,7 +47,7 @@ plot_params = [
 
     "methods" => [
         "GrandCoalitionClustering" => [
-            ("logdet_rates", [ :color => "r", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("logdet_rates", [ :color => "b", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "ExhaustiveSearchClustering" => [

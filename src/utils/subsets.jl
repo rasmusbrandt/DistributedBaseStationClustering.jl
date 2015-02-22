@@ -1,3 +1,4 @@
+# Returns all non-empty subsets of supplied list of elements
 function all_nonempty_subsets(elements::Vector)
     N = length(elements)
 
