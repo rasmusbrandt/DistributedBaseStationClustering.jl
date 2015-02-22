@@ -13,7 +13,7 @@ function is_IA_feasible(partition, Ns, Ms, ds, assignment)
     if all(Ns .== Ns[1]) && all(Ms .== Ms[1]) && all(served_length .== served_length[1])
         return Liu2013_IBC_symmetric(partition, Ns[1], Ms[1], d, served_length[1])
     else
-        return Liu2013_IBC_heterogeneous(partition, Ns, Ms, d, assignment)
+        return Liu2013_IBC_heterogeneous(partition, Ns, Ms, d, served, served_length)
     end
 end
 
@@ -25,11 +25,12 @@ function Liu2013_IBC_symmetric(partition, N, M, d, Kc)
     end
 end
 
-function Liu2013_IBC_heterogeneous(partition, Ns, Ms, d, assignment)
+# Warning: This function is very slow.
+function Liu2013_IBC_heterogeneous(partition, Ns, Ms, d, served, served_length)
     for block in partition.blocks
         # Condition (14a)
         for j in block.elements
-            for i in block.elements; for k in served_MS_ids(i, assignment)
+            for i in block.elements; for k in served[i]
                 min(Ms[j] - served_length[j]*d, Ns[k] - d) >= 0 || return false
             end; end
         end
