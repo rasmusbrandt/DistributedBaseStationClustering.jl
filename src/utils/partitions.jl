@@ -40,8 +40,8 @@ function all_twoblock_partitions(elements::Block)
         partition = Partition(Block(elements[1]), Block())
 
         # Distribute the remaining elements into the two blocks
-        for idx = 1:(N-1)
-            add_element_to_block!(partition, elements[idx + 1], ((pattern >> (idx - 1)) & 1) + 1)
+        for idx = 2:N
+            add_element_to_block!(partition, elements[idx], ((pattern >> (idx - 2)) & 1) + 1)
         end
 
         # Store this partition in the list of all partitions
