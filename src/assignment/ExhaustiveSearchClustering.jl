@@ -41,8 +41,8 @@ function ExhaustiveSearchClustering(channel, network)
     end
 
     # Build cluster assignment matrix
-    assignment_matrix = partition_to_assignment_matrix(best_partition, K, I, temp_assignment)
+    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(best_partition, K, I, temp_assignment)
 
     # Store cluster assignment together with existing cell assignment
-    network.assignment = Assignment(temp_assignment.cell_assignment, assignment_matrix)
+    network.assignment = Assignment(temp_assignment.cell_assignment, cluster_assignment_matrix)
 end
