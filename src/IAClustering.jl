@@ -30,6 +30,7 @@ include("precoding/IntraclusterWMMSE.jl")
 
 include("utils/feasibility.jl")
 include("utils/partitions.jl")
+include("utils/subsets.jl")
 
 ##########################################################################
 # Logging defaults

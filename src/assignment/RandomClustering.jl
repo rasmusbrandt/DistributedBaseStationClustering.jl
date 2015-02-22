@@ -8,7 +8,7 @@ function RandomClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
     temp_assignment = get_assignment(network)
 
-    partitions = all_partitions(1:K)
+    partitions = all_partitions(1:I)
 
     # Pick random partition
     selected_partition = partitions[int(floor(I*rand()) + 1)]
