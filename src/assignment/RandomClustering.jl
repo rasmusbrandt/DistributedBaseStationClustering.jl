@@ -5,7 +5,7 @@ function RandomClustering(channel, network)
     ds = get_no_streams(network)
 
     # Perform cell selection
-    assign_cells_by_large_scale_fading!(channel, network)
+    LargeScaleFadingCellAssignment!(channel, network)
     temp_assignment = get_assignment(network)
 
     partitions = all_partitions(1:K)

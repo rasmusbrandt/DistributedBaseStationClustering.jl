@@ -5,7 +5,7 @@ function ExhaustiveSearchClustering(channel, network)
     ds = get_no_streams(network)
 
     # Perform cell selection
-    assign_cells_by_large_scale_fading!(channel, network)
+    LargeScaleFadingCellAssignment!(channel, network)
     temp_assignment = get_assignment(network)
 
     # Exhaustive search over all partitions
