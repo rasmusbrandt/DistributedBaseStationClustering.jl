@@ -68,30 +68,3 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix)
 end
-
-function Chen2014_LinearObjClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    ds = get_no_streams(network)
-
-    # Consistency check
-    if I != K
-        Lumberjack.error("Chen2014_LinearObjClustering can only handle I = K scenarios.")
-    end
-
-    # Perform cell selection
-    LargeScaleFadingCellAssignment!(channel, network)
-    temp_cell_assignment = get_assignment(network)
-
-    # Get W matrix
-    W = Chen2014_LinearObjClustering_W(channel, network, temp_cell_assignment)
-
-    # Algorithm 1 in Chen2014
-    partition = Partition()
-    error("Not implemented yet.")
-
-    # Build cluster assignment matrix
-    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(best_partition, K, I, temp_cell_assignment)
-
-    # Store cluster assignment together with existing cell assignment
-    network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix)
-end
