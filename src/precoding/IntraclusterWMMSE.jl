@@ -8,7 +8,7 @@ end
 NaiveIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=false)
 RobustIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=true)
 
-function IntraclusterWMMSE(channel, network; robustness=true)
+function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     assignment = get_assignment(network)
 
     K = get_no_MSs(network)

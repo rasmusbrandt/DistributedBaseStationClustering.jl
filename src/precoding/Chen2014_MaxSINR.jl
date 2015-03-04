@@ -7,7 +7,7 @@ end
 NaiveChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=false)
 RobustChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=true)
 
-function Chen2014_MaxSINR(channel, network; robustness=true)
+function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     assignment = get_assignment(network)
 
     K = get_no_MSs(network)
@@ -105,10 +105,10 @@ function update_MSs!(state::Chen2014_MaxSINRState,
 
         # Per-stream receivers
         for n = 1:ds[k]
-            Phi_i_plus_n = Hermitian(
+            Psi_plus_n = Hermitian(
                 Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(Phi_imperfect.S)),
                 Phi_imperfect.uplo)
-            u = Phi_i_plus_n\channel.H[k,i]*state.V[k][:,n]
+            u = Psi_plus_n\channel.H[k,i]*state.V[k][:,n]
             state.U[k][:,n] = u/norm(u,2)
         end
 
