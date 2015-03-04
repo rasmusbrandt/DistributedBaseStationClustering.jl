@@ -86,22 +86,15 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         # Covariances
         Phi_imperfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
         Phi_perfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
-        for j = 1:channel.I
-            if j in coordinators
-                for l in served_MS_ids(j, assignment)
-                    #Phi += Hermitian(channel.H[k,j]*(state.V[l]*state.V[l]')*channel.H[k,j]')
-                    Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_imperfect.S)
-                    Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-                end
-            else
-                for l in served_MS_ids(j, assignment)
-                    if robustness
-                        Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
-                    end
-                    Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-                end
-            end
-        end
+        for j in coordinators; for l in served_MS_ids(j, assignment)
+            #Phi += Hermitian(channel.H[k,j]*(state.V[l]*state.V[l]')*channel.H[k,j]')
+            Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
+            Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_imperfect.S)
+        end; end
+        for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
+            Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
+            robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
+        end; end
 
         # Per-stream receivers
         for n = 1:ds[k]
@@ -121,7 +114,7 @@ end
 
 function update_BSs!(state::Chen2014_MaxSINRState,
     channel::SinglecarrierChannel, Ps, sigma2s,
-    assignment,aux_params,robustness)
+    assignment, aux_params, robustness)
 
     ds = [ size(state.W[k], 1) for k = 1:channel.K ]
 
