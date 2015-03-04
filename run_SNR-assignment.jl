@@ -31,6 +31,7 @@ simulation_params = [
     "assignment_methods" => [
         GrandCoalitionClustering,
         ExhaustiveSearchClustering,
+        BnBClustering,
         NoClustering,
         Chen2014_LinearObjClustering_Exhaustive,
         # RandomClustering,

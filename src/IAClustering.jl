@@ -12,6 +12,7 @@ import Lumberjack
 
 export
     # assignment
+    BnBClustering,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
     RandomClustering,

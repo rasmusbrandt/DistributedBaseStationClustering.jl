@@ -55,6 +55,11 @@ plot_params = [
             ("utilities", [ :color => "y", :linestyle => "--", :label => "ExhaustiveSearchClustering (utils.)" ]),
         ],
 
+        "BnBClustering" => [
+            ("logdet_rates", [ :color => "m", :linestyle => "-", :label => "BnBClustering" ]),
+            ("utilities", [ :color => "m", :linestyle => "--", :label => "BnBClustering (utils.)" ]),
+        ],
+
         "Chen2014_LinearObjClustering_Exhaustive" => [
             ("logdet_rates", [ :color => "g", :linestyle => "-", :label => "Chen2014_LinearObjClustering_Exhaustive" ]),
             ("utilities", [ :color => "g", :linestyle => "--", :label => "Chen2014_LinearObjClustering_Exhaustive (utils.)" ]),

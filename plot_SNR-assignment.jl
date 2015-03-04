@@ -55,6 +55,11 @@ plot_params = [
             ("utilities", [ :color => "y", :linestyle => "--", :label => "ExhaustiveSearchClustering (utils.)" ]),
         ],
 
+        "BnBClustering" => [
+            ("logdet_rates", [ :color => "m", :linestyle => "-", :label => "BnBClustering" ]),
+            ("utilities", [ :color => "m", :linestyle => "--", :label => "BnBClustering (utils.)" ]),
+        ],
+
         "NoClustering" => [
             ("logdet_rates", [ :color => "k", :linestyle => "-", :label => "NoClustering" ]),
         ],
