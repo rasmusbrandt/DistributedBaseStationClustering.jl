@@ -11,3 +11,10 @@ function partition_to_cluster_assignment_matrix(partition, K, I, assignment)
 
     return cluster_assignment_matrix
 end
+
+include("BnBClustering.jl")
+include("Chen2014_LinearObjClustering.jl")
+include("ExhaustiveSearchClustering.jl")
+include("GrandCoalitionClustering.jl")
+include("NoClustering.jl")
+include("RandomClustering.jl")

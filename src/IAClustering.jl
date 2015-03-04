@@ -12,19 +12,16 @@ import Lumberjack
 
 export
     # assignment
-    Chen2014_LinearObjClustering_ExhaustiveSearch, ExhaustiveSearchClustering,
-    GrandCoalitionClustering, NoClustering, RandomClustering,
+    ExhaustiveSearchClustering,
+    GrandCoalitionClustering,
+    RandomClustering,
+    NoClustering,
 
     # precoding
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("assignment/assignment.jl")
-include("assignment/Chen2014_LinearObjClustering.jl")
-include("assignment/ExhaustiveSearchClustering.jl")
-include("assignment/GrandCoalitionClustering.jl")
-include("assignment/NoClustering.jl")
-include("assignment/RandomClustering.jl")
 
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterWMMSE.jl")
