@@ -55,6 +55,10 @@ plot_params = [
             ("utilities", [ :color => "y", :linestyle => "--", :label => "ExhaustiveSearchClustering (utils.)" ]),
         ],
 
+        "NoClustering" => [
+            ("logdet_rates", [ :color => "k", :linestyle => "-", :label => "NoClustering" ]),
+        ],
+
         "Chen2014_LinearObjClustering_Exhaustive" => [
             ("logdet_rates", [ :color => "g", :linestyle => "-", :label => "Chen2014_LinearObjClustering_Exhaustive" ]),
             ("utilities", [ :color => "g", :linestyle => "--", :label => "Chen2014_LinearObjClustering_Exhaustive (utils.)" ]),

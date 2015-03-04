@@ -13,7 +13,7 @@ import Lumberjack
 export
     # assignment
     Chen2014_LinearObjClustering_Exhaustive, ExhaustiveSearchClustering,
-    GrandCoalitionClustering, RandomClustering,
+    GrandCoalitionClustering, NoClustering, RandomClustering,
 
     # precoding
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
@@ -23,6 +23,7 @@ include("assignment/assignment.jl")
 include("assignment/Chen2014_LinearObjClustering_Exhaustive.jl")
 include("assignment/ExhaustiveSearchClustering.jl")
 include("assignment/GrandCoalitionClustering.jl")
+include("assignment/NoClustering.jl")
 include("assignment/RandomClustering.jl")
 
 include("precoding/Chen2014_MaxSINR.jl")
