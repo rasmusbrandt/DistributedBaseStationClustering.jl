@@ -20,11 +20,13 @@ export
 
     # precoding
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
+    RobustIntraclusterLeakageMinimization, NaiveIntraclusterLeakageMinimization,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("assignment/assignment.jl")
 
 include("precoding/Chen2014_MaxSINR.jl")
+include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
 
 include("utils/feasibility.jl")

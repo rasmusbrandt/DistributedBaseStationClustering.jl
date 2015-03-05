@@ -95,8 +95,8 @@ function update_MSs!(state::IntraclusterWMMSEState,
         coordinators = coordinated_BS_ids(k, assignment)
 
         # Covariances
-        Phi_imperfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
         Phi_perfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
+        Phi_imperfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
         for j in coordinators; for l in served_MS_ids(j, assignment)
             #Phi += Hermitian(channel.H[k,j]*(state.V[l]*state.V[l]')*channel.H[k,j]')
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
@@ -124,8 +124,8 @@ function update_BSs!(state::IntraclusterWMMSEState,
     for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
 
-        # Virtual uplink covariance
-        Gamma = Hermitian(complex(zeros(channel.Ms[i],channel.Ms[i])))
+        # Covariance
+        Gamma = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinators
                 Gamma += Hermitian(channel.H[l,i]'*(state.U[l]*state.Z[l]*state.U[l]')*channel.H[l,i])

@@ -1,13 +1,13 @@
-immutable Chen2014_MaxSINRState
+immutable IntraclusterLeakageMinimizationState
     U::Array{Matrix{Complex128},1}
-    W::Array{Hermitian{Complex128},1} # these are only used for rate calculations
+    W::Array{Hermitian{Complex128},1} # for rate calculations
     V::Array{Matrix{Complex128},1}
 end
 
-NaiveChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=false)
-RobustChen2014_MaxSINR(channel, network) = Chen2014_MaxSINR(channel, network, robustness=true)
+NaiveIntraclusterLeakageMinimization(channel, network) = IntraclusterLeakageMinimization(channel, network, robustness=false)
+RobustIntraclusterLeakageMinimization(channel, network) = IntraclusterLeakageMinimization(channel, network, robustness=true)
 
-function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
+function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true)
     assignment = get_assignment(network)
 
     K = get_no_MSs(network)
@@ -16,8 +16,8 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     ds = get_no_streams(network)
     aux_params = get_aux_precoding_params(network)
 
-    state = Chen2014_MaxSINRState(
-        zero_receivers(channel, ds),
+    state = IntraclusterLeakageMinimizationState(
+        Array(Matrix{Complex128}, K),
         unity_MSE_weights(ds),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params))
     objective = Float64[]
@@ -40,7 +40,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         if iters >= 2
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"]
-                Lumberjack.debug("Chen2014_MaxSINR converged.",
+                Lumberjack.debug("IntraclusterLeakageMinimization converged.",
                     [ :no_iters => iters, :final_objective => objective[end],
                       :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
                       :max_iters => aux_params["max_iters"] ])
@@ -50,11 +50,11 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
 
         # Begin next iteration, unless the loop will end
         if iters < aux_params["max_iters"]
-            update_BSs!(state, channel, Ps, sigma2s, assignment, aux_params, robustness)
+            update_BSs!(state, channel, Ps, assignment, aux_params, robustness)
         end
     end
     if iters == aux_params["max_iters"]
-        Lumberjack.debug("Chen2014_MaxSINR did NOT converge.",
+        Lumberjack.debug("IntraclusterLeakageMinimization did NOT converge.",
             [ :no_iters => iters, :final_objective => objective[end],
               :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
               :max_iters => aux_params["max_iters"] ])
@@ -75,7 +75,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     return results
 end
 
-function update_MSs!(state::Chen2014_MaxSINRState,
+function update_MSs!(state::IntraclusterLeakageMinimizationState,
     channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
 
     ds = [ size(state.W[k], 1) for k = 1:channel.K ]
@@ -85,36 +85,30 @@ function update_MSs!(state::Chen2014_MaxSINRState,
 
         # Covariances
         Phi_perfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
-        Phi_imperfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
+        Psi_imperfect = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k])))
         for j in coordinators; for l in served_MS_ids(j, assignment)
             #Phi += Hermitian(channel.H[k,j]*(state.V[l]*state.V[l]')*channel.H[k,j]')
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-            Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_imperfect.S)
+            l != k && Base.LinAlg.BLAS.herk!(Psi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Psi_imperfect.S)
         end; end
         for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-            robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
+            l != k && robustness && (Psi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
         end; end
 
-        # Per-stream receivers
-        for n = 1:ds[k]
-            Psi_plus_n = Hermitian(
-                Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(Phi_imperfect.S)),
-                Phi_imperfect.uplo)
-            u = Psi_plus_n\channel.H[k,i]*state.V[k][:,n]
-            state.U[k][:,n] = u/norm(u,2)
-        end
+        # Zero-forcing receiver
+        Psi_imperfect_eigen = eigfact(Psi_imperfect, 1:ds[k])
+        state.U[k] = Psi_imperfect_eigen.vectors
 
-        # True MSE weights (for rate calculation only)
+        # True MMSE receiver and MMSE weight
         F = channel.H[k,i]*state.V[k]
         Ummse = Phi_perfect\F
         state.W[k] = Hermitian((eye(ds[k]) - Ummse'*F)\eye(ds[k]))
     end; end
 end
 
-function update_BSs!(state::Chen2014_MaxSINRState,
-    channel::SinglecarrierChannel, Ps, sigma2s,
-    assignment, aux_params, robustness)
+function update_BSs!(state::IntraclusterLeakageMinimizationState,
+    channel::SinglecarrierChannel, Ps, assignment, aux_params, robustness)
 
     ds = [ size(state.W[k], 1) for k = 1:channel.K ]
 
@@ -125,25 +119,28 @@ function update_BSs!(state::Chen2014_MaxSINRState,
         Gamma = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinators
-                Gamma += Hermitian(channel.H[l,i]'*(state.U[l]*state.U[l]')*channel.H[l,i])
+                #Gamma += Hermitian(channel.H[k,i]'*(state.U[k]*state.U[k]')*channel.H[k,i])
+                Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(1.), channel.H[l,i]'*state.U[l], complex(1.), Gamma.S)
             else
                 if robustness
-                    Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*eye(channel.Ms[i])))
+                    # Using vecnorm(.)^2 may generate NaNs here!
+                    Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
+                    # Breaking version: Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))
                 end
             end
         end; end
 
-        # Per-stream precoders
+        # Precoders for all served users
         served = served_MS_ids(i, assignment)
         Nserved = length(served)
         for k in served
-            for n = 1:ds[k]
-                Gamma_i_plus_n = Hermitian(
-                    Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(-1.), channel.H[k,i]'*state.U[k][:,n], complex(1.), copy(Gamma.S)) + (sigma2s[k]/Ps[i])*eye(channel.Ms[i]),
-                    Gamma.uplo)
-                v = Gamma_i_plus_n\channel.H[k,i]'*state.U[k][:,n]
-                state.V[k][:,n] = sqrt(Ps[i]/(Nserved*ds[k]))*v/norm(v,2)
-            end
+            Delta = Hermitian(
+                Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(-1.), channel.H[k,i]'*state.U[k], complex(1.), copy(Gamma.S)),
+                Gamma.uplo)
+
+            # Precoder
+            Delta_eigen = eigfact(Delta, 1:ds[k])
+            state.V[k] = sqrt(Ps[i]/(Nserved*ds[k]))*Delta_eigen.vectors
         end
     end
 end

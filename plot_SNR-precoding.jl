@@ -42,7 +42,7 @@ plot_params = [
 
     "legend" => [
         :loc => "best",
-        :fontsize => 8,
+        :fontsize => 4,
     ],
 
     "methods" => [
@@ -54,6 +54,14 @@ plot_params = [
         "NaiveIntraclusterWMMSE" => [
             ("logdet_rates", [ :color => "m", :linestyle => ":", :label => "NaiveIntraclusterWMMSE" ]),
             # ("utilities", [ :color => "m", :linestyle => ".", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
+        ],
+
+        "RobustIntraclusterLeakageMinimization" => [
+            ("logdet_rates", [ :color => "gray", :linestyle => "-", :label => "RobustIntraclusterLeakageMinimization" ]),
+        ],
+
+        "NaiveIntraclusterLeakageMinimization" => [
+            ("logdet_rates", [ :color => "gray", :linestyle => ":", :label => "NaiveIntraclusterLeakageMinimization" ]),
         ],
 
         "RobustChen2014_MaxSINR" => [
