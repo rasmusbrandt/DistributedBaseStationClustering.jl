@@ -1,8 +1,5 @@
 function RandomClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    Ps = get_transmit_powers(network)
-    sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network)
+    I = get_no_BSs(network)
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -25,7 +22,7 @@ function RandomClustering(channel, network)
     partition = Partition(a)
 
     # Build cluster assignment matrix
-    assignment_matrix = partition_to_cluster_assignment_matrix(partition, K, I, temp_cell_assignment)
+    assignment_matrix = partition_to_cluster_assignment_matrix(network, partition)
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, assignment_matrix)

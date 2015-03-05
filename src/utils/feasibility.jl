@@ -1,5 +1,10 @@
 # Feasibility criterion from Liu2013
-function is_IA_feasible(partition, Ns, Ms, ds, assignment)
+function is_IA_feasible(network, partition)
+    Ns = get_no_MS_antennas(network)
+    Ms = get_no_BS_antennas(network)
+    ds = get_no_streams(network)
+    assignment = get_assignment(network)
+
     # Can we even use these results?
     all(ds .== ds[1]) || Lumberjack.error("Feasibility check with Liu2013 only handles cases with equal number of streams per user.")
     d = ds[1]

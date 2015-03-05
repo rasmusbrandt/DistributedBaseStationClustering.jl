@@ -25,7 +25,6 @@ end
 
 function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
-    ds = get_no_streams(network)
 
     # Consistency check
     if I != K
@@ -44,7 +43,7 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     best_partition = Partition()
     for partition in PartitionIterator(I)
         # Check that IA is feasible for this cluster structure
-        if is_IA_feasible(partition, channel.Ns, channel.Ms, ds, temp_cell_assignment)
+        if is_IA_feasible(network, partition)
             # Calculate objective
             for block in partition.blocks
                 objective = 0.
@@ -63,7 +62,7 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     end
 
     # Build cluster assignment matrix
-    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(best_partition, K, I, temp_cell_assignment)
+    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(network, best_partition)
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix)
