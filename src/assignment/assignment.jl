@@ -12,7 +12,7 @@ function partition_to_cluster_assignment_matrix(partition, K, I, assignment)
     return cluster_assignment_matrix
 end
 
-function longterm_cluster_IA_rates(channel, network, partition)
+function longterm_cluster_IA_rates(channel, network, partition, cell_assignment)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
@@ -21,7 +21,7 @@ function longterm_cluster_IA_rates(channel, network, partition)
 
     for block in partition.blocks
         intercluster_interferers = setdiff(1:I, block.elements)
-        for i in block.elements; for k in served_MS_ids(i, temp_assignment)
+        for i in block.elements; for k in served_MS_ids(i, cell_assignment)
             desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]
             int_noise_power = sigma2s[k]
             for j in intercluster_interferers
