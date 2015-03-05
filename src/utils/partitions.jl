@@ -5,7 +5,7 @@
 immutable Block
     elements::Vector{Int}
 end
-Block() = Block([])
+Block() = Block(Int[])
 getindex(b::Block, idx) = b.elements[idx]
 Base.push!(b::Block, e::Int) = push!(b.elements, e)
 Base.show(io::IO, b::Block) = showcompact(io, b.elements)
@@ -15,6 +15,7 @@ Base.length(b::Block) = length(b.elements)
 immutable Partition
     blocks::Vector{Block}
 end
+Partition() = Partition(Block[])
 Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
 Base.length(p::Partition) = length(p.blocks)
 

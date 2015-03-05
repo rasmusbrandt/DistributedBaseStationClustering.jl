@@ -41,8 +41,8 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
 
     # Exhaustive search over partitions
     objective = 0.; best_objective = 0.
-    partitions = all_partitions(1:I); best_partition = Partition(); 
-    for partition in partitions
+    best_partition = Partition()
+    for partition in PartitionIterator(I)
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(partition, channel.Ns, channel.Ms, ds, temp_cell_assignment)
             # Calculate objective

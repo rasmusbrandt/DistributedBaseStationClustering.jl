@@ -9,7 +9,7 @@ function ExhaustiveSearchClustering(channel, network)
     # Exhaustive search over all partitions
     rates = Array(Float64, K)
     best_partition = Partition(); best_sum_rate = 0.
-    for partition in all_partitions(1:I)
+    for partition in PartitionIterator(I)
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(partition, channel.Ns, channel.Ms, ds, temp_cell_assignment)
             # Calculate rates
