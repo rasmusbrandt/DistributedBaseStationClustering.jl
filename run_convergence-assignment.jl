@@ -25,15 +25,16 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "convergence_$(start_time)-assignment",
-    "I" => 6, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 4, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "assignment_methods" => [
-        GrandCoalitionClustering,
+        Chen2014_LinearObjClustering_ExhaustiveSearch,
         ExhaustiveSearchClustering,
-        BnBClustering,
-        Chen2014_LinearObjClustering_Exhaustive,
-        # RandomClustering,
+
+        GrandCoalitionClustering,
+        RandomClustering,
+        NoClustering,
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,

@@ -42,37 +42,28 @@ plot_params = [
 
     "legend" => [
         :loc => "best",
-        :fontsize => 8,
+        :fontsize => 4,
     ],
 
     "methods" => [
-        "GrandCoalitionClustering" => [
-            ("logdet_rates", [ :color => "b", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        "Chen2014_LinearObjClustering_ExhaustiveSearch" => [
+            ("logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObjClustering_ExhaustiveSearch" ]),
         ],
 
         "ExhaustiveSearchClustering" => [
-            ("logdet_rates", [ :color => "y", :linestyle => "-", :label => "ExhaustiveSearchClustering" ]),
-            ("utilities", [ :color => "y", :linestyle => "--", :label => "ExhaustiveSearchClustering (utils.)" ]),
+            ("logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "ExhaustiveSearchClustering" ]),
         ],
 
-        "BnBClustering" => [
-            ("logdet_rates", [ :color => "m", :linestyle => "-", :label => "BnBClustering" ]),
-            ("utilities", [ :color => "m", :linestyle => "--", :label => "BnBClustering (utils.)" ]),
-        ],
-
-        "Chen2014_LinearObjClustering_Exhaustive" => [
-            ("logdet_rates", [ :color => "g", :linestyle => "-", :label => "Chen2014_LinearObjClustering_Exhaustive" ]),
-            ("utilities", [ :color => "g", :linestyle => "--", :label => "Chen2014_LinearObjClustering_Exhaustive (utils.)" ]),
-        ],
-
-        "NeighbourClustering" => [
-            ("logdet_rates", [ :color => "c", :linestyle => "-", :label => "NeighbourClustering" ]),
-            ("utilities", [ :color => "c", :linestyle => "--", :label => "NeighbourClustering (utils.)" ]),
+        "GrandCoalitionClustering" => [
+            ("logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "RandomClustering" => [
-            ("logdet_rates", [ :color => "k", :linestyle => "-", :label => "RandomClustering" ]),
-            ("utilities", [ :color => "k", :linestyle => "--", :label => "RandomClustering (utils.)" ]),
+            ("logdet_rates", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+        ],
+
+        "NoClustering" => [
+            ("logdet_rates", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]
