@@ -3,21 +3,20 @@
 
 # A block is just a set of integers.
 immutable Block
-    elements::Vector{Int}
+    elements::IntSet
 end
-Block() = Block(Int[])
-getindex(b::Block, idx) = b.elements[idx]
-Base.push!(b::Block, e::Int) = push!(b.elements, e)
+Block() = Block(IntSet())
+
+# Inherit part of the interface from IntSet
 Base.show(io::IO, b::Block) = showcompact(io, b.elements)
 Base.length(b::Block) = length(b.elements)
+Base.push!(b::Block, e::Int) = push!(b.elements, e)
 
 # The Partition type describes a partition of integers into blocks.
 immutable Partition
-    blocks::Vector{Block}
+    blocks::Set{Block}
 end
-Partition() = Partition(Block[])
-Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
-Base.length(p::Partition) = length(p.blocks)
+Partition() = Partition(Set{Block}())
 
 # Create partition from restricted growth string
 function Partition(rgs::Vector)
@@ -28,8 +27,12 @@ function Partition(rgs::Vector)
         push!(blocks[rgs[l] + 1], l)
     end
 
-    return Partition(blocks)
+    return Partition(Set(blocks))
 end
+
+# Inherit part of the interface from Set
+Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
+Base.length(p::Partition) = length(p.blocks)
 
 # PartitionIterator gives all partitions of the set 1:n. This iterator is
 # based on Algorithm H from TAoCP 7.2.1.5.
