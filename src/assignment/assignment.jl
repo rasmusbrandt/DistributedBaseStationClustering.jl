@@ -21,10 +21,14 @@ function longterm_cluster_IA_rates(channel, network, partition)
     sigma2s = get_receiver_noise_powers(network)
     assignment = get_assignment(network)
 
-    rates = zeros(Float64, K)
-
+    active_BSs = IntSet()
     for block in partition.blocks
-        intercluster_interferers = setdiff(1:I, block.elements)
+        union!(active_BSs, block.elements)
+    end
+
+    rates = zeros(Float64, K)
+    for block in partition.blocks
+        intercluster_interferers = setdiff(active_BSs, block.elements)
         for i in block.elements; for k in served_MS_ids(i, assignment)
             desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]
             int_noise_power = sigma2s[k]
@@ -40,7 +44,7 @@ function longterm_cluster_IA_rates(channel, network, partition)
     return rates
 end
 
-include("BnBClustering.jl")
+include("BranchAndBoundClustering.jl")
 include("Chen2014_LinearObjClustering.jl")
 include("ExhaustiveSearchClustering.jl")
 include("GrandCoalitionClustering.jl")

@@ -12,7 +12,7 @@ import Lumberjack
 
 export
     # assignment
-    BnBClustering,
+    BranchAndBoundClustering,
     Chen2014_LinearObjClustering_ExhaustiveSearch,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,

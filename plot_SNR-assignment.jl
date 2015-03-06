@@ -54,6 +54,10 @@ plot_params = [
             ("logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "ExhaustiveSearchClustering" ]),
         ],
 
+        "BranchAndBoundClustering" => [
+            ("logdet_rates", [ :color => "Aqua", :linestyle => "-", :marker => ".", :label => "BranchAndBoundClustering" ]),
+        ],
+
         "GrandCoalitionClustering" => [
             ("logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
