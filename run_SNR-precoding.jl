@@ -42,9 +42,6 @@ simulation_params = [
         "max_iters" => 1000,
     ],
     "independent_variable" => (set_transmit_powers_dBm!, -80:10:0),
-    # "aux_independent_variables" => [
-    #     ((n, v) -> set_aux_precoding_param!(n, v, "max_iters"), [10, 50]),
-    # ]
 ]
 network =
     setup_indoors_network(simulation_params["I"],

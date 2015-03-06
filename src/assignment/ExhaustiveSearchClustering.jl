@@ -5,8 +5,11 @@ function ExhaustiveSearchClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
+    iters = 0
     best_partition = Partition(); best_objective = 0.
     for partition in PartitionIterator(I)
+        iters += 1
+
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(network, partition)
             # Calculate rates
@@ -21,7 +24,8 @@ function ExhaustiveSearchClustering(channel, network)
     end
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :best_objective => best_objective,
-          :best_partition => best_partition }
+          :best_partition => best_partition,
+          :iters => iters }
     )
 
     # Build cluster assignment matrix

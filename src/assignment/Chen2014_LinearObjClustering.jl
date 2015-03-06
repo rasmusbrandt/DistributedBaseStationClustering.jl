@@ -13,8 +13,11 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     W = Chen2014_LinearObjClustering_W(channel, network)
 
     # Exhaustive search over partitions
+    iters = 0
     best_partition = Partition(); best_objective = 0.
     for partition in PartitionIterator(I)
+        iters += 1
+
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(network, partition)
             # Calculate objective
@@ -34,7 +37,8 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     end
     Lumberjack.info("Chen2014_LinearObjClustering_ExhaustiveSearch finished.",
         { :best_objective => best_objective,
-          :best_partition => best_partition }
+          :best_partition => best_partition,
+          :iters => iters }
     )
 
     # Build cluster assignment matrix
