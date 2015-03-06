@@ -1,5 +1,6 @@
 # Feasibility criterion from Liu2013
 function is_IA_feasible(network, partition)
+    I = get_no_BSs(network)
     Ns = get_no_MS_antennas(network)
     Ms = get_no_BS_antennas(network)
     ds = get_no_streams(network)
@@ -12,8 +13,8 @@ function is_IA_feasible(network, partition)
     all(mod(Ms, d) .== 0) || Lumberjack.error("Feasibility check with Liu2013 only handles cases where d | M_i for all i.")
 
     # List of served MSs
-    served = [ served_MS_ids(i, assignment) for i = 1:length(Ms) ]
-    served_length = [ length(served[i]) for i = 1:length(Ms) ]
+    served = [ served_MS_ids(i, assignment) for i = 1:I ]
+    served_length = [ length(served[i]) for i = 1:I ]
 
     if all(Ns .== Ns[1]) && all(Ms .== Ms[1]) && all(served_length .== served_length[1])
         return Liu2013_IBC_symmetric(partition, Ns[1], Ms[1], d, served_length[1])
@@ -26,8 +27,10 @@ function Liu2013_IBC_symmetric(partition, N, M, d, Kc)
     for block in partition.blocks
         I = length(block.elements)
 
-        return ((I-1)*Kc*d <= M - Kc*d + N - d ? true : false)
+        (I-1)*Kc*d <= M - Kc*d + N - d || return false
     end
+
+    return true
 end
 
 # Warning: This function is very slow.
