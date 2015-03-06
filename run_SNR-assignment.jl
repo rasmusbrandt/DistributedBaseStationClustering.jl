@@ -20,9 +20,9 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "SNR_$(start_time)-assignment",
-    "I" => 4, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
-    "Ndrops" => 10, "Nsim" => 5,
+    "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
         Chen2014_LinearObjClustering_ExhaustiveSearch,
         # ExhaustiveSearchClustering,
@@ -40,10 +40,10 @@ simulation_params = [
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
-    "independent_variable" => (set_transmit_powers_dBm!, -80:10:0),
+    "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
 ]
 network =
-    setup_indoors_network(simulation_params["I"],
+    setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 raw_results = simulate(network, simulation_params, loop_over=:assignment_methods)

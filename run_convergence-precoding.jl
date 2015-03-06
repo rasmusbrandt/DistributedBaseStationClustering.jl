@@ -24,11 +24,11 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "convergence_$(start_time)-precoding",
-    "I" => 6, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
-    "Ndrops" => 10, "Nsim" => 5,
+    "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
-        ExhaustiveSearchClustering,
+        BranchAndBoundClustering,
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
@@ -50,7 +50,7 @@ simulation_params = [
     ]
 ]
 network =
-    setup_indoors_network(simulation_params["I"],
+    setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 
