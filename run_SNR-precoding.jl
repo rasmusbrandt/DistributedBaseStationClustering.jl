@@ -12,12 +12,6 @@ using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
 
 ##########################################################################
-# Set up logging
-Lumberjack.configure(Lumberjack._lumber_mill.timber_trucks["console"]; mode = "warn")
-Lumberjack.add_truck(Lumberjack.LumberjackTruck("info.log", "info"), "info")
-Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
-
-##########################################################################
 # General settings
 srand(973472333)
 start_time = strftime("%Y%m%dT%H%M%S", time())

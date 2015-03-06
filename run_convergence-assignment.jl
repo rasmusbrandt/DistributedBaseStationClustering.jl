@@ -12,9 +12,7 @@ using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
 
 ##########################################################################
-# Set up logging
-Lumberjack.configure(Lumberjack._lumber_mill.timber_trucks["console"]; mode = "warn")
-Lumberjack.add_truck(Lumberjack.LumberjackTruck("info.log", "info"), "info")
+# Custom logging
 Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
 
 ##########################################################################
