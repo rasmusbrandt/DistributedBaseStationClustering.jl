@@ -3,7 +3,6 @@ function RandomClustering(channel, network)
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
-    temp_cell_assignment = get_assignment(network)
 
     # Generate random restricted growth string. See Algorithm H in TAoCP 7.2.1.5.
     a = Array(Int, I)
@@ -18,6 +17,8 @@ function RandomClustering(channel, network)
         end
     end
 
+    Lumberjack.info("RandomClustering finished.", { :a => a })
+
     # Get corresponding partition
     partition = Partition(a)
 
@@ -25,5 +26,6 @@ function RandomClustering(channel, network)
     assignment_matrix = partition_to_cluster_assignment_matrix(network, partition)
 
     # Store cluster assignment together with existing cell assignment
+    temp_cell_assignment = get_assignment(network)
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, assignment_matrix)
 end

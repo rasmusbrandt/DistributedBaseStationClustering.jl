@@ -19,12 +19,12 @@ end
 Partition() = Partition(Set{Block}())
 
 # Create partition from restricted growth string
-function Partition(rgs::Vector)
-    no_blocks = maximum(rgs) + 1
+function Partition(a::Vector)
+    no_blocks = 1 + maximum(a)
     blocks = [ Block() for n = 1:no_blocks ]
 
-    for l = 1:length(rgs)
-        push!(blocks[rgs[l] + 1], l)
+    for l = 1:length(a)
+        push!(blocks[a[l] + 1], l)
     end
 
     return Partition(Set(blocks))
