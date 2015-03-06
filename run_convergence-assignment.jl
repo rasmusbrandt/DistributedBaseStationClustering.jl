@@ -38,6 +38,7 @@ simulation_params = [
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
+        # RobustChen2014_MaxSINR,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

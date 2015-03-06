@@ -51,7 +51,7 @@ plot_params = [
         ],
 
         "ExhaustiveSearchClustering" => [
-            ("logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "ExhaustiveSearchClustering" ]),
+            ("logdet_rates", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
