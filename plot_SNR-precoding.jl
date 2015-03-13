@@ -38,11 +38,12 @@ plot_params = [
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Sum rate [bits/s/Hz]",
+        :ylim => [0, 70],
     ],
 
     "legend" => [
         :loc => "best",
-        :fontsize => 4,
+        :fontsize => 10,
     ],
 
     "methods" => [

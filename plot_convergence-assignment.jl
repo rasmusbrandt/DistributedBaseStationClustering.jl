@@ -38,11 +38,13 @@ plot_params = [
     "axes" => [
         :xlabel => "Iterations",
         :ylabel => "Sum rate [bits/s/Hz]",
+        :ylim => [0, 70],
     ],
 
     "legend" => [
         :loc => "best",
-        :fontsize => 4,
+        :fontsize => 8,
+        :ncol => 2,
     ],
 
     "methods" => [
