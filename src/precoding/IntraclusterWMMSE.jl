@@ -24,8 +24,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
 
     state = IntraclusterWMMSEState(
         Array(Matrix{Complex128}, K),
-        unity_MSE_weights(ds),
-        unity_MSE_weights(ds),
+        Array(Hermitian{Complex128}, K),
+        Array(Hermitian{Complex128}, K),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params))
     objective = Float64[]
     utilities = Array(Float64, K, maximum(ds), aux_params["max_iters"])
@@ -89,7 +89,7 @@ end
 function update_MSs!(state::IntraclusterWMMSEState,
     channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
 
-    ds = [ size(state.Z[k], 1) for k = 1:channel.K ]
+    ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
     for i = 1:channel.I; for k in served_MS_ids(i, assignment)
         coordinators = coordinated_BS_ids(k, assignment)
@@ -211,8 +211,8 @@ function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
 end
 
 function calculate_utilities(state::IntraclusterWMMSEState)
-    K = length(state.Z)
-    ds = Int[ size(state.Z[k], 1) for k = 1:K ]; max_d = maximum(ds)
+    K = length(state.V)
+    ds = Int[ size(state.V[k], 2) for k = 1:K ]; max_d = maximum(ds)
 
     utilities = zeros(Float64, K, max_d)
     for k = 1:K; if ds[k] > 0

@@ -18,7 +18,7 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
 
     state = IntraclusterLeakageMinimizationState(
         Array(Matrix{Complex128}, K),
-        unity_MSE_weights(ds),
+        Array(Hermitian{Complex128}, K),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params))
     objective = Float64[]
     logdet_rates = Array(Float64, K, maximum(ds), aux_params["max_iters"])
@@ -78,7 +78,7 @@ end
 function update_MSs!(state::IntraclusterLeakageMinimizationState,
     channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
 
-    ds = [ size(state.W[k], 1) for k = 1:channel.K ]
+    ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
     for i = 1:channel.I; for k in served_MS_ids(i, assignment)
         coordinators = coordinated_BS_ids(k, assignment)
@@ -110,7 +110,7 @@ end
 function update_BSs!(state::IntraclusterLeakageMinimizationState,
     channel::SinglecarrierChannel, Ps, assignment, aux_params, robustness)
 
-    ds = [ size(state.W[k], 1) for k = 1:channel.K ]
+    ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
     for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
