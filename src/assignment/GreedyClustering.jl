@@ -55,7 +55,8 @@ function GreedyClustering(channel, network)
         end
     end
     partition = Partition(partition_matrix)
-    objective = sum(longterm_cluster_rates(channel, network, partition))
+    rates = longterm_cluster_rates(channel, network, partition)
+    objective = sum(rates)
     Lumberjack.info("GreedyClustering finished.",
         { :objective => objective,
           :a => restricted_growth_string(partition_matrix),
@@ -64,4 +65,6 @@ function GreedyClustering(channel, network)
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
+
+    return restricted_growth_string(partition_matrix), rates
 end

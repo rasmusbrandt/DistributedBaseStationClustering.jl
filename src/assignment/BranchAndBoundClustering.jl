@@ -84,11 +84,9 @@ function BranchAndBoundClustering(channel, network)
     Lumberjack.debug("Utopian (fully cooperative) rates calculated.", { :utopian_rates => utopian_rates, :utopian_value => utopian_value })
 
     # Incumbent: non-cooperative case
-    incumbent_a = [0:(I-1)] # restricted growth string with no unique entries
-    no_coalitions = Partition(incumbent_a)
-    incumbent_rates = longterm_cluster_rates(channel, network, no_coalitions)
+    incumbent_a, incumbent_rates = GreedyClustering(channel, network)
     incumbent_value = sum(incumbent_rates)
-    Lumberjack.debug("Incumbent (non-cooperative) rates calculated.", { :incumbent_rates => incumbent_rates, :incumbent_value => incumbent_value })
+    Lumberjack.debug("Incumbent (greedy) rates calculated.", { :incumbent_rates => incumbent_rates, :incumbent_value => incumbent_value })
 
     # Perform eager branch and bound
     incumbent_evolution = Float64[]
