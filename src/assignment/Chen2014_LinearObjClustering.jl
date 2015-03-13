@@ -41,12 +41,9 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
           :iters => iters }
     )
 
-    # Build cluster assignment matrix
-    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(network, best_partition)
-
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
-    network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix)
+    network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix(network, best_partition))
 end
 
 function Chen2014_LinearObjClustering_W(channel, network)

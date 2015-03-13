@@ -13,7 +13,7 @@ function ExhaustiveSearchClustering(channel, network)
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(network, partition)
             # Calculate rates
-            rates = longterm_cluster_IA_rates(channel, network, partition)
+            rates = longterm_cluster_rates(channel, network, partition)
 
             objective = sum(rates)
             if objective > best_objective
@@ -28,10 +28,7 @@ function ExhaustiveSearchClustering(channel, network)
           :iters => iters }
     )
 
-    # Build cluster assignment matrix
-    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(network, best_partition)
-
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
-    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix)
+    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, best_partition))
 end

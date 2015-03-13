@@ -1,21 +1,21 @@
-function partition_to_cluster_assignment_matrix(network, partition)
+function cluster_assignment_matrix(network, partition)
     I = get_no_BSs(network); K = get_no_MSs(network)
     assignment = get_assignment(network)
 
-    cluster_assignment_matrix = zeros(Int, K, I)
+    cl_assignment_matrix = zeros(Int, K, I)
 
     for block in partition.blocks
         for i in block.elements
             for j in block.elements; for l in served_MS_ids(j, assignment)
-                cluster_assignment_matrix[l,i] = 1
+                cl_assignment_matrix[l,i] = 1
             end; end
         end
     end
 
-    return cluster_assignment_matrix
+    return cl_assignment_matrix
 end
 
-function longterm_cluster_IA_rates(channel, network, partition)
+function longterm_cluster_rates(channel, network, partition)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)

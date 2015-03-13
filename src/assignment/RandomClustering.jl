@@ -28,10 +28,7 @@ function RandomClustering(channel, network)
     end
     Lumberjack.info("RandomClustering finished.", { :a => a })
 
-    # Build cluster assignment matrix
-    assignment_matrix = partition_to_cluster_assignment_matrix(network, random_partition)
-
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
-    network.assignment = Assignment(temp_cell_assignment.cell_assignment, assignment_matrix)
+    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, random_partition))
 end

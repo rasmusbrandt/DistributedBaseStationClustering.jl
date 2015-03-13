@@ -31,7 +31,7 @@ function bound!(node, channel, network, utopian_rates)
         # Rates for MSs already in clusters. These are rate bounds, since
         # the out-of-cluster interference of the unclustered users are not
         # taken into account.
-        rate_bounds = longterm_cluster_IA_rates(channel, network, partial_partition)
+        rate_bounds = longterm_cluster_rates(channel, network, partial_partition)
 
         # Bound the unclustered users rates by their utopian rates.
         for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
@@ -79,14 +79,14 @@ function BranchAndBoundClustering(channel, network)
     # Rate upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
     grand_coalition = Partition(grand_coalition_a)
-    utopian_rates = longterm_cluster_IA_rates(channel, network, grand_coalition)
+    utopian_rates = longterm_cluster_rates(channel, network, grand_coalition)
     utopian_value = sum(utopian_rates)
     Lumberjack.debug("Utopian (fully cooperative) rates calculated.", { :utopian_rates => utopian_rates, :utopian_value => utopian_value })
 
     # Incumbent: non-cooperative case
     incumbent_a = [0:(I-1)] # restricted growth string with no unique entries
     no_coalitions = Partition(incumbent_a)
-    incumbent_rates = longterm_cluster_IA_rates(channel, network, no_coalitions)
+    incumbent_rates = longterm_cluster_rates(channel, network, no_coalitions)
     incumbent_value = sum(incumbent_rates)
     Lumberjack.debug("Incumbent (non-cooperative) rates calculated.", { :incumbent_rates => incumbent_rates, :incumbent_value => incumbent_value })
 
@@ -137,10 +137,7 @@ function BranchAndBoundClustering(channel, network)
           :iters => iters }
     )
 
-    # Build cluster assignment matrix
-    cluster_assignment_matrix = partition_to_cluster_assignment_matrix(network, Partition(incumbent_a))
-
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
-    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix)
+    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, Partition(incumbent_a)))
 end
