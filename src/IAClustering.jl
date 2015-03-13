@@ -16,6 +16,7 @@ export
     Chen2014_LinearObjClustering_ExhaustiveSearch,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
+    GreedyClustering,
     RandomClustering,
     NoClustering,
 

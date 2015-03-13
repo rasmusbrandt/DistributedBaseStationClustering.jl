@@ -33,6 +33,7 @@ simulation_params = [
         BranchAndBoundClustering,
 
         GrandCoalitionClustering,
+        GreedyClustering,
         RandomClustering,
         NoClustering,
     ],

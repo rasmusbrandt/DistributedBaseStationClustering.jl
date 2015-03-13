@@ -63,6 +63,10 @@ plot_params = [
             ("logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
+        "GreedyClustering" => [
+            ("logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        ],
+
         "RandomClustering" => [
             ("logdet_rates", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],

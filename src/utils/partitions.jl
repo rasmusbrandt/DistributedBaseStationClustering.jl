@@ -20,19 +20,82 @@ Partition() = Partition(Set{Block}())
 
 # Create partition from restricted growth string
 function Partition(a::Vector)
-    no_blocks = 1 + maximum(a)
-    blocks = [ Block() for n = 1:no_blocks ]
+    I = length(a)
+    a_max = maximum(a)
+    no_blocks = 1 + a_max
 
-    for l = 1:length(a)
+    # Consistency checks
+    all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+
+    # Build blocks and partition
+    blocks = [ Block() for n = 1:no_blocks ]
+    for l = 1:I
         push!(blocks[a[l] + 1], l)
     end
 
     return Partition(Set(blocks))
 end
 
+# Create partition from assignment matrix
+Partition(A::Matrix) =
+    Partition(restricted_growth_string(A))
+
 # Inherit part of the interface from Set
 Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
 Base.length(p::Partition) = length(p.blocks)
+
+# Convert from assignment matrix to restricted growth string
+function restricted_growth_string(A::Matrix)
+    I = size(A, 1)
+
+    # Consistency checks
+    A' == A || Lumberjack.error("Tried to create partition from asymmetric assignment matrix.", { :A => A })
+    diag(A) == ones(I) || Lumberjack.error("Elements must belong to their own block.", { :A => A })
+
+    # Build restricted growth string
+    Ac = copy(A)
+    a = zeros(Int, I)
+    block_no = 0
+    for i = 1:I
+        # Find all integers in the block containing integer i.
+        elements = find(Ac[i,:] .== 1)
+
+        if length(elements) > 0
+            # Consistency check
+            for j in elements[2:end]
+                find(Ac[j,:] .== 1) == elements || Lumberjack.error("Incorrect structure in assignment matrix.", { :A => Ac })
+            end
+
+            # Add all elements to block and increment number of blocks.
+            a[elements] = block_no
+            block_no += 1
+
+            # Do not investigate these elements more
+            Ac[elements,elements] = 0
+        end
+    end
+
+    return a
+end
+
+# Convert from restricted growth string to assignment matrix
+function assignment_matrix(a::Vector)
+    I = length(a)
+    a_max = maximum(a)
+    no_blocks = 1 + a_max
+
+    # Consistency checks
+    all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+
+    # Create matrix iteratively
+    A = eye(Int, I, I)
+    for n = 0:(no_blocks-1)
+        elements = find(a .== n)
+        A[elements, elements] = 1
+    end
+
+    return A
+end
 
 # PartitionIterator gives all partitions of the set 1:n. This iterator is
 # based on Algorithm H from TAoCP 7.2.1.5.
