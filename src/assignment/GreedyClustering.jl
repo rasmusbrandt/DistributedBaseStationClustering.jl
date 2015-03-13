@@ -10,20 +10,21 @@ function GreedyClustering(channel, network)
 
     # Clustering metric
     Ps = get_transmit_powers(network)
+    sigma2s = get_receiver_noise_powers(network)
     F = zeros(Float64, I, I)
     for i = 1:I; for j = 1:I
         if i == j
-            # Only accumulate interference
+            F[i,j] = -Inf
             continue
         end
 
         # Sum interference from BS j to MSs served by BS i
-        F[i,j] = sum([ (channel.large_scale_fading_factor[k,j]^2)*Ps[j] for k in served_MS_ids(i, temp_cell_assignment) ])
+        F[i,j] = sum([ log2((channel.large_scale_fading_factor[k,j]^2)*Ps[j]/sigma2s[k]) for k in served_MS_ids(i, temp_cell_assignment) ])
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
     iters = 0
-    while !all(F .== 0.)
+    while !all(F .== -Inf)
         iters += 1
 
         # Find strongest interfering link that is still active
@@ -37,21 +38,20 @@ function GreedyClustering(channel, network)
         # Check IA feasibility
         if is_IA_feasible(network, Partition(partition_matrix))
             # Fix BS j to this cluster
-            F[:,j] = 0.; F[j,:] = 0.
+            F[:,j] = -Inf
 
             if length(i_cluster) == 1
                 # We have effectively put BS i in this cluster as well,
                 # without it really being aware. Do not try to put BS i
                 # in another cluster.
-                F[:,i] = 0.; F[i,:] = 0.
+                F[:,i] = -Inf
             end
         else
             # This was not a feasible cluster, undo the assignment.
             partition_matrix[i_cluster,j] = 0; partition_matrix[j,i_cluster] = 0
 
             # Do not try to add BS j to the cluster of BS i again
-            F[i_cluster,j] = 0.
-            F[j,i_cluster] = 0.
+            F[i_cluster,j] = -Inf
         end
     end
     partition = Partition(partition_matrix)
