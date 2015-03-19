@@ -98,7 +98,7 @@ function assignment_matrix(a::Vector)
 end
 
 # PartitionIterator gives all partitions of the set 1:n. This iterator is
-# based on Algorithm H from TAoCP 7.2.1.5.
+# based on Algorithm H from TAoCP 7.2.1.5. Note that a is zero-based.
 immutable PartitionIterator
     n::Int
 
