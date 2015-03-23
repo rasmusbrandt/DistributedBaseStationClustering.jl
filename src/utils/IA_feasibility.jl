@@ -27,7 +27,7 @@ function Liu2013_IBC_symmetric(partition, N, M, d, Kc)
     for block in partition.blocks
         I = length(block.elements)
 
-        (I-1)*Kc*d <= M - Kc*d + N - d || return false
+        I*Kc*d <= M + N - d || return false
     end
 
     return true
