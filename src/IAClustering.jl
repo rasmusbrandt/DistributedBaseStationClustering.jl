@@ -31,10 +31,10 @@ include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
 
-include("utils/combinations.jl")
-include("utils/IA_feasibility.jl")
-include("utils/partitions.jl")
-include("utils/subsets.jl")
+include("misc/combinations.jl")
+include("misc/feasibility.jl")
+include("misc/partitions.jl")
+include("misc/subsets.jl")
 
 ##########################################################################
 # Logging defaults
