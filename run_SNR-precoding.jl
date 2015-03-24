@@ -36,6 +36,12 @@ simulation_params = [
         Shi2011_WMMSE,
         Eigenprecoding,
     ],
+    "aux_network_params" => [
+        "no_coherence_symbols" => 1000,
+    ],
+    "aux_assignment_params" => [
+        "clustering_type" => :spectrum_sharing,
+    ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,

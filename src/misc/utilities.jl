@@ -94,7 +94,7 @@ longterm_rates(channel, network, partition) =
 # entire coherence time, so adding BSs to coalitions monotonically increases
 # the overhead.
 function spectrum_sharing_prelog_factor(network, partition)
-    Tc = get_aux_assignment_param(network, "no_coherence_symbols")
+    Tc = get_aux_network_param(network, "no_coherence_symbols")
     return max(0, 1 - sum([ CSI_acquisition_symbol_overhead(network, block) for block in partition.blocks ])/Tc)
 end
 
@@ -103,7 +103,7 @@ end
 # overhead due to the CSI acquisition.
 function orthogonal_prelog_factor(network, block)
     I = get_no_BSs(network)
-    Tc = get_aux_assignment_param(network, "no_coherence_symbols")
+    Tc = get_aux_network_param(network, "no_coherence_symbols")
     return max(0, length(block)/I - CSI_acquisition_symbol_overhead(network, block)/Tc)
 end
 
