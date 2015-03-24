@@ -10,7 +10,8 @@ function NoClustering(channel, network)
         cluster_assignment_matrix[k,i] = 1
     end; end
 
-    Lumberjack.info("NoClustering finished.", { :a => [0:(I-1)] })
+    a = [0:(I-1)]
+    Lumberjack.info("NoClustering finished.", { :sum_rate => sum(longterm_cluster_rates(channel, network, Partition(a))), :a => a })
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_assignment.cell_assignment, cluster_assignment_matrix)

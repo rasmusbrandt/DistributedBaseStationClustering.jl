@@ -23,9 +23,9 @@ function GreedyClustering(channel, network)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
-    iters = 0
+    no_iters = 0
     while !all(F .== -Inf)
-        iters += 1
+        no_iters += 1
 
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
@@ -58,9 +58,9 @@ function GreedyClustering(channel, network)
     rates = longterm_cluster_rates(channel, network, partition)
     objective = sum(rates)
     Lumberjack.info("GreedyClustering finished.",
-        { :objective => objective,
+        { :sum_rate => objective,
           :a => restricted_growth_string(partition_matrix),
-          :iters => iters }
+          :no_iters => no_iters }
     )
 
     # Store cluster assignment together with existing cell assignment

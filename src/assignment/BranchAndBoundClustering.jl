@@ -90,9 +90,9 @@ function BranchAndBoundClustering(channel, network)
 
     # Perform eager branch and bound
     incumbent_evolution = Float64[]
-    live = initialize_live(utopian_rates); iters = 0
+    live = initialize_live(utopian_rates); no_iters = 0; no_feasibility_checks = 0
     while length(live) > 0
-        iters += 1
+        no_iters += 1
 
         # Select next node to be processed. (Nodes with the least upper bounds
         # should be investigated first.)
@@ -104,6 +104,7 @@ function BranchAndBoundClustering(channel, network)
 
         for child in branch(parent)
             bound!(child, channel, network, utopian_rates)
+            no_feasibility_checks += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_value
@@ -130,9 +131,10 @@ function BranchAndBoundClustering(channel, network)
         end
     end
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :incumbent_value => incumbent_value,
-          :incumbent_a => incumbent_a,
-          :iters => iters }
+        { :sum_rate => incumbent_value,
+          :a => incumbent_a,
+          :no_iters => no_iters,
+          :no_feasibility_checks => no_feasibility_checks }
     )
 
     # Store cluster assignment together with existing cell assignment
