@@ -53,8 +53,8 @@ function assignment_matrix(p::Partition)
     A = eye(Int, I, I)
 
     for block in p.blocks
-        block_idxs = collect(block.elements)
-        A[block_idxs, block_idxs] = 1
+        elements = collect(block.elements)
+        A[elements, elements] = 1
     end
 
     return A
