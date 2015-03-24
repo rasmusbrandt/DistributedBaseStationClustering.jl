@@ -1,20 +1,22 @@
+# Creates a K-by-I matrix whose (i,k) entry denotes whether or not
+# BS i coordinates to MS k. Note that this matrix is different than
+# the partition logical matrix in partitions.jl, which is an
+# I-by-I matrix.
 function cluster_assignment_matrix(network, partition)
     I = get_no_BSs(network); K = get_no_MSs(network)
     assignment = get_assignment(network)
 
-    cl_assignment_matrix = zeros(Int, K, I)
+    A = zeros(Int, K, I)
 
     for block in partition.blocks
         for i in block.elements
             for j in block.elements; for l in served_MS_ids(j, assignment)
-                cl_assignment_matrix[l,i] = 1
+                A[l,i] = 1
             end; end
         end
     end
 
-    warn("Remove me.")
-
-    return cl_assignment_matrix
+    return A
 end
 
 include("BranchAndBoundClustering.jl")

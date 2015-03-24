@@ -45,10 +45,10 @@ Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
 Base.length(p::Partition) = length(p.blocks)
 
 # Convert from partition to restricted growth string
-restricted_growth_string(p::Partition) = restricted_growth_string(assignment_matrix(p))
+restricted_growth_string(p::Partition) = restricted_growth_string(logical_matrix(p))
 
 # Convert from partition to assignment matrix
-function assignment_matrix(p::Partition)
+function logical_matrix(p::Partition)
     I = maximum([ maximum(block.elements) for block in p.blocks ])
     A = eye(Int, I, I)
 
@@ -95,7 +95,7 @@ function restricted_growth_string(A::Matrix)
 end
 
 # Convert from restricted growth string to assignment matrix
-function assignment_matrix(a::Vector)
+function logical_matrix(a::Vector)
     I = length(a)
     a_max = maximum(a)
     no_blocks = 1 + a_max
