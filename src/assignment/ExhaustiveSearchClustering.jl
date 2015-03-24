@@ -13,7 +13,7 @@ function ExhaustiveSearchClustering(channel, network)
         # Check that IA is feasible for this cluster structure
         if is_IA_feasible(network, partition)
             # Calculate rates
-            rates = longterm_cluster_rates(channel, network, partition)
+            rates = longterm_throughputs(channel, network, partition)
 
             objective = sum(rates)
             if objective > best_objective

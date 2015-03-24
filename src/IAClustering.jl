@@ -35,6 +35,7 @@ include("misc/combinations.jl")
 include("misc/feasibility.jl")
 include("misc/partitions.jl")
 include("misc/subsets.jl")
+include("misc/utilities.jl")
 
 ##########################################################################
 # Logging defaults

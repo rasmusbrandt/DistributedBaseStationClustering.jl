@@ -36,7 +36,7 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
         end
     end
     Lumberjack.info("Chen2014_LinearObjClustering_ExhaustiveSearch finished.",
-        { :sum_rate => sum(longterm_cluster_rates(channel, network, best_partition)),
+        { :sum_rate => sum(longterm_throughputs(channel, network, best_partition)),
           :a => restricted_growth_string(best_partition),
           :no_iters => no_iters,
           :objective => best_objective }

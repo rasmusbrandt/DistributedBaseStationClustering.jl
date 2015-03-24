@@ -5,7 +5,7 @@ function GrandCoalitionClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     a = zeros(Int, I)
-    Lumberjack.info("GrandCoalitionClustering finished.", { :sum_rate => sum(longterm_cluster_rates(channel, network, Partition(a))), :a => a })
+    Lumberjack.info("GrandCoalitionClustering finished.", { :sum_rate => sum(longterm_throughputs(channel, network, Partition(a))), :a => a })
 
     # Store cluster assignment together with existing cell assignment
     temp_assignment = get_assignment(network)

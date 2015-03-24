@@ -55,7 +55,7 @@ function GreedyClustering(channel, network)
         end
     end
     partition = Partition(partition_matrix)
-    rates = longterm_cluster_rates(channel, network, partition)
+    rates = longterm_throughputs(channel, network, partition)
     objective = sum(rates)
     Lumberjack.info("GreedyClustering finished.",
         { :sum_rate => objective,

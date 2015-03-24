@@ -31,7 +31,7 @@ function bound!(node, channel, network, utopian_rates)
         # Rates for MSs already in clusters. These are rate bounds, since
         # the out-of-cluster interference of the unclustered users are not
         # taken into account.
-        rate_bounds = longterm_cluster_rates(channel, network, partial_partition)
+        rate_bounds = longterm_throughputs(channel, network, partial_partition)
 
         # Bound the unclustered users rates by their utopian rates.
         for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
@@ -79,7 +79,7 @@ function BranchAndBoundClustering(channel, network)
     # Rate upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
     grand_coalition = Partition(grand_coalition_a)
-    utopian_rates = longterm_cluster_rates(channel, network, grand_coalition)
+    utopian_rates = longterm_throughputs(channel, network, grand_coalition)
     utopian_value = sum(utopian_rates)
     Lumberjack.debug("Utopian (fully cooperative) rates calculated.", { :utopian_rates => utopian_rates, :utopian_value => utopian_value })
 
