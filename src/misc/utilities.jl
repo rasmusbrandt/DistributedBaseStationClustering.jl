@@ -44,7 +44,7 @@ function longterm_utilities(channel, network, partition)
                         desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
                         rho = desired_power/sigma2s[k]
 
-                        rates[k,1:ds[k]] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+                        rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
 
                         # Calculate throughputs
                         throughputs[k,1:ds[k]] = alpha*rates[k,1:ds[k]]
@@ -84,7 +84,7 @@ function longterm_utilities(channel, network, partition)
                         int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
                         rho = desired_power/int_noise_power
 
-                        rates[k,1:ds[k]] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+                        rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
