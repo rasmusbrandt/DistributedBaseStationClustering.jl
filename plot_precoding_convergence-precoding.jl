@@ -1,9 +1,9 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# plot_SNR-precoding.jl
+# plot_precoding_convergence-precoding.jl
 #
-# Plots SNR curves, comparing different precoding methods.
+# Plots convergence curves, comparing different precoding methods.
 ##########################################################################
 
 include("src/IAClustering.jl")
@@ -36,14 +36,15 @@ plot_params = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "Iterations",
         :ylabel => "Sum rate [bits/s/Hz]",
         :ylim => [0, 70],
     ],
 
     "legend" => [
         :loc => "best",
-        :fontsize => 10,
+        :fontsize => 6,
+        :ncol => 4,
     ],
 
     "methods" => [
@@ -89,6 +90,6 @@ plot_params = [
 # Plot it
 for file_name in parsed_args["file_names"]
     data = load(file_name)
-    processed_results = postprocess(data["raw_results"], data["simulation_params"], plot_params)
-    plot(processed_results, data["simulation_params"], plot_params)
+    processed_results = postprocess_convergence(data["raw_results"], data["simulation_params"], plot_params)
+    plot_convergence(processed_results, data["simulation_params"], plot_params)
 end

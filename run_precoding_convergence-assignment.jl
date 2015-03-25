@@ -1,10 +1,10 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# run_convergence-precoding.jl
+# run_precoding_convergence-assignment.jl
 #
-# Convergence, comparing different precoding methods for the same
-# cluster assignment method.
+# Convergence, comparing different cluster assignment methods for the same
+# precoding method.
 ##########################################################################
 
 include("src/IAClustering.jl")
@@ -23,22 +23,23 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "simulation_name" => "convergence_$(start_time)-precoding",
+    "simulation_name" => "precoding_convergence-assignment_$(start_time)",
     "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
+        Chen2014_ExhaustiveSearch,
+        # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
+
+        GrandCoalitionClustering,
+        GreedyClustering,
+        RandomClustering,
+        NoClustering,
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
-        NaiveIntraclusterWMMSE,
-        RobustIntraclusterLeakageMinimization,
-        NaiveIntraclusterLeakageMinimization,
-        RobustChen2014_MaxSINR,
-        NaiveChen2014_MaxSINR,
-        Shi2011_WMMSE,
-        Eigenprecoding,
+        # RobustChen2014_MaxSINR,
     ],
     "aux_network_params" => [
         "no_coherence_symbols" => 1000,
@@ -60,7 +61,7 @@ network =
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 
-raw_results = simulate_convergence(network, simulation_params, loop_over=:precoding_methods)
+raw_results = simulate_convergence(network, simulation_params, loop_over=:assignment_methods)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",

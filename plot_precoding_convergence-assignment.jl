@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# plot_convergence-cluster_assignment.jl
+# plot_precoding_convergence-assignment.jl
 #
 # Plots convergence curves, comparing different cluster assignment methods.
 ##########################################################################

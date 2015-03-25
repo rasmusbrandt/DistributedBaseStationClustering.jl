@@ -1,10 +1,10 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# run_convergence-assignment.jl
+# run_system-SNR-assignment.jl
 #
-# Convergence, comparing different cluster assignment methods for the same
-# precoding method.
+# Performance as a function of transmit power, comparing different
+# cluster assignment methods.
 ##########################################################################
 
 include("src/IAClustering.jl")
@@ -12,18 +12,14 @@ using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
 
 ##########################################################################
-# Custom logging
-Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
-
-##########################################################################
 # General settings
-srand(83196723)
+srand(973472333)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "simulation_name" => "convergence_$(start_time)-assignment",
+    "simulation_name" => "system-SNR-assignment_$(start_time)",
     "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
@@ -49,19 +45,16 @@ simulation_params = [
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
-        "stop_crit" => 0.,
-        "max_iters" => 20,
+        "stop_crit" => 1e-3,
+        "max_iters" => 1000,
     ],
-    "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-30, -10]),
-    ]
+    "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
 ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
-
-raw_results = simulate_convergence(network, simulation_params, loop_over=:assignment_methods)
+raw_results = simulate(network, simulation_params, loop_over=:assignment_methods)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",
