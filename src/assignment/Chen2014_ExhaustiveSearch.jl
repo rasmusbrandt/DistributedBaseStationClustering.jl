@@ -10,7 +10,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Get W matrix
-    W = Chen2014_W(channel, network)
+    W = Chen2014_W_matrix(channel, network)
 
     # Exhaustive search over partitions
     no_iters = 0
@@ -46,9 +46,14 @@ function Chen2014_ExhaustiveSearch(channel, network)
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
     network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix(network, best_partition))
+
+    # Return results
+    results = AssignmentResults()
+    results["utilities"] = utilities
+    return results
 end
 
-function Chen2014_W(channel, network)
+function Chen2014_W_matrix(channel, network)
     I = get_no_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)

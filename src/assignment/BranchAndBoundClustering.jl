@@ -10,15 +10,15 @@ Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < 
 is_leaf(node, I) = (length(node.a) == I)
 
 # Initialize the live structure by creating the root node.
-function initialize_live(utopian_rates)
-    root = BranchAndBoundNode([0], sum(utopian_rates))
+function initialize_live(utopian_utilities)
+    root = BranchAndBoundNode([0], sum(utopian_utilities))
     Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
-# Bound a node by testing feasibility and calculating the rates for the
+# Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_rates)
+function bound!(node, channel, network, utopian_utilities)
     I = get_no_BSs(network)
     assignment = get_assignment(network)
 
@@ -26,20 +26,20 @@ function bound!(node, channel, network, utopian_rates)
     partial_partition = Partition(node.a)
 
     if is_IA_feasible(network, partial_partition)
-        # This is a feasible allocation. Bound rates.
+        # This is a feasible allocation. Bound utilities.
 
-        # Rates for MSs already in clusters. These are rate bounds, since
+        # Rates for MSs already in clusters. These are utility bounds, since
         # the out-of-cluster interference of the unclustered users are not
         # taken into account.
-        rate_bounds = longterm_throughputs(channel, network, partial_partition)
+        utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
 
-        # Bound the unclustered users rates by their utopian rates.
+        # Bound the unclustered users utilities by their utopian utilities.
         for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
-            rate_bounds[l] = utopian_rates[l]
+            utility_bounds[l,:] = utopian_utilities[l,:]
         end; end
 
-        # Sum rate bound
-        node.upper_bound = sum(rate_bounds)
+        # Sum utility bound
+        node.upper_bound = sum(utility_bounds)
     else
         # Infeasible allocation. 
         node.upper_bound = -Inf
@@ -79,18 +79,20 @@ function BranchAndBoundClustering(channel, network)
     # Rate upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
     grand_coalition = Partition(grand_coalition_a)
-    utopian_rates = longterm_throughputs(channel, network, grand_coalition)
-    utopian_value = sum(utopian_rates)
-    Lumberjack.debug("Utopian (fully cooperative) rates calculated.", { :utopian_rates => utopian_rates, :utopian_value => utopian_value })
+    utopian_utilities, _ = longterm_utilities(channel, network, grand_coalition)
+    utopian_value = sum(utopian_utilities)
+    Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_value => utopian_value })
 
     # Incumbent: non-cooperative case
-    incumbent_a, incumbent_rates = GreedyClustering(channel, network)
-    incumbent_value = sum(incumbent_rates)
-    Lumberjack.debug("Incumbent (greedy) rates calculated.", { :incumbent_rates => incumbent_rates, :incumbent_value => incumbent_value })
+    greedy_results = GreedyClustering(channel, network)
+    incumbent_utilities = greedy_results["utilities"]
+    incumbent_a = greedy_results["a"]
+    incumbent_value = sum(incumbent_utilities)
+    Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_value => incumbent_value })
 
     # Perform eager branch and bound
     incumbent_evolution = Float64[]
-    live = initialize_live(utopian_rates); no_iters = 0; no_feasibility_checks = 0
+    live = initialize_live(utopian_utilities); no_iters = 0; no_feasibility_checks = 0
     while length(live) > 0
         no_iters += 1
 
@@ -103,7 +105,7 @@ function BranchAndBoundClustering(channel, network)
         push!(incumbent_evolution, incumbent_value)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_rates)
+            bound!(child, channel, network, utopian_utilities)
             no_feasibility_checks += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
@@ -131,7 +133,7 @@ function BranchAndBoundClustering(channel, network)
         end
     end
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_rate => incumbent_value,
+        { :sum_utility => incumbent_value,
           :a => incumbent_a,
           :no_iters => no_iters,
           :no_feasibility_checks => no_feasibility_checks }
@@ -140,4 +142,9 @@ function BranchAndBoundClustering(channel, network)
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, Partition(incumbent_a)))
+
+    # Return results
+    results = AssignmentResults()
+    results["utilities"] = longterm_utilities(channel, network, Partition(incumbent_a))[1]
+    return results
 end

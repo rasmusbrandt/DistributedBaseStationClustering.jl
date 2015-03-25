@@ -26,9 +26,15 @@ function RandomClustering(channel, network)
             break
         end
     end
-    Lumberjack.info("RandomClustering finished.", { :sum_rate => sum(longterm_throughputs(channel, network, Partition(a))), :a => a,  })
+    utilities, _ = longterm_utilities(channel, network, Partition(a))
+    Lumberjack.info("RandomClustering finished.", { :sum_utility => sum(utilities), :a => a,  })
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, random_partition))
+
+    # Return results
+    results = AssignmentResults()
+    results["utilities"] = utilities
+    return results
 end

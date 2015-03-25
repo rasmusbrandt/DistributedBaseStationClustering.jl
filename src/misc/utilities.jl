@@ -1,26 +1,25 @@
 ##########################################################################
-# Utilities for clustering and coalitional formation.
+# Utilities for clustering and coalitional formation
 
-# This function calculates the longterm throughputs of the users, given a
-# certain network partition (cluster). If a block in the partition is not
-# IA feasible, the throughputs are -Inf for those users. The return vector
-# can thus contain both Float64s, as well as Infs. It is up to the caller
-# to select how to handle this.
+# This function calculates the longterm utilities of the users, given a
+# certain network partition (cluster).
 #
 # Notice: this function only returns a bound of the rates for now,
 # since I don't if the E1 exponential integral has been implemented
 # by anyone in Julia yet.
-function longterm_throughputs(channel, network, partition; apply_overhead_prelog::Bool=true)
+function longterm_utilities(channel, network, partition)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network)
+    ds = get_no_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
 
     # Rates are the raw spectral efficients. Throughputs are the
     # spectral efficiencies with overhead pre-log factor applied.
-    rates = zeros(Float64, K)
+    rates = zeros(Float64, K, max_d)
+    throughputs = zeros(Float64, K, max_d)
+    alphas = ones(Float64, K)
 
     # Both rate and overhead calculations depend on what type of
     # clustering that is used.
@@ -30,20 +29,33 @@ function longterm_throughputs(channel, network, partition; apply_overhead_prelog
             # But the pre-log factors can be different between coalitions.
             alpha = orthogonal_prelog_factor(network, block)
 
+            # Check IA feasibility for this block
+            IA_feas = is_IA_feasible(network, block)
+
             # Calculate rates
             for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
-                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                    rho = desired_power/sigma2s[k]
+                    # Retain overhead pre-log factors, to be used in the precoding
+                    alphas[k] = alpha
 
-                    rates[k] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+                    if IA_feas
+                        # Feasible for IA, calculate rates without interference
+                        desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
+                        rho = desired_power/sigma2s[k]
 
-                    # Calculate throughputs
-                    if apply_overhead_prelog
-                        throughputs[k] = alpha*rates[k]
+                        rates[k,1:ds[k]] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+
+                        # Calculate throughputs
+                        throughputs[k,1:ds[k]] = alpha*rates[k,1:ds[k]]
                     else
-                        throughputs[k] = rates[k]
+                        # Not feasible for IA. Set rates for this block
+                        # as 0 or -Inf, depending on given parameter.
+                        if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
+                            rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
+                        else
+                            rates[k,1:ds[k]] = 0; throughputs[k,1:ds[k]] = 0
+                        end
                     end
                 end
             end
@@ -58,37 +70,50 @@ function longterm_throughputs(channel, network, partition; apply_overhead_prelog
 
         # Calculate rates for all MSs in clusters
         for block in partition.blocks
+            # Check IA feasibility for this block
+            IA_feas = is_IA_feasible(network, block)
+
+            # Find out-of-cluster interferers
             intercluster_interferers = setdiff(active_BSs, block.elements)
             for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
-                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                    int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
-                    rho = desired_power/int_noise_power
+                    if IA_feas
+                        # Feasible for IA, calculate rates without interference
+                        desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
+                        int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
+                        rho = desired_power/int_noise_power
 
-                    rates[k] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+                        rates[k,1:ds[k]] = ds[k]*0.5log(1 + 2rho) # This is a lower bound
+                    else
+                        # Not feasible for IA. Set rates for this block
+                        # as 0 or -Inf, depending on given parameter.
+                        if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
+                            rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
+                        else
+                            rates[k,1:ds[k]] = 0; throughputs[k,1:ds[k]] = 0
+                        end
+                    end
                 end
             end
         end
 
         # For spectrum sharing, the pre-log factor is identical over coalitions.
-        if apply_overhead_prelog
-            throughputs = spectrum_sharing_prelog_factor(network, partition)*rates
-        else
-            throughputs = rates
-        end
+        alpha = spectrum_sharing_prelog_factor(network, partition)
+        throughputs = alpha*rates
+        alphas *= alpha
     else
         Lumberjack.error("Incorrect clustering given in auxiliary assignment parameters.")
     end
 
-    return throughputs
+    # By having apply_overhead_prelog as an assignment parameter, we can easily
+    # run the simulations with and without overhead prelog applied.
+    if haskey(aux_params, "apply_overhead_prelog") && aux_params["apply_overhead_prelog"]
+        return throughputs, alphas
+    else
+        return rates, alphas
+    end
 end
-
-# The long-term rates are simply the long-term throughputs, when the overhead
-# pre-log factors are 1. This is implemented by simply not multiplying with the
-# overhead pre-log factors.
-longterm_rates(channel, network, partition) =
-    longterm_throughputs(channel, network, partition, apply_overhead_prelog=false)
 
 # Pre-log factor for spectrum sharing clustering. All BSs already share the
 # entire coherence time, so adding BSs to coalitions monotonically increases

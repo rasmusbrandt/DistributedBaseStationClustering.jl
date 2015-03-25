@@ -32,8 +32,8 @@ include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
 
 include("misc/combinations.jl")
-include("misc/feasibility.jl")
 include("misc/partitions.jl")
+include("misc/feasibility.jl")
 include("misc/subsets.jl")
 include("misc/utilities.jl")
 
