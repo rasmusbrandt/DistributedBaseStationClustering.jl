@@ -47,8 +47,8 @@ plot_params = [
     ],
 
     "methods" => [
-        "Chen2014_LinearObjClustering_ExhaustiveSearch" => [
-            ("logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObjClustering_ExhaustiveSearch" ]),
+        "Chen2014_ExhaustiveSearch" => [
+            ("logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
 
         "ExhaustiveSearchClustering" => [

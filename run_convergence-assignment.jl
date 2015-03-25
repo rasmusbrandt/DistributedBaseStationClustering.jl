@@ -28,7 +28,7 @@ simulation_params = [
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
-        Chen2014_LinearObjClustering_ExhaustiveSearch,
+        Chen2014_ExhaustiveSearch,
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 

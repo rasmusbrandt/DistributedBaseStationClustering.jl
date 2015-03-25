@@ -20,7 +20,7 @@ function cluster_assignment_matrix(network, partition)
 end
 
 include("BranchAndBoundClustering.jl")
-include("Chen2014_LinearObjClustering.jl")
+include("Chen2014_ExhaustiveSearch.jl")
 include("ExhaustiveSearchClustering.jl")
 include("GrandCoalitionClustering.jl")
 include("GreedyClustering.jl")

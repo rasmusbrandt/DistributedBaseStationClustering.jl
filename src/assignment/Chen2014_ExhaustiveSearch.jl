@@ -1,4 +1,4 @@
-function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
+function Chen2014_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 
     # Consistency check
@@ -10,7 +10,7 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Get W matrix
-    W = Chen2014_LinearObjClustering_W(channel, network)
+    W = Chen2014_W(channel, network)
 
     # Exhaustive search over partitions
     no_iters = 0
@@ -35,8 +35,9 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
             end
         end
     end
-    Lumberjack.info("Chen2014_LinearObjClustering_ExhaustiveSearch finished.",
-        { :sum_rate => sum(longterm_throughputs(channel, network, best_partition)),
+    utilities, _ = longterm_utilities(channel, network, best_partition)
+    Lumberjack.info("Chen2014_ExhaustiveSearch finished.",
+        { :sum_utility => sum(utilities),
           :a => restricted_growth_string(best_partition),
           :no_iters => no_iters,
           :objective => best_objective }
@@ -47,7 +48,7 @@ function Chen2014_LinearObjClustering_ExhaustiveSearch(channel, network)
     network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix(network, best_partition))
 end
 
-function Chen2014_LinearObjClustering_W(channel, network)
+function Chen2014_W(channel, network)
     I = get_no_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
