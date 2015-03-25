@@ -1,3 +1,9 @@
+##########################################################################
+# IntraclusterWMMSE
+#
+# Derived similarly to the original WMMSE algorithm (Shi2011), this
+# version takes into account intracluster interference.
+
 immutable IntraclusterWMMSEState
     U::Array{Matrix{Complex128},1}
     W::Array{Hermitian{Complex128},1} # for rate calculations
