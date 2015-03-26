@@ -137,7 +137,7 @@ function branch(parent)
     children = Array(BranchAndBoundNode, no_children)
 
     for p = 1:no_children
-        child_a = vcat(parent.a, p - 1)
+        child_a = push!(copy(parent.a), p - 1)
         child = BranchAndBoundNode(child_a, parent.upper_bound)
         children[p] = child
 
