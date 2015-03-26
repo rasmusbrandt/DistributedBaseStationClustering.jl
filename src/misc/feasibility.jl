@@ -13,22 +13,14 @@ end
 
 # Returns true if IA is feasible for this block
 function is_IA_feasible(network, block::Block)
+    # Check if we can use these results
     check_Liu2013_applicability(network)
 
-    I = get_no_BSs(network)
-    Ns = get_no_MS_antennas(network)
-    Ms = get_no_BS_antennas(network)
-    ds = get_no_streams(network); d = ds[1]
-    assignment = get_assignment(network)
-
-    # List of served MSs
-    served = [ served_MS_ids(i, assignment) for i = 1:I ]
-    served_length = [ length(served[i]) for i = 1:I ]
-
-    if all(Ns .== Ns[1]) && all(Ms .== Ms[1]) && all(served_length .== served_length[1])
-        return Liu2013_IBC_symmetric(block, Ns[1], Ms[1], d, served_length[1])
+    # Check IA feasibility with the tighest condition
+    if check_Liu2013_symmetry(network)
+        return Liu2013_IBC_symmetric(network, block)
     else
-        return Liu2013_IBC_heterogeneous(block, Ns, Ms, d, served, served_length)
+        return Liu2013_IBC_heterogeneous(network, block)
     end
 end
 
@@ -58,9 +50,45 @@ function check_Liu2013_applicability(network)
     end
 end
 
+# Check if we can use the symmetric version of the condition
+function check_Liu2013_symmetry(network)
+    # Only check symmetry if we have not already done so
+    if !haskey(network.aux_network_params, "check_Liu2013_symmetry:symmetry")
+        I = get_no_BSs(network)
+        Ns = get_no_MS_antennas(network)
+        Ms = get_no_BS_antennas(network)
+        ds = get_no_streams(network) # we already know that all MSs are served the same number of streams
+        assignment = get_assignment(network)
+
+        # Number of MSs served by each BS
+        served_length = [ length(served_MS_ids(i, assignment)) for i = 1:I ]
+
+        # Check symmetry and store in network, for caching purposes
+        if all(Ns .== Ns[1]) && all(Ms .== Ms[1]) && all(served_length .== served_length[1])
+            set_aux_network_param!(network, true, "check_Liu2013_symmetry:symmetry")
+
+            # We also store all parameters needed to check feasibility, since
+            # we are performing a huge number of feasibility checks in e.g.
+            # exhaustive search or branch and bound.
+            set_aux_network_param!(network, Ns[1], "check_Liu2013_symmetry:N")
+            set_aux_network_param!(network, Ms[1], "check_Liu2013_symmetry:M")
+            set_aux_network_param!(network, ds[1], "check_Liu2013_symmetry:d")
+            set_aux_network_param!(network, served_length[1], "check_Liu2013_symmetry:Kc")
+        else
+            set_aux_network_param!(network, false, "check_Liu2013_symmetry:symmetry")
+        end
+    end
+
+    return get_aux_network_param(network, "check_Liu2013_symmetry:symmetry")
+end
+
 # Special case for symmetric IBCs.
-function Liu2013_IBC_symmetric(block, N, M, d, Kc)
+function Liu2013_IBC_symmetric(network, block)
     I = length(block)
+    N = get_aux_network_param(network, "check_Liu2013_symmetry:N")
+    M = get_aux_network_param(network, "check_Liu2013_symmetry:M")
+    d = get_aux_network_param(network, "check_Liu2013_symmetry:d")
+    Kc = get_aux_network_param(network, "check_Liu2013_symmetry:Kc")
 
     if I*Kc*d <= M + N - d
         return true
@@ -72,7 +100,15 @@ end
 # General feasibility check for heterogeneous IBCs.
 # Warning: This function is very slow since it checks all subsets of
 # interfering links, which grows exponentially.
-function Liu2013_IBC_heterogeneous(block, Ns, Ms, d, served, served_length)
+function Liu2013_IBC_heterogeneous(network, block)
+    Lumberjack.warn("This function is very slow, since it checks all subsets of interfering links. Perhaps a polynomial check, similar to de Kerret for the IC, could be used?")
+
+    I = get_no_BSs(network)
+    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
+    d = get_no_streams(network)[1]
+    served = [ served_MS_ids(i, assignment) for i = 1:I ]
+    served_length = [ length(served[i]) for i = 1:I ]
+
     # Condition (14a)
     for j in block
         for i in block; for k in served[i]
