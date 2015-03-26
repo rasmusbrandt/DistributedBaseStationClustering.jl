@@ -17,7 +17,7 @@ srand(973472333)
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "I" => 4, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ntest" => 100,
     "precoding_methods" => [
@@ -29,6 +29,14 @@ simulation_params = [
         NaiveChen2014_MaxSINR,
         Shi2011_WMMSE,
         Eigenprecoding,
+    ],
+    "aux_network_params" => [
+        "no_coherence_symbols" => 1000,
+    ],
+    "aux_assignment_params" => [
+        "clustering_type" => :spectrum_sharing,
+        "apply_overhead_prelog" => true,
+        "IA_infeasible_utility_inf" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

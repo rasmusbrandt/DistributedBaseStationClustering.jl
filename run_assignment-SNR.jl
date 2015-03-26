@@ -39,7 +39,7 @@ simulation_params = [
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
-        "IA_infeasible_utility_inf" => false,
+        "IA_infeasible_utility_inf" => true,
     ],
     "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
 ]

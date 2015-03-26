@@ -17,9 +17,9 @@ srand(973472333)
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "I" => 12, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
-    "Ntest" => 10,
+    "Ntest" => 100,
     "assignment_methods" => [
         Chen2014_ExhaustiveSearch,
         ExhaustiveSearchClustering,
@@ -31,6 +31,14 @@ simulation_params = [
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE # pseudo
+    ],
+    "aux_network_params" => [
+        "no_coherence_symbols" => 1000,
+    ],
+    "aux_assignment_params" => [
+        "clustering_type" => :spectrum_sharing,
+        "apply_overhead_prelog" => true,
+        "IA_infeasible_utility_inf" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
