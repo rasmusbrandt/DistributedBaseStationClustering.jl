@@ -115,7 +115,7 @@ function bound!(node, channel, network, utopian_utilities)
     utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
 
     # Bound the unclustered users utilities by their utopian utilities.
-    for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
+    for j in setdiff(IntSet(1:I), IntSet(1:length(node.a))); for l in served_MS_ids(j, assignment)
         utility_bounds[l,:] = utopian_utilities[l,:]
     end; end
 
