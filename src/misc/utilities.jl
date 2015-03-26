@@ -145,12 +145,12 @@ function spectrum_sharing_prelog_factor(network, partition)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
 
     # Sum of Lps (implemented as loop, since it seems to be the fastest way)
-    Lp_sum = 0.
+    Lp_sum = 0
     for block in partition.blocks
         Lp_sum += CSI_acquisition_symbol_overhead(network, block)
     end
 
-    return max(0, 1 - Lp_sum/Tc)
+    return max(0., 1 - Lp_sum/Tc)
 end
 
 # Pre-log factor for orthogonal clustering. Each BS brings its share (1/I) of
@@ -159,7 +159,7 @@ end
 function orthogonal_prelog_factor(network, block)
     I = get_no_BSs(network)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
-    return max(0, length(block)/I - CSI_acquisition_symbol_overhead(network, block)/Tc)
+    return max(0., length(block)/I - CSI_acquisition_symbol_overhead(network, block)/Tc)
 end
 
 # Calculates the number of symbol intervals needed for CSI acquisition. This
