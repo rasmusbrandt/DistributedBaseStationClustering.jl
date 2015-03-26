@@ -42,7 +42,7 @@ function longterm_utilities(channel, network, partition)
     # clustering that is used.
     if aux_params["clustering_type"] == :orthogonal
         # In orthogonal clustering, only the direct channel affects the rate.
-        for block in partition
+        for block in partition.blocks
             # But the pre-log factors can be different between coalitions.
             alpha = orthogonal_prelog_factor(network, block)
 
@@ -50,7 +50,7 @@ function longterm_utilities(channel, network, partition)
             IA_feas = is_IA_feasible(network, block)
 
             # Calculate rates
-            for i in block
+            for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
                     # Retain overhead pre-log factors, to be used in the precoding
@@ -84,13 +84,13 @@ function longterm_utilities(channel, network, partition)
         active_BSs = IntSet(reduce(union, partition)) # make this an IntSet, so the setdiff operation below works nicely when the result is the empty set
 
         # Calculate rates for all MSs in clusters
-        for block in partition
+        for block in partition.blocks
             # Check IA feasibility for this block
             IA_feas = is_IA_feasible(network, block)
 
             # Find out-of-cluster interferers
-            intercluster_interferers = setdiff(active_BSs, block)
-            for i in block
+            intercluster_interferers = setdiff(active_BSs, block.elements) # setdiff is efficient if both arguments are IntSets.
+            for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
                     # Rates without interference, assuming IA feasibility
@@ -160,11 +160,11 @@ function CSI_acquisition_symbol_overhead(network, block)
     assignment = get_assignment(network)
 
     # First term in Lp (DL channel training)
-    sum_M = sum(Ms[collect(block)])
+    sum_M = sum(Ms[collect(block.elements)])
 
     # Other terms in Lp
     sum_N = 0; quad_sum_M = 0; sum_d = 0
-    for i in block
+    for i in block.elements
         for k in served_MS_ids(i, assignment)
             # UL channel training
             sum_N += Ns[k]

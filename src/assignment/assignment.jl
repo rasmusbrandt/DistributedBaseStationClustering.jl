@@ -9,9 +9,9 @@ function cluster_assignment_matrix(network, partition)
 
     A = zeros(Int, K, I)
 
-    for block in partition
-        for i in block
-            for j in block; for l in served_MS_ids(j, assignment)
+    for block in partition.blocks
+        for i in block.elements
+            for j in block.elements; for l in served_MS_ids(j, assignment)
                 A[l,i] = 1
             end; end
         end

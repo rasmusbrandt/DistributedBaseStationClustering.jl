@@ -5,7 +5,7 @@
 function is_IA_feasible(network, partition::Partition)
     check_Liu2013_applicability(network)
 
-    for block in partition
+    for block in partition.blocks
         is_IA_feasible(network, block) || return false
     end
     return true
@@ -110,15 +110,15 @@ function Liu2013_IBC_heterogeneous(network, block)
     served_length = [ length(served[i]) for i = 1:I ]
 
     # Condition (14a)
-    for j in block
-        for i in block; for k in served[i]
+    for j in block.elements
+        for i in block.elements; for k in served[i]
             min(Ms[j] - served_length[j]*d, Ns[k] - d) >= 0 || return false
         end; end
     end
 
     # Enumerate all interfering links
     interfering_cells = (Int, Int)[]
-    for i in block; for j in block
+    for i in block.elements; for j in block.elements
         if i != j
             push!(interfering_cells, (i, j))
         end

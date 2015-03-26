@@ -38,9 +38,9 @@ function Chen2014_ExhaustiveSearch(channel, network)
         if is_IA_feasible(network, partition)
             # Calculate objective
             objective = 0.
-            for block in partition
+            for block in partition.blocks
                 objective = 0.
-                for i in block; for j in block
+                for i in block.elements; for j in block.elements
                     objective += W[i,j]
                 end; end
             end
