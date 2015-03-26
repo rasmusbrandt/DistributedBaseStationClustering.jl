@@ -107,7 +107,7 @@ function bound!(node, channel, network, utopian_utilities)
     assignment = get_assignment(network)
 
     # The partial cluster is given by a
-    partial_partition = Partition(node.a)
+    partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not

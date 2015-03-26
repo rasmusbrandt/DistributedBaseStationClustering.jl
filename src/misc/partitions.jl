@@ -30,13 +30,15 @@ Base.done(p::Partition, state) = done(p.blocks, state)
 Base.next(p::Partition, state) = next(p.blocks, state)
 
 # Create partition from restricted growth string
-function Partition(a::Vector)
+function Partition(a::Vector; skip_check::Bool=false)
     I = length(a)
     a_max = maximum(a)
     no_blocks = 1 + a_max
 
     # Consistency checks
-    all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+    if !skip_check
+        all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+    end
 
     # Build blocks and partition
     blocks = [ Block() for n = 1:no_blocks ]
@@ -140,7 +142,7 @@ Base.start(p::PartitionIterator) = PartitionIteratorState(p.n) # H1
 Base.done(p::PartitionIterator, s) = s.terminate
 function Base.next(p::PartitionIterator, s)
     # H2
-    current_partition = Partition(s.a)
+    current_partition = Partition(s.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
     if s.a[p.n] < s.m
         # H3
