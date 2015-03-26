@@ -81,7 +81,10 @@ function longterm_utilities(channel, network, partition)
     elseif aux_params["clustering_type"] == :spectrum_sharing
         # Only the BSs that are in the partition will be active in generating
         # interference to the other 
-        active_BSs = IntSet(reduce(union, partition)) # make this an IntSet, so the setdiff operation below works nicely when the result is the empty set
+        active_BSs = IntSet()
+        for block in partition.blocks
+            union!(active_BSs, block.elements)
+        end
 
         # Calculate rates for all MSs in clusters
         for block in partition.blocks
@@ -140,7 +143,14 @@ end
 # the overhead.
 function spectrum_sharing_prelog_factor(network, partition)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
-    return max(0, 1 - (1/Tc)*sum(map(block -> CSI_acquisition_symbol_overhead(network, block), partition)))
+
+    # Sum of Lps (implemented as loop, since it seems to be the fastest way)
+    Lp_sum = 0.
+    for block in partition.blocks
+        Lp_sum += CSI_acquisition_symbol_overhead(network, block)
+    end
+
+    return max(0, 1 - Lp_sum/Tc)
 end
 
 # Pre-log factor for orthogonal clustering. Each BS brings its share (1/I) of
