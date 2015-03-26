@@ -40,14 +40,9 @@ simulation_params = [
         "apply_overhead_prelog" => true,
         "IA_infeasible_utility_inf" => true,
     ],
-    "aux_precoding_params" => [
-        "initial_precoders" => "eigendirection",
-        "stop_crit" => 0.,
-        "max_iters" => 100,
-    ],
 ]
 network =
-    setup_indoors_network(simulation_params["I"],
+    setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 

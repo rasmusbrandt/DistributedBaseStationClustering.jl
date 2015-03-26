@@ -45,7 +45,7 @@ simulation_params = [
     ],
 ]
 network =
-    setup_indoors_network(simulation_params["I"],
+    setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 
