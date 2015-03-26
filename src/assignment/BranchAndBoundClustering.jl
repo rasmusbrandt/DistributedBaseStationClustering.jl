@@ -4,7 +4,7 @@
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
 
-    Lumberjack.debug("BranchAndBoundClustering started.")
+    # Lumberjack.debug("BranchAndBoundClustering started.")
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -14,14 +14,14 @@ function BranchAndBoundClustering(channel, network)
     grand_coalition = Partition(grand_coalition_a)
     _, _, utopian_utilities = longterm_utilities(channel, network, grand_coalition)
     utopian_value = sum(utopian_utilities)
-    Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_value => utopian_value })
+    # Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_value => utopian_value })
 
     # Incumbent: non-cooperative case
     greedy_results = GreedyClustering(channel, network)
     incumbent_utilities = greedy_results["utilities"]
     incumbent_a = greedy_results["a"]
     incumbent_value = sum(incumbent_utilities)
-    Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_value => incumbent_value })
+    # Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_value => incumbent_value })
 
     # Perform eager branch and bound
     incumbent_evolution = Float64[]
@@ -49,19 +49,19 @@ function BranchAndBoundClustering(channel, network)
                     incumbent_value = child.upper_bound
                     incumbent_a = child.a
 
-                    Lumberjack.debug("Found new incumbent solution.",
-                        { :node => child, :incumbent_value => incumbent_value }
-                    )
+                    # Lumberjack.debug("Found new incumbent solution.",
+                    #     { :node => child, :incumbent_value => incumbent_value }
+                    # )
                 else
-                    Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
-                        { :node => child, :incumbent_value => incumbent_value }
-                    )
+                    # Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
+                    #     { :node => child, :incumbent_value => incumbent_value }
+                    # )
                     push!(live, child)
                 end
             else
-                Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
-                    { :node => child, :incumbent_value => incumbent_value }
-                )
+                # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
+                #     { :node => child, :incumbent_value => incumbent_value }
+                # )
             end
         end
     end
@@ -96,7 +96,7 @@ is_leaf(node, I) = (length(node.a) == I)
 # Initialize the live structure by creating the root node.
 function initialize_live(utopian_utilities)
     root = BranchAndBoundNode([0], sum(utopian_utilities))
-    Lumberjack.debug("Root created.", { :node => root })
+    # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
@@ -124,7 +124,7 @@ function bound!(node, channel, network, utopian_utilities)
     # the aux_assignment_param IA_infeasible_utility_inf is set to true.
     node.upper_bound = sum(utility_bounds)
 
-    Lumberjack.debug("Bounding.", { :node => node })
+    # Lumberjack.debug("Bounding.", { :node => node })
 end
 
 # Branch a node by creating a number of descendants, corresponding to putting
@@ -141,7 +141,7 @@ function branch(parent)
         child = BranchAndBoundNode(child_a, parent.upper_bound)
         children[p] = child
 
-        Lumberjack.debug("Branching.", { :node => child })
+        # Lumberjack.debug("Branching.", { :node => child })
     end
 
     return children
