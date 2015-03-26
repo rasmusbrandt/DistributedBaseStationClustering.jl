@@ -142,12 +142,15 @@ end
 # entire coherence time, so adding BSs to coalitions monotonically increases
 # the overhead.
 function spectrum_sharing_prelog_factor(network, partition)
+    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
+    ds = get_no_streams(network)
+    assignment = get_assignment(network)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
 
     # Sum of Lps (implemented as loop, since it seems to be the fastest way)
     Lp_sum = 0
     for block in partition.blocks
-        Lp_sum += CSI_acquisition_symbol_overhead(network, block)
+        Lp_sum += CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
     end
 
     return max(0., 1 - Lp_sum/Tc)
@@ -158,17 +161,21 @@ end
 # overhead due to the CSI acquisition.
 function orthogonal_prelog_factor(network, block)
     I = get_no_BSs(network)
+    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
+    ds = get_no_streams(network)
+    assignment = get_assignment(network)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
-    return max(0., length(block)/I - CSI_acquisition_symbol_overhead(network, block)/Tc)
+
+    return max(0., length(block)/I - CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)/Tc)
 end
 
 # Calculates the number of symbol intervals needed for CSI acquisition. This
 # quantity is denoted with $L_p^\text{CSI}$ in the notes.
-function CSI_acquisition_symbol_overhead(network, block)
-    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
-    ds = get_no_streams(network)
-    assignment = get_assignment(network)
-
+#
+# This function is called several times from spectrum_sharing_prelog_factor,
+# and therefore we save time by finding Ns, Ms, ds and assignment in the
+# calling function.
+function CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
     # First term in Lp (DL channel training)
     sum_M = 0
     for i in block.elements
