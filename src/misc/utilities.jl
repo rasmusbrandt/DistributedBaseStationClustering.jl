@@ -170,7 +170,10 @@ function CSI_acquisition_symbol_overhead(network, block)
     assignment = get_assignment(network)
 
     # First term in Lp (DL channel training)
-    sum_M = sum(Ms[collect(block.elements)])
+    sum_M = 0
+    for i in block.elements
+        sum_M += Ms[i]
+    end
 
     # Other terms in Lp
     sum_N = 0; quad_sum_M = 0; sum_d = 0
