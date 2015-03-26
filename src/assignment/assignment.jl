@@ -1,5 +1,6 @@
 # Creates a K-by-I matrix whose (i,k) entry denotes whether or not
-# BS i coordinates to MS k. Note that this matrix is different than
+# BS i coordinates to MS k. This is the matrix that the network assignment
+# structure needs. Note that this matrix is different than
 # the partition logical matrix in partitions.jl, which is an
 # I-by-I matrix.
 function cluster_assignment_matrix(network, partition)
@@ -18,11 +19,3 @@ function cluster_assignment_matrix(network, partition)
 
     return A
 end
-
-include("BranchAndBoundClustering.jl")
-include("Chen2014_ExhaustiveSearch.jl")
-include("ExhaustiveSearchClustering.jl")
-include("GrandCoalitionClustering.jl")
-include("GreedyClustering.jl")
-include("NoClustering.jl")
-include("RandomClustering.jl")

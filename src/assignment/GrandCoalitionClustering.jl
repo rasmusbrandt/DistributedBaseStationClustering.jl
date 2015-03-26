@@ -1,3 +1,5 @@
+# Helper function that gives the grand coalition, i.e. that all BSs
+# cooperate within one huge cluster.
 function GrandCoalitionClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 

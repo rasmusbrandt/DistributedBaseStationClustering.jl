@@ -26,6 +26,13 @@ export
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("assignment/assignment.jl")
+include("assignment/BranchAndBoundClustering.jl")
+include("assignment/Chen2014_ExhaustiveSearch.jl")
+include("assignment/ExhaustiveSearchClustering.jl")
+include("assignment/GrandCoalitionClustering.jl")
+include("assignment/GreedyClustering.jl")
+include("assignment/NoClustering.jl")
+include("assignment/RandomClustering.jl")
 
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterLeakageMinimization.jl")

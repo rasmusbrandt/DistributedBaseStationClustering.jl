@@ -21,7 +21,9 @@ function longterm_utilities(channel, network, partition)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
 
-    utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency
+    @defaultize_param! aux_params "IntraclusterWMMSE:bisection_Gamma_cond" 1e10
+
+    utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
     rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
     throughputs = zeros(Float64, K, max_d) # spectral efficiency incl. overhead pre-log factor
     alphas = ones(Float64, K) # pre-log factor due to overhead
@@ -57,7 +59,7 @@ function longterm_utilities(channel, network, partition)
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
-                        if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
+                        if aux_params["IA_infeasible_utility_inf"]
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
                             rates[k,:] = 0; throughputs[k,:] = 0
@@ -98,7 +100,7 @@ function longterm_utilities(channel, network, partition)
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
-                        if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
+                        if aux_params["IA_infeasible_utility_inf"]
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
                             rates[k,:] = 0; throughputs[k,:] = 0
@@ -112,13 +114,11 @@ function longterm_utilities(channel, network, partition)
         alpha = spectrum_sharing_prelog_factor(network, partition)
         throughputs = alpha*rates
         alphas *= alpha
-    else
-        Lumberjack.error("Incorrect clustering given in auxiliary assignment parameters.")
     end
 
     # By having apply_overhead_prelog as an assignment parameter, we can easily
     # run the simulations with and without overhead prelog applied.
-    if haskey(aux_params, "apply_overhead_prelog") && aux_params["apply_overhead_prelog"]
+    if aux_params["apply_overhead_prelog"]
         return throughputs, alphas, utopian_rates
     else
         return rates, alphas, utopian_rates

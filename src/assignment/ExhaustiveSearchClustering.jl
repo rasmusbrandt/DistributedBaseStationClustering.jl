@@ -1,3 +1,5 @@
+# Exhaustive search over all set partitions with the
+# utility model from utilities.jl
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     d_max = maximum(get_no_streams(network))
@@ -12,17 +14,14 @@ function ExhaustiveSearchClustering(channel, network)
     for partition in PartitionIterator(I)
         no_iters += 1
 
-        # Check that IA is feasible for this cluster structure
-        if is_IA_feasible(network, partition)
-            # Calculate utilities
-            utilities, _ = longterm_utilities(channel, network, partition)
+        # Calculate utilities
+        utilities, _ = longterm_utilities(channel, network, partition)
 
-            objective = sum(utilities)
-            if objective > best_objective
-                best_objective = objective
-                best_utilities = utilities
-                best_partition = partition
-            end
+        objective = sum(utilities)
+        if objective > best_objective
+            best_objective = objective
+            best_utilities = utilities
+            best_partition = partition
         end
     end
     Lumberjack.info("ExhaustiveSearchClustering finished.",

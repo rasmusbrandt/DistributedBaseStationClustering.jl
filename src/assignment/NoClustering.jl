@@ -1,3 +1,5 @@
+# A helper function giving the non-cooperative scenario, where all BSs
+# belong to their own clusters.
 function NoClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 

@@ -1,73 +1,6 @@
-type BranchAndBoundNode
-    a::Vector{Int} # restricted growth string describing the (partial) partition
-    upper_bound::Float64
-end
-
-# For sorting of the list of live nodes
-Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < N2.upper_bound)
-
-# Helper functions
-is_leaf(node, I) = (length(node.a) == I)
-
-# Initialize the live structure by creating the root node.
-function initialize_live(utopian_utilities)
-    root = BranchAndBoundNode([0], sum(utopian_utilities))
-    Lumberjack.debug("Root created.", { :node => root })
-    return [ root ]
-end
-
-# Bound a node by testing feasibility and calculating the utilities for the
-# clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities)
-    I = get_no_BSs(network)
-    assignment = get_assignment(network)
-
-    # The partial cluster is given by a
-    partial_partition = Partition(node.a)
-
-    if is_IA_feasible(network, partial_partition)
-        # This is a feasible allocation. Bound utilities.
-
-        # Rates for MSs already in clusters. These are utility bounds, since
-        # the out-of-cluster interference of the unclustered users are not
-        # taken into account.
-        utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
-
-        # Bound the unclustered users utilities by their utopian utilities.
-        for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
-            utility_bounds[l,:] = utopian_utilities[l,:]
-        end; end
-
-        # Sum utility bound
-        node.upper_bound = sum(utility_bounds)
-    else
-        # Infeasible allocation. 
-        node.upper_bound = -Inf
-    end
-
-    Lumberjack.debug("Bounding.", { :node => node })
-end
-
-# Branch a node by creating a number of descendants, corresponding to putting
-# the BS at this depth in different clusters. Branched nodes inherit the
-# parent bound, until their bounds are updated.
-function branch(parent)
-    m = 1 + maximum(parent.a)
-
-    no_children = m + 1
-    children = Array(BranchAndBoundNode, no_children)
-
-    for p = 1:no_children
-        child_a = vcat(parent.a, p - 1)
-        child = BranchAndBoundNode(child_a, parent.upper_bound)
-        children[p] = child
-
-        Lumberjack.debug("Branching.", { :node => child })
-    end
-
-    return children
-end
-
+# Performs branch and bound on a tree whose leaves describe restricted
+# growth strings. The utilities are taken from utilities.jl, as well as
+# the utopian bounds.
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
 
@@ -147,4 +80,69 @@ function BranchAndBoundClustering(channel, network)
     results = AssignmentResults()
     results["utilities"] = longterm_utilities(channel, network, Partition(incumbent_a))[1]
     return results
+end
+
+type BranchAndBoundNode
+    a::Vector{Int} # restricted growth string describing the (partial) partition
+    upper_bound::Float64
+end
+
+# For sorting of the list of live nodes
+Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < N2.upper_bound)
+
+# Helper functions
+is_leaf(node, I) = (length(node.a) == I)
+
+# Initialize the live structure by creating the root node.
+function initialize_live(utopian_utilities)
+    root = BranchAndBoundNode([0], sum(utopian_utilities))
+    Lumberjack.debug("Root created.", { :node => root })
+    return [ root ]
+end
+
+# Bound a node by testing feasibility and calculating the utilities for the
+# clustered BSs and unclustered BSs.
+function bound!(node, channel, network, utopian_utilities)
+    I = get_no_BSs(network)
+    assignment = get_assignment(network)
+
+    # The partial cluster is given by a
+    partial_partition = Partition(node.a)
+
+    # Rates for MSs already in clusters. These are utility bounds, since
+    # the out-of-cluster interference of the unclustered users are not
+    # taken into account.
+    utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
+
+    # Bound the unclustered users utilities by their utopian utilities.
+    for j in setdiff(1:I, 1:length(node.a)); for l in served_MS_ids(j, assignment)
+        utility_bounds[l,:] = utopian_utilities[l,:]
+    end; end
+
+    # Sum utility bound. This might be -Inf, if any of the utilities are -Inf.
+    # This can happen when a particular block is not IA feasible, and
+    # the aux_assignment_param IA_infeasible_utility_inf is set to true.
+    node.upper_bound = sum(utility_bounds)
+
+    Lumberjack.debug("Bounding.", { :node => node })
+end
+
+# Branch a node by creating a number of descendants, corresponding to putting
+# the BS at this depth in different clusters. Branched nodes inherit the
+# parent bound, until their bounds are updated.
+function branch(parent)
+    m = 1 + maximum(parent.a)
+
+    no_children = m + 1
+    children = Array(BranchAndBoundNode, no_children)
+
+    for p = 1:no_children
+        child_a = vcat(parent.a, p - 1)
+        child = BranchAndBoundNode(child_a, parent.upper_bound)
+        children[p] = child
+
+        Lumberjack.debug("Branching.", { :node => child })
+    end
+
+    return children
 end

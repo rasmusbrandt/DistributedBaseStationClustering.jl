@@ -1,9 +1,22 @@
+# Implementation of exhaustive search (over partitions) to the utility model
+# proposed in
+#
+# Chen, Cheng, "Clustering for Interference Alignment in Multiuser
+# Interference Network," IEEE Trans. Vehicular Technology, vol. 63, no. 6,
+# pp. 2613-2624, July 2014, doi: 10.1109/TVT.2013.2292897
+#
+# Note that a suboptimal algorithm also was proposed in this paper, but we
+# don't implement that one.
 function Chen2014_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
+    aux_params = get_aux_assignment_params(network)
 
     # Consistency check
     if I != K
         Lumberjack.error("Chen2014_LinearObjClustering can only handle I = K scenarios.")
+    end
+    if aux_params["IA_infeasible_utility_inf"] == false
+        Lumberjack.info("Chen2014_ExhaustiveSearch only finds solutions where all clusters are IA feasible. IA_infeasible_utility_inf is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
     end
 
     # Perform cell selection
@@ -18,7 +31,10 @@ function Chen2014_ExhaustiveSearch(channel, network)
     for partition in PartitionIterator(I)
         no_iters += 1
 
-        # Check that IA is feasible for this cluster structure
+        # Check that IA is feasible for this cluster structure. Note that this
+        # means that Chen2014_ExhaustiveSearch cannot handle situations where
+        # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
+        # IA_infeasible_utility_inf is set to false.
         if is_IA_feasible(network, partition)
             # Calculate objective
             objective = 0.
@@ -40,7 +56,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
         { :sum_utility => sum(utilities),
           :a => restricted_growth_string(best_partition),
           :no_iters => no_iters,
-          :objective => best_objective }
+          :Chen2014_objective => best_objective }
     )
 
     # Store cluster assignment together with existing cell assignment
