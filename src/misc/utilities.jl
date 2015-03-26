@@ -94,8 +94,11 @@ function longterm_utilities(channel, network, partition)
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
                     # Rates without interference, assuming IA feasibility
-                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                    int_noise_power = sigma2s[k] + sum(map(j -> channel.large_scale_fading_factor[k,j]^2*Ps[j], intercluster_interferers))
+                    desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
+                    int_noise_power = sigma2s[k]
+                    for j in intercluster_interferers
+                        int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
+                    end
                     rho = desired_power/int_noise_power
 
                     utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
