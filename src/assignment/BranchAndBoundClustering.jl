@@ -3,73 +3,74 @@
 # the utopian bounds.
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
+    assignment = get_assignment(network)
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
 
-    # Rate upper bounds by assuming feasibility of grand coalition.
+    # Utility upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
     grand_coalition = Partition(grand_coalition_a)
     _, _, utopian_utilities = longterm_utilities(channel, network, grand_coalition)
-    utopian_value = sum(utopian_utilities)
-    # Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_value => utopian_value })
+    # utopian_sum_value = sum(utopian_utilities)
+    # Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_sum_value => utopian_sum_value })
 
-    # Incumbent: non-cooperative case
+    # Utility lower bounds by using GreedyClustering as initial incumbent.
     greedy_results = GreedyClustering(channel, network)
     incumbent_utilities = greedy_results["utilities"]
     incumbent_a = greedy_results["a"]
-    incumbent_value = sum(incumbent_utilities)
-    # Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_value => incumbent_value })
+    incumbent_sum_utility = sum(incumbent_utilities)
+    # Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_sum_utility => incumbent_sum_utility })
 
     # Perform eager branch and bound
-    incumbent_evolution = Float64[]
-    live = initialize_live(utopian_utilities); no_iters = 0; no_feasibility_checks = 0
+    incumbent_sum_utility_evolution = Float64[]
+    live = initialize_live(utopian_utilities); no_iters = 0; no_utility_calculations = 0
     while length(live) > 0
         no_iters += 1
 
-        # Select next node to be processed. (Nodes with the least upper bounds
-        # should be investigated first.)
+        # Select next node to be processed. We use the best first strategy,
+        # i.e. we pick the live node with the lowest (best) upper bound.
         sort!(live)
         parent = shift!(live)
 
-        # Store incumbent evolution per investigated node
-        push!(incumbent_evolution, incumbent_value)
+        # Store incumbent evolution per iteration
+        push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_utilities)
-            no_feasibility_checks += 1
+            bound!(child, channel, network, utopian_utilities, I, assignment)
+            no_utility_calculations += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
-            if child.upper_bound > incumbent_value
+            if child.upper_bound > incumbent_sum_utility
                 if is_leaf(child, I)
                     # For leaves, the upper bound is tight. Thus, we
                     # have found a new incumbent!
-                    incumbent_value = child.upper_bound
+                    incumbent_sum_utility = child.upper_bound
                     incumbent_a = child.a
 
                     # Lumberjack.debug("Found new incumbent solution.",
-                    #     { :node => child, :incumbent_value => incumbent_value }
+                    #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
                     # )
                 else
                     # Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
-                    #     { :node => child, :incumbent_value => incumbent_value }
+                    #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
                     # )
                     push!(live, child)
                 end
             else
                 # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
-                #     { :node => child, :incumbent_value => incumbent_value }
+                #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
                 # )
             end
         end
     end
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_utility => incumbent_value,
+        { :sum_utility => incumbent_sum_utility,
           :a => incumbent_a,
           :no_iters => no_iters,
-          :no_feasibility_checks => no_feasibility_checks }
+          :no_utility_calculations => no_utility_calculations }
     )
 
     # Store cluster assignment together with existing cell assignment
@@ -102,10 +103,7 @@ end
 
 # Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities)
-    I = get_no_BSs(network)
-    assignment = get_assignment(network)
-
+function bound!(node, channel, network, utopian_utilities, I, assignment)
     # The partial cluster is given by a
     partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
