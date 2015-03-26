@@ -79,7 +79,7 @@ function BranchAndBoundClustering(channel, network)
     # Rate upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
     grand_coalition = Partition(grand_coalition_a)
-    utopian_utilities, _ = longterm_utilities(channel, network, grand_coalition)
+    _, _, utopian_utilities = longterm_utilities(channel, network, grand_coalition)
     utopian_value = sum(utopian_utilities)
     Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_value => utopian_value })
 

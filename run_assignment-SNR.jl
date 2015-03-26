@@ -20,12 +20,12 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "assignment-SNR_$(start_time)",
-    "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10,
     "assignment_methods" => [
         Chen2014_ExhaustiveSearch,
-        # ExhaustiveSearchClustering,
+        ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
         GrandCoalitionClustering,
@@ -38,6 +38,7 @@ simulation_params = [
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
+        "apply_overhead_prelog" => false,
     ],
     "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
 ]

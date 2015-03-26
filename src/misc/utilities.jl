@@ -2,7 +2,13 @@
 # Utilities for clustering and coalitional formation
 
 # This function calculates the longterm utilities of the users, given a
-# certain network partition (cluster).
+# certain network partition (cluster). The utopian_rates are the spectral
+# efficiences achievable disregarding IA feasibility and overheads, and are
+# thus upper bounds. The rates are the spectral efficiencies achievable
+# when IA feasibility is accounted for, and can be -Inf, 0, or non-negative
+# depending on the settings. Finally, the throughputs are the spectral
+# efficiences when both IA feasibility and the pre-log factor due to
+# overhead is accounted for. The alphas are the pre-log factors.
 #
 # Notice: this function only returns a bound of the rates for now,
 # since I don't if the E1 exponential integral has been implemented
@@ -15,11 +21,10 @@ function longterm_utilities(channel, network, partition)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
 
-    # Rates are the raw spectral efficients. Throughputs are the
-    # spectral efficiencies with overhead pre-log factor applied.
-    rates = zeros(Float64, K, max_d)
-    throughputs = zeros(Float64, K, max_d)
-    alphas = ones(Float64, K)
+    utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency
+    rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
+    throughputs = zeros(Float64, K, max_d) # spectral efficiency incl. overhead pre-log factor
+    alphas = ones(Float64, K) # pre-log factor due to overhead
 
     # Both rate and overhead calculations depend on what type of
     # clustering that is used.
@@ -39,22 +44,23 @@ function longterm_utilities(channel, network, partition)
                     # Retain overhead pre-log factors, to be used in the precoding
                     alphas[k] = alpha
 
+                    # Rates without interference, assuming IA feasibility
+                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
+                    rho = desired_power/sigma2s[k]
+
+                    utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
+
                     if IA_feas
-                        # Feasible for IA, calculate rates without interference
-                        desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                        rho = desired_power/sigma2s[k]
-
-                        rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
-
-                        # Calculate throughputs
-                        throughputs[k,1:ds[k]] = alpha*rates[k,1:ds[k]]
+                        # These rates are achievable using IA
+                        rates[k,:] = utopian_rates[k,:]
+                        throughputs[k,:] = alphas[k]*utopian_rates[k,:]
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
                         if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
-                            rates[k,1:ds[k]] = 0; throughputs[k,1:ds[k]] = 0
+                            rates[k,:] = 0; throughputs[k,:] = 0
                         end
                     end
                 end
@@ -78,20 +84,24 @@ function longterm_utilities(channel, network, partition)
             for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
-                    if IA_feas
-                        # Feasible for IA, calculate rates without interference
-                        desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                        int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
-                        rho = desired_power/int_noise_power
+                    # Rates without interference, assuming IA feasibility
+                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
+                    int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
+                    rho = desired_power/int_noise_power
 
-                        rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
+                    utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
+
+                    if IA_feas
+                        # These rates are achievable using IA
+                        rates[k,:] = utopian_rates[k,:]
+                        throughputs[k,:] = utopian_rates[k,:] # will be multiplied by alpha later
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
                         if haskey(aux_params, "IA_infeasible_utility_inf") && aux_params["IA_infeasible_utility_inf"]
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
-                            rates[k,1:ds[k]] = 0; throughputs[k,1:ds[k]] = 0
+                            rates[k,:] = 0; throughputs[k,:] = 0
                         end
                     end
                 end
@@ -109,9 +119,9 @@ function longterm_utilities(channel, network, partition)
     # By having apply_overhead_prelog as an assignment parameter, we can easily
     # run the simulations with and without overhead prelog applied.
     if haskey(aux_params, "apply_overhead_prelog") && aux_params["apply_overhead_prelog"]
-        return throughputs, alphas
+        return throughputs, alphas, utopian_rates
     else
-        return rates, alphas
+        return rates, alphas, utopian_rates
     end
 end
 
