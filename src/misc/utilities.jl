@@ -32,7 +32,7 @@ function longterm_utilities(channel, network, partition)
     # clustering that is used.
     if aux_params["clustering_type"] == :orthogonal
         # In orthogonal clustering, only the direct channel affects the rate.
-        for block in partition.blocks
+        for block in partition
             # But the pre-log factors can be different between coalitions.
             alpha = orthogonal_prelog_factor(network, block)
 
@@ -40,7 +40,7 @@ function longterm_utilities(channel, network, partition)
             IA_feas = is_IA_feasible(network, block)
 
             # Calculate rates
-            for i in block.elements
+            for i in block
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
                     # Retain overhead pre-log factors, to be used in the precoding
@@ -71,24 +71,21 @@ function longterm_utilities(channel, network, partition)
     elseif aux_params["clustering_type"] == :spectrum_sharing
         # Only the BSs that are in the partition will be active in generating
         # interference to the other 
-        active_BSs = IntSet()
-        for block in partition.blocks
-            union!(active_BSs, block.elements)
-        end
+        active_BSs = IntSet(reduce(union, partition)) # make this an IntSet, so the setdiff operation below works nicely when the result is the empty set
 
         # Calculate rates for all MSs in clusters
-        for block in partition.blocks
+        for block in partition
             # Check IA feasibility for this block
             IA_feas = is_IA_feasible(network, block)
 
             # Find out-of-cluster interferers
-            intercluster_interferers = setdiff(active_BSs, block.elements)
-            for i in block.elements
+            intercluster_interferers = setdiff(active_BSs, block)
+            for i in block
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
                     # Rates without interference, assuming IA feasibility
                     desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
-                    int_noise_power = sigma2s[k] + sum([ channel.large_scale_fading_factor[k,j]^2*Ps[j] for j in intercluster_interferers ])
+                    int_noise_power = sigma2s[k] + sum(map(j -> channel.large_scale_fading_factor[k,j]^2*Ps[j], intercluster_interferers))
                     rho = desired_power/int_noise_power
 
                     utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
@@ -130,7 +127,7 @@ end
 # the overhead.
 function spectrum_sharing_prelog_factor(network, partition)
     Tc = get_aux_network_param(network, "no_coherence_symbols")
-    return max(0, 1 - sum([ CSI_acquisition_symbol_overhead(network, block) for block in partition.blocks ])/Tc)
+    return max(0, 1 - (1/Tc)*sum(map(block -> CSI_acquisition_symbol_overhead(network, block), partition)))
 end
 
 # Pre-log factor for orthogonal clustering. Each BS brings its share (1/I) of
@@ -150,11 +147,11 @@ function CSI_acquisition_symbol_overhead(network, block)
     assignment = get_assignment(network)
 
     # First term in Lp (DL channel training)
-    sum_M = sum(Ms[collect(block.elements)])
+    sum_M = sum(Ms[collect(block)])
 
     # Other terms in Lp
     sum_N = 0; quad_sum_M = 0; sum_d = 0
-    for i in block.elements
+    for i in block
         for k in served_MS_ids(i, assignment)
             # UL channel training
             sum_N += Ns[k]

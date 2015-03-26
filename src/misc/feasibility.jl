@@ -5,7 +5,7 @@
 function is_IA_feasible(network, partition::Partition)
     check_Liu2013_applicability(network)
 
-    for block in partition.blocks
+    for block in partition
         is_IA_feasible(network, block) || return false
     end
     return true
@@ -60,7 +60,7 @@ end
 
 # Special case for symmetric IBCs.
 function Liu2013_IBC_symmetric(block, N, M, d, Kc)
-    I = length(block.elements)
+    I = length(block)
 
     if I*Kc*d <= M + N - d
         return true
@@ -74,15 +74,15 @@ end
 # interfering links, which grows exponentially.
 function Liu2013_IBC_heterogeneous(block, Ns, Ms, d, served, served_length)
     # Condition (14a)
-    for j in block.elements
-        for i in block.elements; for k in served[i]
+    for j in block
+        for i in block; for k in served[i]
             min(Ms[j] - served_length[j]*d, Ns[k] - d) >= 0 || return false
         end; end
     end
 
     # Enumerate all interfering links
     interfering_cells = (Int, Int)[]
-    for i in block.elements; for j in block.elements
+    for i in block; for j in block
         if i != j
             push!(interfering_cells, (i, j))
         end

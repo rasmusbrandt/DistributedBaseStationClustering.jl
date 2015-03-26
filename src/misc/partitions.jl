@@ -11,12 +11,23 @@ Block() = Block(IntSet())
 Base.show(io::IO, b::Block) = showcompact(io, b.elements)
 Base.length(b::Block) = length(b.elements)
 Base.push!(b::Block, e::Int) = push!(b.elements, e)
+Base.start(b::Block) = start(b.elements)
+Base.done(b::Block, state) = done(b.elements, state)
+Base.next(b::Block, state) = next(b.elements, state)
+Base.eltype(b::Block) = eltype(b.elements) # needed to get collect to return the correct type
 
 # The Partition type describes a partition of integers into blocks.
 immutable Partition
     blocks::Set{Block}
 end
 Partition() = Partition(Set{Block}())
+
+# Inherit part of the interface from Set
+Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
+Base.length(p::Partition) = length(p.blocks)
+Base.start(p::Partition) = start(p.blocks)
+Base.done(p::Partition, state) = done(p.blocks, state)
+Base.next(p::Partition, state) = next(p.blocks, state)
 
 # Create partition from restricted growth string
 function Partition(a::Vector)
@@ -40,20 +51,16 @@ end
 Partition(A::Matrix) =
     Partition(restricted_growth_string(A))
 
-# Inherit part of the interface from Set
-Base.show(io::IO, p::Partition) = showcompact(io, p.blocks)
-Base.length(p::Partition) = length(p.blocks)
-
 # Convert from partition to restricted growth string
 restricted_growth_string(p::Partition) = restricted_growth_string(logical_matrix(p))
 
 # Convert from partition to assignment matrix
 function logical_matrix(p::Partition)
-    I = maximum([ maximum(block.elements) for block in p.blocks ])
+    I = maximum([ maximum(block) for block in p.blocks ])
     A = eye(Int, I, I)
 
     for block in p.blocks
-        elements = collect(block.elements)
+        elements = collect(block)
         A[elements, elements] = 1
     end
 
