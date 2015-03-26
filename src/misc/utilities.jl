@@ -10,6 +10,16 @@
 # efficiences when both IA feasibility and the pre-log factor due to
 # overhead is accounted for. The alphas are the pre-log factors.
 #
+# If the spectral efficiency when IA is not feasible is 0, this means that
+# the corresponding cluster is turned off. This does however _not_ mean that
+# the overhead pre-log factor is changed. We still count the overhead from
+# CSI acquisition, and in the case of orthogonal clustering the temporal
+# degrees of freedom provided by each BS in the clusters, when calculating
+# the overheads. This could/should be generalized to the case when some
+# clusters are turned off, and thus giving up their temporal degrees of
+# freedom and CSI acquisition overhead to the other clusters. In the current
+# implementation, we are not taking this into consideration however.
+#
 # Notice: this function only returns a bound of the rates for now,
 # since I don't if the E1 exponential integral has been implemented
 # by anyone in Julia yet.
