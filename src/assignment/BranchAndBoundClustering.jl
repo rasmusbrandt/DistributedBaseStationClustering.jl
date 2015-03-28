@@ -3,12 +3,12 @@
 # the utopian bounds.
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
-    assignment = get_assignment(network)
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
+    assignment = get_assignment(network)
 
     # Utility upper bounds by assuming feasibility of grand coalition.
     grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
