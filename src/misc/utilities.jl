@@ -60,7 +60,7 @@ function longterm_utilities(channel, network, partition)
                     desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
                     rho = desired_power/sigma2s[k]
 
-                    utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
+                    utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho) # This is a lower bound
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -104,7 +104,7 @@ function longterm_utilities(channel, network, partition)
                     end
                     rho = desired_power/int_noise_power
 
-                    utopian_rates[k,1:ds[k]] = 0.5log(1 + 2rho) # This is a lower bound
+                    utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho) # This is a lower bound
 
                     if IA_feas
                         # These rates are achievable using IA
