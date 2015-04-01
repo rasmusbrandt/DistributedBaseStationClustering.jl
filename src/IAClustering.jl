@@ -26,6 +26,12 @@ export
     RobustIntraclusterLeakageMinimization, NaiveIntraclusterLeakageMinimization,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
+include("misc/combinations.jl")
+include("misc/partitions.jl")
+include("misc/feasibility.jl")
+include("misc/subsets.jl")
+include("misc/utilities.jl")
+
 include("assignment/assignment.jl")
 include("assignment/BranchAndBoundClustering.jl")
 include("assignment/Chen2014_ExhaustiveSearch.jl")
@@ -39,12 +45,6 @@ include("assignment/RandomClustering.jl")
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
-
-include("misc/combinations.jl")
-include("misc/partitions.jl")
-include("misc/feasibility.jl")
-include("misc/subsets.jl")
-include("misc/utilities.jl")
 
 ##########################################################################
 # Logging defaults
