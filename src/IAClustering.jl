@@ -14,6 +14,7 @@ export
     # assignment
     BranchAndBoundClustering,
     Chen2014_ExhaustiveSearch,
+    CoalitionFormationClustering_Individual,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
     GreedyClustering,
@@ -28,6 +29,7 @@ export
 include("assignment/assignment.jl")
 include("assignment/BranchAndBoundClustering.jl")
 include("assignment/Chen2014_ExhaustiveSearch.jl")
+include("assignment/CoalitionFormationClustering.jl")
 include("assignment/ExhaustiveSearchClustering.jl")
 include("assignment/GrandCoalitionClustering.jl")
 include("assignment/GreedyClustering.jl")
