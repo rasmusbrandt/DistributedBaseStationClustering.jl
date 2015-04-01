@@ -64,8 +64,10 @@ function longterm_utilities(channel, network, partition)
 
                     if IA_feas
                         # These rates are achievable using IA
-                        rates[k,:] = utopian_rates[k,:]
-                        throughputs[k,:] = alphas[k]*utopian_rates[k,:]
+                        for n = 1:max_d
+                            rates[k,n] = utopian_rates[k,n]
+                            throughputs[k,n] = alphas[k]*utopian_rates[k,n]
+                        end
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
@@ -108,8 +110,10 @@ function longterm_utilities(channel, network, partition)
 
                     if IA_feas
                         # These rates are achievable using IA
-                        rates[k,:] = utopian_rates[k,:]
-                        throughputs[k,:] = utopian_rates[k,:] # will be multiplied by alpha later
+                        for n = 1:max_d
+                            rates[k,n] = utopian_rates[k,n]
+                            throughputs[k,n] = utopian_rates[k,n] # will be multiplied by alpha later
+                        end
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
