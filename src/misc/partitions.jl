@@ -2,7 +2,7 @@
 # Partitions
 
 # A block is just a set of integers.
-immutable Block
+type Block
     elements::IntSet
 end
 Block() = Block(IntSet())
@@ -13,7 +13,7 @@ Base.length(b::Block) = length(b.elements)
 Base.push!(b::Block, e::Int) = push!(b.elements, e)
 
 # The Partition type describes a partition of integers into blocks.
-immutable Partition
+type Partition
     blocks::Set{Block}
 end
 Partition() = Partition(Set{Block}())
