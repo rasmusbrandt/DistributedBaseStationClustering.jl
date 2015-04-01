@@ -10,7 +10,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     I = get_no_BSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "CoalitionFormationClustering:search_budget" 50
+    @defaultize_param! aux_params "CoalitionFormationClustering:search_budget" 100
     search_budget = aux_params["CoalitionFormationClustering:search_budget"]
 
     # Perform cell selection
@@ -24,17 +24,21 @@ function CoalitionFormationClustering_Individual(channel, network)
     state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches)
 
     # Perform coalitional formation until no BS deviates
-    deviation_performed = true
-    while deviation_performed
-        deviation_performed = false
+    deviation_performed = trues(I) # temporary, to enter the loop
+    while any(deviation_performed)
+        deviation_performed = falses(I)
 
-        # Give all BSs a chance to deviate
-        for i = 1:I
-            if deviate!(i, I, state, search_budget, channel, network, temp_cell_assignment)
-                deviation_performed = true
+        # Give all BSs a chance to deviate, in the order of the strongest first
+        for i in sortperm(state.BS_utilities)
+            deviation_performed[i] = deviate!(i, I, state, search_budget, channel, network, temp_cell_assignment)
+
+            # If BS i has deviated, then the utilities of the other BSs have changed.
+            # Break out of the loop, and start looping over the newly sorted
+            # array of BS utilities.
+            if deviation_performed[i]
+                break
             end
         end
-
     end
     utilities, _ = longterm_utilities(channel, network, state.partition)
     Lumberjack.info("CoalitionFormationClustering finished.", { :sum_utility => sum(utilities), :a => restricted_growth_string(state.partition), :no_searches => state.no_searches })
@@ -133,8 +137,6 @@ function deviate!(i, I, state, search_budget, channel, network, cell_assignment)
             end
         end
 
-        Lumberjack.debug("Coal: Trying to add BS $i to $(my_block)")
-
         # Check if the existing members of this coalition allow BS i to join (this check includes BS i, unnecessarily)
         BSs_in_block = collect(my_block.elements)
         if all(deviating_BS_utilities[BSs_in_block,sort_idx] .> state.BS_utilities[BSs_in_block])
@@ -142,12 +144,9 @@ function deviate!(i, I, state, search_budget, channel, network, cell_assignment)
             state.partition = new_partitions[sort_idx]
             state.BS_utilities = deviating_BS_utilities[:,sort_idx]
 
-            Lumberjack.debug("Coal: Successful")
-
             return true
         end
     end
-    Lumberjack.debug("BS $i did not deviate.")
     return false
 end
 
