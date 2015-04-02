@@ -3,6 +3,9 @@
 # the utopian bounds.
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
+    if I > 12
+        Lumberjack.warn("BranchAndBoundClustering will be slow since I = $I.")
+    end
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
@@ -80,6 +83,9 @@ function BranchAndBoundClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = longterm_utilities(channel, network, Partition(incumbent_a))[1]
+    results["a"] = incumbent_a
+    results["no_iters"] = no_iters
+    results["no_utility_calculations"] = no_utility_calculations
     return results
 end
 

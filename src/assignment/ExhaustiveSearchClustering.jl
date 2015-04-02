@@ -3,12 +3,15 @@
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     d_max = maximum(get_no_streams(network))
+    if I > 12
+        Lumberjack.warn("ExhaustiveSearchClustering will be slow since I = $I.")
+    end
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
-    no_iters = 0
+    no_iters = 0; no_utility_calculations = 0
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
     best_partition = Partition()
     for partition in PartitionIterator(I)
@@ -16,6 +19,7 @@ function ExhaustiveSearchClustering(channel, network)
 
         # Calculate utilities
         utilities, _ = longterm_utilities(channel, network, partition)
+        no_utility_calculations += 1
 
         objective = sum(utilities)
         if objective > best_objective
@@ -24,10 +28,12 @@ function ExhaustiveSearchClustering(channel, network)
             best_partition = partition
         end
     end
+    a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :sum_utility => best_objective,
-          :a => restricted_growth_string(best_partition),
-          :no_iters => no_iters }
+          :a => a,
+          :no_iters => no_iters,
+          :no_utility_calculations => no_utility_calculations }
     )
 
     # Store cluster assignment together with existing cell assignment
@@ -37,5 +43,8 @@ function ExhaustiveSearchClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = best_utilities
+    results["a"] = a
+    results["no_iters"] = no_iters
+    results["no_utility_calculations"] = no_utility_calculations
     return results
 end

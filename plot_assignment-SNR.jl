@@ -24,9 +24,9 @@ end
 parsed_args = parse_args(s)
 
 ##########################################################################
-# Plot parameters
-plot_params = [
-    "plot_name" => "",
+# Plot parameters (SNR)
+plot_params_SNR = [
+    "plot_name" => "SNR",
 
     "objective" => :sumrate,
 
@@ -88,9 +88,72 @@ plot_params = [
 ]
 
 ##########################################################################
+# Plot parameters (utility_calculations)
+plot_params_utility_calculations = [
+    "plot_name" => "utility_calculations",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Number of utility calculations",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "ExhaustiveSearchClustering" => [
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+        ],
+
+        "BranchAndBoundClustering" => [
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+        ],
+
+
+        "CoalitionFormationClustering_Group" => [
+            ("no_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("no_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("no_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        ],
+
+        "GreedyClustering" => [
+            ("no_IA_feasibility_checks", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        ],
+
+        "RandomClustering" => [
+            ("no_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+        ],
+
+        "NoClustering" => [
+            ("no_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+        ],
+    ]
+]
+
+##########################################################################
 # Plot it
 for file_name in parsed_args["file_names"]
     data = load(file_name)
-    processed_results = postprocess_assignment(data["raw_results"], data["simulation_params"], plot_params)
-    plot_assignment(processed_results, data["simulation_params"], plot_params)
+
+    processed_results = postprocess_assignment(data["raw_results"], data["simulation_params"], plot_params_SNR)
+    plot_assignment(processed_results, data["simulation_params"], plot_params_SNR)
+
+    processed_results = postprocess_assignment(data["raw_results"], data["simulation_params"], plot_params_utility_calculations)
+    plot_assignment(processed_results, data["simulation_params"], plot_params_utility_calculations)
 end

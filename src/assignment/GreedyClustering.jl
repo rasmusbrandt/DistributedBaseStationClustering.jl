@@ -35,6 +35,7 @@ function GreedyClustering(channel, network)
 
     # Greedily build clusters based on strongest sum interference between cells
     no_iters = 0
+    no_IA_feasibility_checks = 0
     while !all(F .== -Inf)
         no_iters += 1
 
@@ -51,6 +52,8 @@ function GreedyClustering(channel, network)
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
         # IA_infeasible_negative_inf_utility is set to false.
         if is_IA_feasible(network, Partition(partition_matrix))
+            no_IA_feasibility_checks += 1
+
             # Fix BS j to this cluster
             F[:,j] = -Inf
 
@@ -70,11 +73,13 @@ function GreedyClustering(channel, network)
     end
     partition = Partition(partition_matrix)
     utilities, _ = longterm_utilities(channel, network, partition)
+    a = restricted_growth_string(partition_matrix)
     objective = sum(utilities)
     Lumberjack.info("GreedyClustering finished.",
         { :sum_utility => objective,
-          :a => restricted_growth_string(partition_matrix),
-          :no_iters => no_iters }
+          :a => a,
+          :no_iters => no_iters,
+          :no_IA_feasibility_checks => no_IA_feasibility_checks }
     )
 
     # Store cluster assignment together with existing cell assignment
@@ -83,6 +88,8 @@ function GreedyClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = restricted_growth_string(partition_matrix)
+    results["a"] = a
+    results["no_iters"] = no_iters
+    results["no_IA_feasibility_checks"] = no_IA_feasibility_checks
     return results
 end

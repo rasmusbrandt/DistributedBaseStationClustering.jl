@@ -22,5 +22,8 @@ function NoClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
+    results["a"] = a
+    results["no_iters"] = 1
+    results["no_utility_calculations"] = 1
     return results
 end

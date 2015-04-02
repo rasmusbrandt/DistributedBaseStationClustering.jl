@@ -14,11 +14,15 @@ function RandomClustering(channel, network)
     utilities = zeros(Float64, K, max_d)
 
     # Find a set partition whose utility is not -Inf
+    no_iters = 0; no_utility_calculations = 0
     while true
+        no_iters += 1
+
         # Get random partition by finding random rgs
         random_a = random_restricted_growth_string(I)
         random_partition = Partition(random_a)
         utilities, _ = longterm_utilities(channel, network, Partition(random_a))
+        no_utility_calculations += 1
 
         if sum(utilities) > -Inf
             break
@@ -34,6 +38,9 @@ function RandomClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
+    results["a"] = random_a
+    results["no_iters"] = no_iters
+    results["no_utility_calculations"] = no_utility_calculations
     return results
 end
 

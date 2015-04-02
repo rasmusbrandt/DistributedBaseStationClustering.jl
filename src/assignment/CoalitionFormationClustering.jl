@@ -86,9 +86,10 @@ function CoalitionFormationClustering_Individual(channel, network)
         end
     end
     utilities, _ = longterm_utilities(channel, network, state.partition)
+    a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
         { :sum_utility => sum(utilities),
-          :a => restricted_growth_string(state.partition),
+          :a => a,
           :no_searches => state.no_searches,
           :no_utility_calculations => state.no_utility_calculations })
 
@@ -98,6 +99,9 @@ function CoalitionFormationClustering_Individual(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
+    results["a"] = a
+    results["no_searches"] = state.no_searches
+    results["no_utility_calculations"] = state.no_utility_calculations
     return results
 end
 
@@ -245,9 +249,10 @@ function CoalitionFormationClustering_Group(channel, network)
         state.r -= 1
     end
     utilities, _ = longterm_utilities(channel, network, state.partition)
+    a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Group finished.",
         { :sum_utility => sum(utilities),
-          :a => restricted_growth_string(state.partition),
+          :a => a,
           :no_iters => state.no_iters,
           :no_utility_calculations => state.no_utility_calculations })
 
@@ -257,6 +262,9 @@ function CoalitionFormationClustering_Group(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
+    results["a"] = a
+    results["no_iters"] = state.no_iters
+    results["no_utility_calculations"] = state.no_utility_calculations
     return results
 end
 
