@@ -25,8 +25,8 @@ parsed_args = parse_args(s)
 
 ##########################################################################
 # Plot parameters
-plot_params_SNR = [
-    "plot_name" => "SNR",
+plot_params_instantaneous_sumrate = [
+    "plot_name" => "instantaneous",
 
     "objective" => :sumrate,
 
@@ -38,7 +38,6 @@ plot_params_SNR = [
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Sum rate [bits/s/Hz]",
-        :ylim => [0, 70],
     ],
 
     "legend" => [
@@ -87,8 +86,10 @@ plot_params_SNR = [
         ],
     ]
 ]
-plot_params_no_utility_calculations = [
-    "plot_name" => "no_utility_calculations",
+plot_params_longterm_sumrate = copy(plot_params_instantaneous_sumrate)
+plot_params_longterm_sumrate["plot_name"] = "longterm-sumrate"
+plot_params_longterm_iters = [
+    "plot_name" => "longterm-iters",
 
     "objective" => :none,
 
@@ -149,11 +150,12 @@ plot_params_no_utility_calculations = [
 for file_name in parsed_args["file_names"]
     data = load(file_name)
 
-    processed_results = postprocess(data["raw_results"], data["simulation_params"], plot_params_SNR)
-    plot(processed_results, data["simulation_params"], plot_params_SNR)
+    processed_results = postprocess(data["raw_precoding_results"], data["simulation_params"], plot_params_instantaneous_sumrate)
+    plot(processed_results, data["simulation_params"], plot_params_instantaneous_sumrate)
 
-    if data["simulation_params"]["longterm_rates"]
-        processed_results = postprocess(data["raw_results"], data["simulation_params"], plot_params_no_utility_calculations)
-        plot(processed_results, data["simulation_params"], plot_params_no_utility_calculations)
-    end
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_sumrate)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_sumrate)
+
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_iters)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_iters)
 end

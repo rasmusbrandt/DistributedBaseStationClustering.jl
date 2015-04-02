@@ -92,6 +92,6 @@ plot_params = [
 # Plot it
 for file_name in parsed_args["file_names"]
     data = load(file_name)
-    processed_results = postprocess(data["raw_results"], data["simulation_params"], plot_params)
+    processed_results = postprocess(data["raw_precoding_results"], data["simulation_params"], plot_params)
     plot(processed_results, data["simulation_params"], plot_params)
 end
