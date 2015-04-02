@@ -85,7 +85,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
     BS_not_singleton_coalition_before = length(old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
     no_new_partitions = length(other_blocks) + int(BS_not_singleton_coalition_before)
     new_partitions = Array(Partition, no_new_partitions)
-    deviating_BS_utilities = zeros(Float64, I, no_new_partitions)
+    deviated_BS_utilities = zeros(Float64, I, no_new_partitions)
     for n = 1:length(other_blocks)
         # Loop over the deviations where BS i joins an existing coalition
         new_partition = Partition()
@@ -101,7 +101,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
         push!(other_blocks_cp[n].elements, i)
 
         new_partitions[n] = new_partition
-        deviating_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
     end
     if BS_not_singleton_coalition_before
         # BS i was in a non-singleton coalition before deviation. Add the the
@@ -117,15 +117,15 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
         push!(new_partition.blocks, Block(IntSet(i)))
 
         new_partitions[end] = new_partition
-        deviating_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
     end
 
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
-    for sort_idx in sortperm(squeeze(deviating_BS_utilities[i,:], 1), rev=true)
+    for sort_idx in sortperm(squeeze(deviated_BS_utilities[i,:], 1), rev=true)
         # Stop searching if we hit a deviation that results in worse performance.
         # (This is OK since we are looping over a sorted array.)
-        if deviating_BS_utilities[i,sort_idx] < state.BS_utilities[i]
+        if deviated_BS_utilities[i,sort_idx] < state.BS_utilities[i]
             return false
         end
 
@@ -148,10 +148,10 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         # Check if the existing members of this coalition allow BS i to join (this check includes BS i, unnecessarily)
         BSs_in_block = collect(my_block.elements)
-        if all(deviating_BS_utilities[BSs_in_block,sort_idx] .> state.BS_utilities[BSs_in_block])
+        if all(deviated_BS_utilities[BSs_in_block,sort_idx] .>= state.BS_utilities[BSs_in_block])
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
-            state.BS_utilities = deviating_BS_utilities[:,sort_idx]
+            state.BS_utilities = deviated_BS_utilities[:,sort_idx]
 
             return true
         end
@@ -172,7 +172,10 @@ function CoalitionFormationClustering_Group(channel, network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_merge_size" 2
+    @defaultize_param! aux_params "CoalitionFormationClustering_Group:search_order" :greedy
     max_merge_size = aux_params["CoalitionFormationClustering_Group:max_merge_size"]
+    search_order = aux_params["CoalitionFormationClustering_Group:search_order"]
+    in(search_order, [:greedy, :lexicographic]) || Lumberjack.error("Incorrect CoalitionFormationClustering_Group:search_order.")
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -189,7 +192,7 @@ function CoalitionFormationClustering_Group(channel, network)
 
         # Keep merging until no coalitions want to merge
         while merge_performed
-            merge_performed = merge!(state, I, max_merge_size, channel, network, temp_cell_assignment)
+            merge_performed = merge!(state, I, max_merge_size, search_order, channel, network, temp_cell_assignment)
         end
 
         # Decrease the number of coalitions that are allowed to merge
@@ -208,15 +211,24 @@ function CoalitionFormationClustering_Group(channel, network)
 end
 
 function merge!(state::CoalitionFormationClustering_GroupState, I,
-    max_merge_size, channel, network, cell_assignment)
+    max_merge_size, search_order, channel, network, cell_assignment)
 
     # Need the current blocks in an array, for easy indexing
     all_blocks = collect(state.partition.blocks)
     all_blocks_card = length(all_blocks)
 
-    # Loop over all lexicographically r-combinations of the current coalition structure
+    # Create all possible r-mergers
+    no_new_partitions = binomial(all_blocks_card, state.r)
+    new_partitions = Array(Partition, no_new_partitions)
+    merged_BS_utilities = zeros(Float64, I, no_new_partitions)
+    merged_BSs = Array(Vector{Int}, no_new_partitions)
+
+    # Loop lexicographically over all r-combinations of the current coalitions
+    n = 0
     for merging_blocks_idxs in kCombinationIterator(all_blocks_card, state.r)
-        # Separate blocks
+        n += 1
+
+        # Separate blocks based on who is merging and not
         merged_block = Block()
         for merging_blocks_idx in merging_blocks_idxs
             union!(merged_block.elements, all_blocks[merging_blocks_idx].elements)
@@ -227,14 +239,28 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         new_partition = Partition()
         push!(new_partition.blocks, merged_block)
         union!(new_partition.blocks, other_blocks)
+        new_partitions[n] = new_partition
+        merged_BSs[n] = collect(merged_block.elements)
+        merged_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+    end
+
+    # Order the potential mergers
+    ordered_mergers = Int[]
+    if search_order == :greedy
+        ordered_mergers = sortperm(squeeze(sum(merged_BS_utilities, 1), 1), rev=true)
+    elseif search_order == :lexicographic
+        ordered_mergers = 1:no_new_partitions
+    end
+
+    # Order the potential mergers decreasing in the sum rate sense
+    for sort_idx in ordered_mergers
+        BSs_idxs = merged_BSs[sort_idx]
 
         # Merge coalitions if everybody agrees
-        merging_BSs = collect(merged_block.elements)
-        merged_BS_utilities = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
-        if all(merged_BS_utilities[merging_BSs] .> state.BS_utilities[merging_BSs])
-            state.partition = new_partition
-            state.BS_utilities = merged_BS_utilities
-            state.r = min(length(new_partition), max_merge_size)
+        if all(merged_BS_utilities[BSs_idxs] .>= state.BS_utilities[BSs_idxs])
+            state.partition = new_partitions[sort_idx]
+            state.BS_utilities = merged_BS_utilities[:,sort_idx]
+            state.r = min(length(new_partitions[sort_idx]), max_merge_size)
 
             return true
         end
