@@ -28,24 +28,34 @@ simulation_params = [
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
-        Chen2014_ExhaustiveSearch,
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
+        CoalitionFormationClustering_Group,
+        CoalitionFormationClustering_Individual,
+
+        Chen2014_ExhaustiveSearch,
+
         GrandCoalitionClustering,
         GreedyClustering,
-        RandomClustering,
+        # RandomClustering,
         NoClustering,
     ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
-        # RobustChen2014_MaxSINR,
     ],
     "aux_network_params" => [
         "no_coherence_symbols" => 1000,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
+        "apply_overhead_prelog" => false,
+        "IA_infeasible_negative_inf_utility" => true,
+
+        "CoalitionFormationClustering_Group:max_merge_size" => 4,
+        "CoalitionFormationClustering_Group:search_order" => :greedy,
+        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:search_order" => :greedy,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

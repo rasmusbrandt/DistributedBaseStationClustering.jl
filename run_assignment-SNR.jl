@@ -13,7 +13,7 @@ using HDF5, JLD
 
 ##########################################################################
 # General settings
-srand(973472333)
+srand(8352339)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
@@ -24,13 +24,17 @@ simulation_params = [
     "d" => 1,
     "Ndrops" => 10,
     "assignment_methods" => [
-        Chen2014_ExhaustiveSearch,
-        ExhaustiveSearchClustering,
+        # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
+
+        CoalitionFormationClustering_Group,
+        CoalitionFormationClustering_Individual,
+
+        Chen2014_ExhaustiveSearch,
 
         GrandCoalitionClustering,
         GreedyClustering,
-        RandomClustering,
+        # RandomClustering,
         NoClustering,
     ],
     "aux_network_params" => [
@@ -38,8 +42,13 @@ simulation_params = [
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_utility_inf" => true,
+        "apply_overhead_prelog" => false,
+        "IA_infeasible_negative_inf_utility" => true,
+
+        "CoalitionFormationClustering_Group:max_merge_size" => 4,
+        "CoalitionFormationClustering_Group:search_order" => :greedy,
+        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:search_order" => :greedy,
     ],
     "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
 ]

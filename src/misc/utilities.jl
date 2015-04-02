@@ -30,8 +30,7 @@ function longterm_utilities(channel, network, partition)
     ds = get_no_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
-
-    @defaultize_param! aux_params "IntraclusterWMMSE:bisection_Gamma_cond" 1e10
+    IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
 
     utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
     rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
@@ -71,7 +70,7 @@ function longterm_utilities(channel, network, partition)
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
-                        if aux_params["IA_infeasible_utility_inf"]
+                        if IA_infeasible_negative_inf_utility
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
                             rates[k,:] = 0; throughputs[k,:] = 0
@@ -117,7 +116,7 @@ function longterm_utilities(channel, network, partition)
                     else
                         # Not feasible for IA. Set rates for this block
                         # as 0 or -Inf, depending on given parameter.
-                        if aux_params["IA_infeasible_utility_inf"]
+                        if IA_infeasible_negative_inf_utility
                             rates[k,1:ds[k]] = -Inf; throughputs[k,1:ds[k]] = -Inf
                         else
                             rates[k,:] = 0; throughputs[k,:] = 0

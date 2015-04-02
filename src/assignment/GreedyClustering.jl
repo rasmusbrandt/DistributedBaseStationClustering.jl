@@ -8,8 +8,8 @@ function GreedyClustering(channel, network)
     aux_params = get_aux_assignment_params(network)
 
     # Consistency check
-    if aux_params["IA_infeasible_utility_inf"] == false
-        Lumberjack.info("GreedyClustering only finds solutions where all clusters are IA feasible. IA_infeasible_utility_inf is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
+    if aux_params["IA_infeasible_negative_inf_utility"] == false
+        Lumberjack.info("GreedyClustering only finds solutions where all clusters are IA feasible. IA_infeasible_negative_inf_utility is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
     end
 
     # Perform cell selection
@@ -49,7 +49,7 @@ function GreedyClustering(channel, network)
         # Check that IA is feasible for this cluster structure. Note that this
         # means that GreedyClustering cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-        # IA_infeasible_utility_inf is set to false.
+        # IA_infeasible_negative_inf_utility is set to false.
         if is_IA_feasible(network, Partition(partition_matrix))
             # Fix BS j to this cluster
             F[:,j] = -Inf

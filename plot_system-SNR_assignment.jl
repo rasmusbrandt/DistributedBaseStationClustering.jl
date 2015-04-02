@@ -47,32 +47,43 @@ plot_params = [
     ],
 
     "methods" => [
-        "Chen2014_ExhaustiveSearch" => [
-            ("logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
-        ],
-
         "ExhaustiveSearchClustering" => [
-            ("logdet_rates", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("utilities", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("utilities", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
+
+        "CoalitionFormationClustering_Group" => [
+            ("utilities", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("utilities", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "Chen2014_ExhaustiveSearch" => [
+            ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
+
         "GrandCoalitionClustering" => [
-            ("logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "GreedyClustering" => [
-            ("logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
         ],
 
         "RandomClustering" => [
-            ("logdet_rates", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("utilities", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("logdet_rates", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("utilities", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]

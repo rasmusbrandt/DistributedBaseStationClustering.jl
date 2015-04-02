@@ -46,10 +46,6 @@ plot_params = [
     ],
 
     "methods" => [
-        "Chen2014_ExhaustiveSearch" => [
-            ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
-        ],
-
         "ExhaustiveSearchClustering" => [
             ("utilities", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
@@ -57,6 +53,21 @@ plot_params = [
         "BranchAndBoundClustering" => [
             ("utilities", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
+
+
+        "CoalitionFormationClustering_Group" => [
+            ("utilities", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("utilities", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "Chen2014_ExhaustiveSearch" => [
+            ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
 
         "GrandCoalitionClustering" => [
             ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),

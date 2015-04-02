@@ -15,8 +15,8 @@ function Chen2014_ExhaustiveSearch(channel, network)
     if I != K
         Lumberjack.error("Chen2014_LinearObjClustering can only handle I = K scenarios.")
     end
-    if aux_params["IA_infeasible_utility_inf"] == false
-        Lumberjack.info("Chen2014_ExhaustiveSearch only finds solutions where all clusters are IA feasible. IA_infeasible_utility_inf is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
+    if aux_params["IA_infeasible_negative_inf_utility"] == false
+        Lumberjack.info("Chen2014_ExhaustiveSearch only finds solutions where all clusters are IA feasible. IA_infeasible_negative_inf_utility is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
     end
 
     # Perform cell selection
@@ -34,7 +34,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_ExhaustiveSearch cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-        # IA_infeasible_utility_inf is set to false.
+        # IA_infeasible_negative_inf_utility is set to false.
         if is_IA_feasible(network, partition)
             # Calculate objective
             objective = 0.
