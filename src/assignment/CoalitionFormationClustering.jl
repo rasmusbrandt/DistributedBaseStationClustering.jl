@@ -13,7 +13,15 @@ function CoalitionFormationClustering_Individual(channel, network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 100
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :greedy
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
+    if aux_params["CoalitionFormationClustering_Individual:search_order"] == :greedy
+        search_order_greedy = true
+    elseif aux_params["CoalitionFormationClustering_Individual:search_order"] == :fair
+        search_order_greedy = false
+    else
+        Lumberjack.error("Incorrect CoalitionFormationClustering_Individual:search_order specified.")
+    end
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -30,8 +38,13 @@ function CoalitionFormationClustering_Individual(channel, network)
     while any(deviation_performed)
         deviation_performed = falses(I)
 
-        # Give all BSs a chance to deviate, in the order of the strongest first
-        for i in sortperm(state.BS_utilities)
+        # Give all BSs a chance to deviate. If search_order_greedy=true, we
+        # let the BSs deviate in the order of their current utilities, i.e. the
+        # BS doing the best is going first. If search_order_greedy=false instead,
+        # the BS which is doing the worst will go first. This is more similar
+        # to GreedyClustering, where the strongest interfering links are clustered
+        # first.
+        for i in sortperm(state.BS_utilities, rev=search_order_greedy)
             deviation_performed[i] = deviate!(state, i, I, search_budget, channel, network, temp_cell_assignment)
         end
     end
