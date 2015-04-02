@@ -38,7 +38,7 @@ simulation_params = [
 
         GrandCoalitionClustering,
         GreedyClustering,
-        # RandomClustering,
+        RandomClustering,
         NoClustering,
     ],
     "precoding_methods" => [
