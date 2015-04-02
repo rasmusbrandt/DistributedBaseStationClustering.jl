@@ -36,14 +36,13 @@ function CoalitionFormationClustering_Individual(channel, network)
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
     while any(deviation_performed)
-        deviation_performed = falses(I)
-
         # Give all BSs a chance to deviate. If search_order_greedy=true, we
         # let the BSs deviate in the order of their current utilities, i.e. the
         # BS doing the best is going first. If search_order_greedy=false instead,
         # the BS which is doing the worst will go first. This is more similar
         # to GreedyClustering, where the strongest interfering links are clustered
         # first.
+        deviation_performed = falses(I)
         for i in sortperm(state.BS_utilities, rev=search_order_greedy)
             deviation_performed[i] = deviate!(state, i, I, search_budget, channel, network, temp_cell_assignment)
         end
@@ -188,9 +187,8 @@ function CoalitionFormationClustering_Group(channel, network)
 
     # Let coalitions merge, until no coalitions want to merge (group-based stability)
     while state.r >= 2 && length(state.partition) > 2
-        merge_performed = true
-
         # Keep merging until no coalitions want to merge
+        merge_performed = true
         while merge_performed
             merge_performed = merge!(state, I, max_merge_size, search_order, channel, network, temp_cell_assignment)
         end
@@ -213,12 +211,12 @@ end
 function merge!(state::CoalitionFormationClustering_GroupState, I,
     max_merge_size, search_order, channel, network, cell_assignment)
 
-    # Need the current blocks in an array, for easy indexing
+    # Put current blocks in an array for easy indexing
     all_blocks = collect(state.partition.blocks)
     all_blocks_card = length(all_blocks)
 
     # Create all possible r-mergers
-    no_new_partitions = binomial(all_blocks_card, state.r)
+    no_new_partitions = binomial(all_blocks_card, state.r) # all_blocks_card choose r
     new_partitions = Array(Partition, no_new_partitions)
     merged_BS_utilities = zeros(Float64, I, no_new_partitions)
     merged_BSs = Array(Vector{Int}, no_new_partitions)
@@ -257,7 +255,7 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         BSs_idxs = merged_BSs[sort_idx]
 
         # Merge coalitions if everybody agrees
-        if all(merged_BS_utilities[BSs_idxs] .>= state.BS_utilities[BSs_idxs])
+        if all(merged_BS_utilities[BSs_idxs,sort_idx] .>= state.BS_utilities[BSs_idxs])
             state.partition = new_partitions[sort_idx]
             state.BS_utilities = merged_BS_utilities[:,sort_idx]
             state.r = min(length(new_partitions[sort_idx]), max_merge_size)
