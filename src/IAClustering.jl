@@ -14,6 +14,7 @@ export
     # assignment
     BranchAndBoundClustering,
     Chen2014_ExhaustiveSearch,
+    CoalitionFormationClustering_Group,
     CoalitionFormationClustering_Individual,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
