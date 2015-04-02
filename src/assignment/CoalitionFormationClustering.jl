@@ -1,11 +1,49 @@
 ##########################################################################
-# Base station clustering based on coalitional formation.
+# Base station clustering based on coalitional formation. Two solution
+# concepts are used: individual-based stability and group-based stability.
+#
+# In both algorithms, we have *BS_utilities*, which are the MS utilities
+# for the served MSs summed up. (This *could* be generalized to other functions.)
+#
+# In the individual-based stability algorithm (CoalitionFormationClustering_Individual),
+# each BS is allowed to deviate to another coalition, given that the BSs
+# in that coalition accepts the deviating BS. Letting all BSs consecutively
+# deviate eventually leads to a coalition structure which is individually stable.
+# The parameter that this algorithm takes are:
+#
+#   Maximum number of deviation searches that each BS is allowed to performed
+#       CoalitionFormationClustering_Individual:search_budget (Int)
+#
+#   The way the possible deviations are ordered
+#       CoalitionFormationClustering_Individual:search_order
+#   This can be either :greedy or :fair, where :greedy means that the BS
+#   with the largest utility is allowed to deviate first, and :fair means
+#   that the BS with the smallest utility is allowed to deviate first.
+#
+# The group-based stability algorithm (CoalitionFormationClustering_Group) works
+# directly on coalitions, rather than on BSs as the individual-based stability
+# algorithm did. In this case, coalitions are allowed to merge, leading up to
+# a coalition structure which is group stable.
+# The parameter that this algorithm takes are:
+#
+#   Maximum number of coalitions merging
+#       CoalitionFormationClustering_Group:max_no_merging_coalitions (Int)
+#
+#   The way the possible mergers are ordered
+#       CoalitionFormationClustering_Group:search_order
+#   This can be either :greedy or :lexicographic, where :greedy means that
+#   the merger which leads to the largest sum utility (over the entire network)
+#   will be tried first. :lexicographic means that the mergers are tried
+#   in lexicographic order.
 
-# Individual-based stability
+
+##########################################################################
+# Individual-based stability algorithm
 type CoalitionFormationClustering_IndividualState
     partition::Partition
     BS_utilities::Vector{Float64}
     no_searches::Vector{Int}
+    no_utility_calculations::Int
 end
 
 function CoalitionFormationClustering_Individual(channel, network)
@@ -31,7 +69,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     initial_partition = Partition(collect(0:(I-1)))
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
     initial_no_searches = zeros(Int, I)
-    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches)
+    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches, 1)
 
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
@@ -48,7 +86,11 @@ function CoalitionFormationClustering_Individual(channel, network)
         end
     end
     utilities, _ = longterm_utilities(channel, network, state.partition)
-    Lumberjack.info("CoalitionFormationClustering_Individual finished.", { :sum_utility => sum(utilities), :a => restricted_growth_string(state.partition), :no_searches => state.no_searches })
+    Lumberjack.info("CoalitionFormationClustering_Individual finished.",
+        { :sum_utility => sum(utilities),
+          :a => restricted_growth_string(state.partition),
+          :no_searches => state.no_searches,
+          :no_utility_calculations => state.no_utility_calculations })
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
@@ -59,7 +101,8 @@ function CoalitionFormationClustering_Individual(channel, network)
     return results
 end
 
-# Lets BS i deviate in the individual stability model. Returns true if it did deviate, otherwise false.
+# Lets BS i deviate in the individual stability model.
+# Returns true if it did deviate, otherwise false.
 function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
     search_budget, channel, network, cell_assignment)
 
@@ -101,6 +144,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         new_partitions[n] = new_partition
         deviated_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        state.no_utility_calculations += 1
     end
     if BS_not_singleton_coalition_before
         # BS i was in a non-singleton coalition before deviation. Add the the
@@ -117,6 +161,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         new_partitions[end] = new_partition
         deviated_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        state.no_utility_calculations += 1
     end
 
     # Check deviations, trying to join the coalitions in the order that
@@ -145,7 +190,8 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
             end
         end
 
-        # Check if the existing members of this coalition allow BS i to join (this check includes BS i, unnecessarily)
+        # Check if the existing members of this coalition allow BS i to join
+        # (this check includes BS i, unnecessarily)
         BSs_in_block = collect(my_block.elements)
         if all(deviated_BS_utilities[BSs_in_block,sort_idx] .>= state.BS_utilities[BSs_in_block])
             # Let BS i join this coalition
@@ -158,21 +204,23 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
     return false
 end
 
-# Group-based stability
+##########################################################################
+# Group-based stability algorithm
 type CoalitionFormationClustering_GroupState
     partition::Partition
     BS_utilities::Vector{Float64}
     r::Int
-    no_searches::Int
+    no_iters::Int
+    no_utility_calculations::Int
 end
 
 function CoalitionFormationClustering_Group(channel, network)
     I = get_no_BSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_merge_size" 2
+    @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_no_merging_coalitions" 2
     @defaultize_param! aux_params "CoalitionFormationClustering_Group:search_order" :greedy
-    max_merge_size = aux_params["CoalitionFormationClustering_Group:max_merge_size"]
+    max_no_merging_coalitions = aux_params["CoalitionFormationClustering_Group:max_no_merging_coalitions"]
     search_order = aux_params["CoalitionFormationClustering_Group:search_order"]
     in(search_order, [:greedy, :lexicographic]) || Lumberjack.error("Incorrect CoalitionFormationClustering_Group:search_order.")
 
@@ -183,21 +231,25 @@ function CoalitionFormationClustering_Group(channel, network)
     # Initial coalition structure is the non-cooperative state
     initial_partition = Partition(collect(0:(I-1)))
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
-    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_utilities, min(I, aux_params["CoalitionFormationClustering_Group:max_merge_size"]), 0)
+    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_utilities, min(I, aux_params["CoalitionFormationClustering_Group:max_no_merging_coalitions"]), 0, 1)
 
     # Let coalitions merge, until no coalitions want to merge (group-based stability)
     while state.r >= 2 && length(state.partition) > 2
         # Keep merging until no coalitions want to merge
         merge_performed = true
         while merge_performed
-            merge_performed = merge!(state, I, max_merge_size, search_order, channel, network, temp_cell_assignment)
+            merge_performed = merge!(state, I, max_no_merging_coalitions, search_order, channel, network, temp_cell_assignment)
         end
 
-        # Decrease the number of coalitions that are allowed to merge
+        # No more mergers happened with the current r, so decrease it.
         state.r -= 1
     end
     utilities, _ = longterm_utilities(channel, network, state.partition)
-    Lumberjack.info("CoalitionFormationClustering_Group finished.", { :sum_utility => sum(utilities), :a => restricted_growth_string(state.partition) })
+    Lumberjack.info("CoalitionFormationClustering_Group finished.",
+        { :sum_utility => sum(utilities),
+          :a => restricted_growth_string(state.partition),
+          :no_iters => state.no_iters,
+          :no_utility_calculations => state.no_utility_calculations })
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
@@ -208,8 +260,10 @@ function CoalitionFormationClustering_Group(channel, network)
     return results
 end
 
+# Enumerates all possible mergers, given the current r and coalition structure,
+# and then tries to perform mergers in a specific order given by the params.
 function merge!(state::CoalitionFormationClustering_GroupState, I,
-    max_merge_size, search_order, channel, network, cell_assignment)
+    max_no_merging_coalitions, search_order, channel, network, cell_assignment)
 
     # Put current blocks in an array for easy indexing
     all_blocks = collect(state.partition.blocks)
@@ -225,6 +279,7 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
     n = 0
     for merging_blocks_idxs in kCombinationIterator(all_blocks_card, state.r)
         n += 1
+        state.no_iters += 1
 
         # Separate blocks based on who is merging and not
         merged_block = Block()
@@ -240,6 +295,7 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         new_partitions[n] = new_partition
         merged_BSs[n] = collect(merged_block.elements)
         merged_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        state.no_utility_calculations += 1
     end
 
     # Order the potential mergers
@@ -250,15 +306,13 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         ordered_mergers = 1:no_new_partitions
     end
 
-    # Order the potential mergers decreasing in the sum rate sense
+    # Try to merge
     for sort_idx in ordered_mergers
-        BSs_idxs = merged_BSs[sort_idx]
-
-        # Merge coalitions if everybody agrees
-        if all(merged_BS_utilities[BSs_idxs,sort_idx] .>= state.BS_utilities[BSs_idxs])
+        # Merge coalitions if everybody benefits
+        if all(merged_BS_utilities[merged_BSs[sort_idx],sort_idx] .>= state.BS_utilities[merged_BSs[sort_idx]])
             state.partition = new_partitions[sort_idx]
             state.BS_utilities = merged_BS_utilities[:,sort_idx]
-            state.r = min(length(new_partitions[sort_idx]), max_merge_size)
+            state.r = min(length(new_partitions[sort_idx]), max_no_merging_coalitions)
 
             return true
         end
@@ -267,8 +321,12 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
     return false
 end
 
-# Calculates the sum utility of the served MSs for each BS. assignment and I
-# are sent as part of the function signature to speed up evaluation slightly.
+##########################################################################
+# BS utility definition
+#
+# Calculates the sum utility of the served MSs for each BS.
+# cell_assignment and I are sent as part of the function signature to speed up
+# evaluation slightly.
 function longterm_BS_utilities(channel, network, partition, cell_assignment, I)
     BS_utilities = zeros(Float64, I)
     utilities, _ = longterm_utilities(channel, network, partition)
