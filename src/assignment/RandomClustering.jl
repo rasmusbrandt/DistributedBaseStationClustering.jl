@@ -5,6 +5,7 @@ function RandomClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     ds = get_no_streams(network); max_d = maximum(ds)
     aux_params = get_aux_assignment_params(network)
+    @defaultize_param! aux_params "RandomClustering:max_iters" 1_000
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -15,7 +16,7 @@ function RandomClustering(channel, network)
 
     # Find a set partition whose utility is not -Inf
     no_iters = 0; no_utility_calculations = 0
-    while true
+    while no_iters <= aux_params["RandomClustering:max_iters"]
         no_iters += 1
 
         # Get random partition by finding random rgs
@@ -27,6 +28,9 @@ function RandomClustering(channel, network)
         if sum(utilities) > -Inf
             break
         end
+    end
+    if no_iters == aux_params["RandomClustering:max_iters"]
+        Lumberjack.warn("Max iterations reached for RandomClustering. This probably means that an IA infeasible coalition structure was chosen.")
     end
 
     Lumberjack.info("RandomClustering finished.", { :sum_utility => sum(utilities), :a => random_a,  })

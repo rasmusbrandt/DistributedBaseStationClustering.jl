@@ -34,9 +34,6 @@ simulation_params = [
         RandomClustering,
         NoClustering,
     ],
-    "precoding_methods" => [
-        RobustIntraclusterWMMSE # pseudo
-    ],
     "aux_network_params" => [
         "no_coherence_symbols" => 1000,
     ],
