@@ -58,6 +58,7 @@ plot_params = [
             # ("utilities", [ :color => "m", :linestyle => ".", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
         ],
 
+
         "RobustIntraclusterLeakageMinimization" => [
             ("logdet_rates", [ :color => "gray", :linestyle => "-", :label => "RobustIntraclusterLeakageMinimization" ]),
         ],
@@ -66,6 +67,7 @@ plot_params = [
             ("logdet_rates", [ :color => "gray", :linestyle => ":", :label => "NaiveIntraclusterLeakageMinimization" ]),
         ],
 
+
         "RobustChen2014_MaxSINR" => [
             ("logdet_rates", [ :color => "y", :linestyle => "-", :label => "RobustChen2014_MaxSINR" ]),
         ],
@@ -73,6 +75,7 @@ plot_params = [
         "NaiveChen2014_MaxSINR" => [
             ("logdet_rates", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR" ]),
         ],
+
 
         "Shi2011_WMMSE" => [
             ("logdet_rates", [ :color => "b", :linestyle => "-", :label => "WMMSE" ]),
@@ -90,6 +93,6 @@ plot_params = [
 # Plot it
 for file_name in parsed_args["file_names"]
     data = load(file_name)
-    processed_results = postprocess_convergence(data["raw_results"], data["simulation_params"], plot_params)
-    plot_convergence(processed_results, data["simulation_params"], plot_params)
+    processed_results = postprocess_precoding_convergence(data["raw_results"], data["simulation_params"], plot_params)
+    plot_precoding_convergence(processed_results, data["simulation_params"], plot_params)
 end

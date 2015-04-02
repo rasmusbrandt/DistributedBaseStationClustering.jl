@@ -24,7 +24,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Indoors network
 simulation_params = [
     "simulation_name" => "precoding_convergence-assignment_$(start_time)",
-    "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
@@ -71,7 +71,7 @@ network =
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
 
-raw_results = simulate_convergence(network, simulation_params, loop_over=:assignment_methods)
+raw_results = simulate_precoding_convergence(network, simulation_params, loop_over=:assignment_methods)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",

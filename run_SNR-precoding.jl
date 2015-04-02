@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# run_system-SNR_precoding.jl
+# run_SNR-precoding.jl
 #
 # Performance as a function of transmit power, comparing different
 # precoding methods.
@@ -19,8 +19,8 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "simulation_name" => "system-SNR_precoding_$(start_time)",
-    "I" => 10, "Kc" => 1, "N" => 2, "M" => 2,
+    "simulation_name" => "SNR-precoding_$(start_time)",
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "assignment_methods" => [
@@ -29,10 +29,13 @@ simulation_params = [
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
+
         RobustIntraclusterLeakageMinimization,
         NaiveIntraclusterLeakageMinimization,
+
         RobustChen2014_MaxSINR,
         NaiveChen2014_MaxSINR,
+
         Shi2011_WMMSE,
         Eigenprecoding,
     ],
@@ -43,11 +46,6 @@ simulation_params = [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => false,
         "IA_infeasible_negative_inf_utility" => true,
-
-        "CoalitionFormationClustering_Group:max_merge_size" => 4,
-        "CoalitionFormationClustering_Group:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:search_budget" => 100,
-        "CoalitionFormationClustering_Individual:search_order" => :greedy,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

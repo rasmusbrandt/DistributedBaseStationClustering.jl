@@ -23,10 +23,13 @@ simulation_params = [
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
+
         RobustIntraclusterLeakageMinimization,
         NaiveIntraclusterLeakageMinimization,
+
         RobustChen2014_MaxSINR,
         NaiveChen2014_MaxSINR,
+
         Shi2011_WMMSE,
         Eigenprecoding,
     ],
@@ -35,8 +38,8 @@ simulation_params = [
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_utility_inf" => true,
+        "apply_overhead_prelog" => false,
+        "IA_infeasible_negative_inf_utility" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

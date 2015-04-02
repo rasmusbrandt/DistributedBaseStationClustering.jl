@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# run_system-SNR_assignment.jl
+# run_SNR-assignment.jl
 #
 # Performance as a function of transmit power, comparing different
 # cluster assignment methods.
@@ -19,10 +19,11 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "simulation_name" => "system-SNR_assignment_$(start_time)",
+    "simulation_name" => "SNR-assignment_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
+    "longterm_rates" => true,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
@@ -64,7 +65,9 @@ network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"])
-raw_results = simulate(network, simulation_params, loop_over=:assignment_methods)
+raw_results = simulate(network, simulation_params,
+    loop_over=:assignment_methods,
+    assignment_loop_run_precoding=!simulation_params["longterm_rates"])
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",
