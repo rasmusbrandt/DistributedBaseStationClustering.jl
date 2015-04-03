@@ -82,7 +82,7 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
 
         # Begin next iteration, unless the loop will end
         if iters < aux_params["max_iters"]
-            update_BSs!(state, channel, Ps, assignment, aux_params, robustness)
+            update_BSs!(state, channel, Ps, alphas, assignment, aux_params, robustness)
         end
     end
     if iters == aux_params["max_iters"]
@@ -149,7 +149,7 @@ function update_MSs!(state::IntraclusterWMMSEState,
 end
 
 function update_BSs!(state::IntraclusterWMMSEState,
-    channel::SinglecarrierChannel, Ps, assignment, aux_params, robustness)
+    channel::SinglecarrierChannel, Ps, alphas, assignment, aux_params, robustness)
 
     for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
@@ -158,35 +158,35 @@ function update_BSs!(state::IntraclusterWMMSEState,
         Gamma = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinators
-                Gamma += Hermitian(channel.H[l,i]'*(state.U[l]*state.Z[l]*state.U[l]')*channel.H[l,i])
+                Gamma += Hermitian(alphas[l]*channel.H[l,i]'*(state.U[l]*state.Z[l]*state.U[l]')*channel.H[l,i])
             else
                 if robustness
                     # Using vecnorm(.)^2 may generate NaNs here!
-                    Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
-                    # Breaking version: Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))
+                    Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
+                    # Breaking version: Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))
                 end
             end
         end; end
 
         # Find optimal Lagrange multiplier
         mu_star, Gamma_eigen =
-            optimal_mu(i, Gamma, state, channel, Ps, assignment, aux_params)
+            optimal_mu(i, Gamma, state, channel, Ps, alphas, assignment, aux_params)
 
         # Precoders (reuse EVD)
         for k in served_MS_ids(i, assignment)
-            state.V[k] = Gamma_eigen.vectors*Diagonal(1./(abs(Gamma_eigen.values) .+ mu_star))*Gamma_eigen.vectors'*channel.H[k,i]'*state.U[k]*state.Z[k]
+            state.V[k] = Gamma_eigen.vectors*Diagonal(1./(abs(Gamma_eigen.values) .+ mu_star))*Gamma_eigen.vectors'*channel.H[k,i]'*state.U[k]*state.Z[k]*alphas[k]
         end
     end
 end
 
 function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
-    channel::SinglecarrierChannel, Ps, assignment, aux_params)
+    channel::SinglecarrierChannel, Ps, alphas, assignment, aux_params)
 
     # Build bisector function
     bis_M = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
     for k in served_MS_ids(i, assignment)
-        #bis_M += Hermitian(channel.H[k,i]'*(state.U[k]*(state.Z[k]*state.Z[k])*state.U[k]')*channel.H[k,i])
-        Base.LinAlg.BLAS.herk!(bis_M.uplo, 'N', complex(1.), channel.H[k,i]'*state.U[k]*state.Z[k], complex(1.), bis_M.S)
+        #bis_M += Hermitian(alphas[k]^2*channel.H[k,i]'*(state.U[k]*(state.Z[k]*state.Z[k]')*state.U[k]')*channel.H[k,i])
+        Base.LinAlg.BLAS.herk!(bis_M.uplo, 'N', complex(1.), channel.H[k,i]'*state.U[k]*state.Z[k]*alphas[k], complex(1.), bis_M.S)
     end
     Gamma_eigen = eigfact(Gamma); Gamma_eigen_values = abs(Gamma_eigen.values)
     bis_JMJ_diag = abs(diag(Gamma_eigen.vectors'*bis_M*Gamma_eigen.vectors))
