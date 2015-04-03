@@ -8,7 +8,9 @@
 module IAClustering
 
 using CoordinatedPrecoding
-import Lumberjack
+import Lumberjack, PyCall
+
+PyCall.@pyimport scipy.special as scipy_special
 
 export
     # assignment

@@ -139,8 +139,12 @@ function bound!(node, channel, network, utopian_utilities, I, assignment)
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not
-    # taken into account.
-    utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
+    # taken into account. If we are at a leaf, calculate exact utilities.
+    if is_leaf(node, I)
+        utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
+    else
+        utility_bounds, _ = longterm_utilities(channel, network, partial_partition, lower_bound=true)
+    end
 
     # Bound the unclustered users utilities by their utopian utilities.
     for j in setdiff(IntSet(1:I), IntSet(1:length(node.a))); for l in served_MS_ids(j, assignment)

@@ -23,7 +23,7 @@
 # Notice: this function only returns a bound of the rates for now,
 # since I don't if the E1 exponential integral has been implemented
 # by anyone in Julia yet.
-function longterm_utilities(channel, network, partition)
+function longterm_utilities(channel, network, partition; lower_bound::Bool=false)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
@@ -31,6 +31,7 @@ function longterm_utilities(channel, network, partition)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
+    force_E1_utility_lower_bound = aux_params["force_E1_utility_lower_bound"]
 
     utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
     rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
@@ -59,7 +60,12 @@ function longterm_utilities(channel, network, partition)
                     desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
                     rho = desired_power/sigma2s[k]
 
-                    utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho) # This is a lower bound
+                    if lower_bound || force_E1_utility_lower_bound
+                        utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho)
+                    else
+                        rho_r = 1/rho
+                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
+                    end
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -105,7 +111,12 @@ function longterm_utilities(channel, network, partition)
                     end
                     rho = desired_power/int_noise_power
 
-                    utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho) # This is a lower bound
+                    if lower_bound || force_E1_utility_lower_bound
+                        utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho)
+                    else
+                        rho_r = 1/rho
+                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
+                    end
 
                     if IA_feas
                         # These rates are achievable using IA
