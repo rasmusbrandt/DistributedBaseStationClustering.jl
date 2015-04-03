@@ -47,6 +47,67 @@ plot_params_instantaneous_sumrate = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
+            ("weighted_logdet_rates", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+        ],
+
+        "BranchAndBoundClustering" => [
+            ("weighted_logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+        ],
+
+
+        "CoalitionFormationClustering_Group" => [
+            ("weighted_logdet_rates", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("weighted_logdet_rates", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "Chen2014_ExhaustiveSearch" => [
+            ("weighted_logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("weighted_logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        ],
+
+        "GreedyClustering" => [
+            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        ],
+
+        "RandomClustering" => [
+            ("weighted_logdet_rates", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+        ],
+
+        "NoClustering" => [
+            ("weighted_logdet_rates", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+        ],
+    ]
+]
+plot_params_longterm_sumrate = [
+    "plot_name" => "instantaneous",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Sum rate [bits/s/Hz]",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "ExhaustiveSearchClustering" => [
             ("utilities", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
@@ -86,8 +147,6 @@ plot_params_instantaneous_sumrate = [
         ],
     ]
 ]
-plot_params_longterm_sumrate = copy(plot_params_instantaneous_sumrate)
-plot_params_longterm_sumrate["plot_name"] = "longterm-sumrate"
 plot_params_longterm_iters = [
     "plot_name" => "longterm-iters",
 

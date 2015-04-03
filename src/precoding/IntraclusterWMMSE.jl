@@ -1,8 +1,14 @@
 ##########################################################################
 # IntraclusterWMMSE
 #
-# Derived similarly to the original WMMSE algorithm (Shi2011), this
-# version takes into account intracluster interference.
+# This is a version of the original WMMSE algorithm from
+# Shi, Razaviyayn, Luo, He, "An iteratively weighted MMSE approach to
+# distributed sum-utility maximization for a MIMO interfering broadcast
+# channel", IEEE Trans. Signal Process., vol. 59, no. 9, 4331-4340, 2011,
+# which has been modified to take into account the intracluster
+# interference. This is done by maximizing a lower bound, where Jensen's
+# inequality has been applied to the logdet(E) term, w.r.t. the expectation
+# of out-of-cluster interference.
 
 immutable IntraclusterWMMSEState
     U::Array{Matrix{Complex128},1}
@@ -11,8 +17,10 @@ immutable IntraclusterWMMSEState
     V::Array{Matrix{Complex128},1}
 end
 
-NaiveIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=false)
-RobustIntraclusterWMMSE(channel, network) = IntraclusterWMMSE(channel, network, robustness=true)
+NaiveIntraclusterWMMSE(channel, network) =
+    IntraclusterWMMSE(channel, network, robustness=false)
+RobustIntraclusterWMMSE(channel, network) =
+    IntraclusterWMMSE(channel, network, robustness=true)
 
 function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     assignment = get_assignment(network)
@@ -20,7 +28,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network)
+    ds = get_no_streams(network); max_d = maximum(ds)
+    alphas = get_user_priorities(network)
 
     aux_params = get_aux_precoding_params(network)
     @defaultize_param! aux_params "IntraclusterWMMSE:bisection_Gamma_cond" 1e10
@@ -32,12 +41,15 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
         Array(Matrix{Complex128}, K),
         Array(Hermitian{Complex128}, K),
         Array(Hermitian{Complex128}, K),
-        initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params))
+        initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params)
+    )
     objective = Float64[]
-    utilities = Array(Float64, K, maximum(ds), aux_params["max_iters"])
-    logdet_rates = Array(Float64, K, maximum(ds), aux_params["max_iters"])
-    MMSE_rates = Array(Float64, K, maximum(ds), aux_params["max_iters"])
-    allocated_power = Array(Float64, K, maximum(ds), aux_params["max_iters"])
+    utilities = Array(Float64, K, max_d, aux_params["max_iters"])
+    logdet_rates = Array(Float64, K, max_d, aux_params["max_iters"])
+    MMSE_rates = Array(Float64, K, max_d, aux_params["max_iters"])
+    weighted_logdet_rates = Array(Float64, K, max_d, aux_params["max_iters"])
+    weighted_MMSE_rates = Array(Float64, K, max_d, aux_params["max_iters"])
+    allocated_power = Array(Float64, K, max_d, aux_params["max_iters"])
 
     iters = 0; conv_crit = Inf
     while iters < aux_params["max_iters"]
@@ -45,10 +57,12 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
         iters += 1
 
         # Results after this iteration
-        utilities[:,:,iters] = calculate_utilities(state)
+        utilities[:,:,iters] = calculate_utilities(state, alphas)
         push!(objective, sum(utilities[:,:,iters]))
         logdet_rates[:,:,iters] = calculate_logdet_rates(state)
         MMSE_rates[:,:,iters] = calculate_MMSE_rates(state)
+        weighted_logdet_rates[:,:,iters] = calculate_weighted_logdet_rates(state, alphas)
+        weighted_MMSE_rates[:,:,iters] = calculate_weighted_MMSE_rates(state, alphas)
         allocated_power[:,:,iters] = calculate_allocated_power(state)
 
         # Check convergence
@@ -56,9 +70,12 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"]
                 Lumberjack.debug("IntraclusterWMMSE converged.",
-                    [ :no_iters => iters, :final_objective => objective[end],
-                      :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
-                      :max_iters => aux_params["max_iters"] ])
+                    [ :no_iters => iters,
+                      :final_objective => objective[end],
+                      :conv_crit => conv_crit,
+                      :stop_crit => aux_params["stop_crit"],
+                      :max_iters => aux_params["max_iters"] ]
+                )
                 break
             end
         end
@@ -70,9 +87,12 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     end
     if iters == aux_params["max_iters"]
         Lumberjack.debug("IntraclusterWMMSE did NOT converge.",
-            [ :no_iters => iters, :final_objective => objective[end],
-              :conv_crit => conv_crit, :stop_crit => aux_params["stop_crit"],
-              :max_iters => aux_params["max_iters"] ])
+            [ :no_iters => iters,
+              :final_objective => objective[end],
+              :conv_crit => conv_crit,
+              :stop_crit => aux_params["stop_crit"],
+              :max_iters => aux_params["max_iters"] ]
+        )
     end
 
     results = PrecodingResults()
@@ -81,12 +101,16 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
         results["utilities"] = utilities
         results["logdet_rates"] = logdet_rates
         results["MMSE_rates"] = MMSE_rates
+        results["weighted_logdet_rates"] = weighted_logdet_rates
+        results["weighted_MMSE_rates"] = weighted_MMSE_rates
         results["allocated_power"] = allocated_power
     elseif aux_params["output_protocol"] == :final_iteration
         results["objective"] = objective[iters]
         results["utilities"] = utilities[:,:,iters]
         results["logdet_rates"] = logdet_rates[:,:,iters]
         results["MMSE_rates"] = MMSE_rates[:,:,iters]
+        results["weighted_logdet_rates"] = weighted_logdet_rates[:,:,iters]
+        results["weighted_MMSE_rates"] = weighted_MMSE_rates[:,:,iters]
         results["allocated_power"] = allocated_power[:,:,iters]
     end
     return results
@@ -216,7 +240,10 @@ function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
     end
 end
 
-function calculate_utilities(state::IntraclusterWMMSEState)
+# Weighted rates when the spatial characteristics of the out-of-cluster
+# interference is unknown to the receivers, but all intracluster interference
+# is perfectly known.
+function calculate_utilities(state::IntraclusterWMMSEState, alphas)
     K = length(state.V)
     ds = Int[ size(state.V[k], 2) for k = 1:K ]; max_d = maximum(ds)
 
@@ -226,7 +253,7 @@ function calculate_utilities(state::IntraclusterWMMSEState)
         # get some imaginary noise however. Also, numerically the eigenvalues
         # may be less than 1, so we need to handle that to not get negative
         # rates.
-        r = log2(max(1, abs(eigvals(state.Z[k]))))
+        r = alphas[k]*log2(max(1, abs(eigvals(state.Z[k]))))
 
         if ds[k] < max_d
             utilities[k,:] = cat(1, r, zeros(Float64, max_d - ds[k]))
