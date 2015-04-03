@@ -3,6 +3,9 @@
 # the utopian bounds.
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
+    aux_params = get_aux_assignment_params(network)
+
+    # Warn if this will be slow...
     if I > 12
         Lumberjack.warn("BranchAndBoundClustering will be slow since I = $I.")
     end
@@ -69,21 +72,33 @@ function BranchAndBoundClustering(channel, network)
             end
         end
     end
+
+    # Calculate final alphas
+    final_partition = Partition(incumbent_a)
+    utilities, alphas, _ = longterm_utilities(channel, network, final_partition)
+
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_utility => incumbent_sum_utility,
           :a => incumbent_a,
+          :alphas => alphas,
           :no_iters => no_iters,
           :no_utility_calculations => no_utility_calculations }
     )
 
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
+
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
-    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, Partition(incumbent_a)))
+    network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, final_partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = longterm_utilities(channel, network, Partition(incumbent_a))[1]
+    results["utilities"] = utilities
     results["a"] = incumbent_a
+    results["alphas"] = alphas
     results["no_iters"] = no_iters
     results["no_utility_calculations"] = no_utility_calculations
     return results

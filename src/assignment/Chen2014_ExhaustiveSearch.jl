@@ -30,7 +30,8 @@ function Chen2014_ExhaustiveSearch(channel, network)
 
     # Exhaustive search over partitions
     no_iters = 0
-    best_partition = Partition(); best_objective = 0.
+    best_objective = 0.
+    best_partition = Partition()
     for partition in PartitionIterator(I)
         no_iters += 1
 
@@ -54,14 +55,20 @@ function Chen2014_ExhaustiveSearch(channel, network)
             end
         end
     end
-    utilities, _ = longterm_utilities(channel, network, best_partition)
+    utilities, alphas, _ = longterm_utilities(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_ExhaustiveSearch finished.",
         { :sum_utility => sum(utilities),
           :a => a,
+          :alphas => alphas,
           :no_iters => no_iters,
           :Chen2014_objective => best_objective }
     )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
@@ -71,6 +78,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     results = AssignmentResults()
     results["utilities"] = utilities
     results["a"] = a
+    results["alphas"] = alphas
     results["no_iters"] = no_iters
     results["Chen2014_objective"] = best_objective
     return results

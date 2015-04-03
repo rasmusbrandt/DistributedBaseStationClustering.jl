@@ -2,6 +2,7 @@
 # belong to their own clusters.
 function NoClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
+    aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -13,8 +14,17 @@ function NoClustering(channel, network)
     end; end
 
     a = [0:(I-1)]
-    utilities, _ = longterm_utilities(channel, network, Partition(a))
-    Lumberjack.info("NoClustering finished.", { :sum_utility => sum(utilities), :a => a })
+    utilities, alphas, _ = longterm_utilities(channel, network, Partition(a))
+    Lumberjack.info("NoClustering finished.",
+        { :sum_utility => sum(utilities),
+          :a => a,
+          :alphas => alphas }
+    )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_assignment.cell_assignment, cluster_assignment_matrix)
@@ -23,6 +33,7 @@ function NoClustering(channel, network)
     results = AssignmentResults()
     results["utilities"] = utilities
     results["a"] = a
+    results["alphas"] = alphas
     results["no_iters"] = 1
     results["no_utility_calculations"] = 1
     return results

@@ -72,15 +72,21 @@ function GreedyClustering(channel, network)
         end
     end
     partition = Partition(partition_matrix)
-    utilities, _ = longterm_utilities(channel, network, partition)
+    utilities, alphas, _ = longterm_utilities(channel, network, partition)
     a = restricted_growth_string(partition_matrix)
     objective = sum(utilities)
     Lumberjack.info("GreedyClustering finished.",
         { :sum_utility => objective,
           :a => a,
+          :alphas => alphas,
           :no_iters => no_iters,
           :no_IA_feasibility_checks => no_IA_feasibility_checks }
     )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
@@ -89,6 +95,7 @@ function GreedyClustering(channel, network)
     results = AssignmentResults()
     results["utilities"] = utilities
     results["a"] = a
+    results["alphas"] = alphas
     results["no_iters"] = no_iters
     results["no_IA_feasibility_checks"] = no_IA_feasibility_checks
     return results

@@ -85,13 +85,20 @@ function CoalitionFormationClustering_Individual(channel, network)
             deviation_performed[i] = deviate!(state, i, I, search_budget, channel, network, temp_cell_assignment)
         end
     end
-    utilities, _ = longterm_utilities(channel, network, state.partition)
+    utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
         { :sum_utility => sum(utilities),
           :a => a,
+          :alphas => alphas,
           :no_searches => state.no_searches,
-          :no_utility_calculations => state.no_utility_calculations })
+          :no_utility_calculations => state.no_utility_calculations }
+    )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
@@ -100,6 +107,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     results = AssignmentResults()
     results["utilities"] = utilities
     results["a"] = a
+    results["alphas"] = alphas
     results["no_searches"] = state.no_searches
     results["no_utility_calculations"] = state.no_utility_calculations
     return results
@@ -248,13 +256,20 @@ function CoalitionFormationClustering_Group(channel, network)
         # No more mergers happened with the current r, so decrease it.
         state.r -= 1
     end
-    utilities, _ = longterm_utilities(channel, network, state.partition)
+    utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Group finished.",
         { :sum_utility => sum(utilities),
           :a => a,
+          :alphas => alphas,
           :no_iters => state.no_iters,
-          :no_utility_calculations => state.no_utility_calculations })
+          :no_utility_calculations => state.no_utility_calculations }
+    )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
@@ -263,6 +278,7 @@ function CoalitionFormationClustering_Group(channel, network)
     results = AssignmentResults()
     results["utilities"] = utilities
     results["a"] = a
+    results["alphas"] = alphas
     results["no_iters"] = state.no_iters
     results["no_utility_calculations"] = state.no_utility_calculations
     return results
