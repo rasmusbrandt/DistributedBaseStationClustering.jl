@@ -87,7 +87,7 @@ plot_params_instantaneous_sumrate = [
     ]
 ]
 plot_params_longterm_sumrate = [
-    "plot_name" => "instantaneous",
+    "plot_name" => "longterm-sumrate",
 
     "objective" => :sumrate,
 
