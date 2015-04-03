@@ -37,6 +37,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     @defaultize_param! aux_params "IntraclusterWMMSE:bisection_max_iters" 5e1
     @defaultize_param! aux_params "IntraclusterWMMSE:bisection_tolerance" 1e-3
 
+    clustering_type = get_aux_assignment_param(network, "clustering_type")
+
     state = IntraclusterWMMSEState(
         Array(Matrix{Complex128}, K),
         Array(Hermitian{Complex128}, K),
@@ -53,7 +55,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
 
     iters = 0; conv_crit = Inf
     while iters < aux_params["max_iters"]
-        update_MSs!(state, channel, Ps, sigma2s, assignment, robustness)
+        update_MSs!(state, channel, Ps, sigma2s, assignment,
+            clustering_type, robustness)
         iters += 1
 
         # Results after this iteration
@@ -82,7 +85,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
 
         # Begin next iteration, unless the loop will end
         if iters < aux_params["max_iters"]
-            update_BSs!(state, channel, Ps, alphas, assignment, aux_params, robustness)
+            update_BSs!(state, channel, Ps, alphas, assignment, aux_params,
+                clustering_type, robustness)
         end
     end
     if iters == aux_params["max_iters"]
@@ -117,7 +121,8 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
 end
 
 function update_MSs!(state::IntraclusterWMMSEState,
-    channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment,
+    clustering_type, robustness)
 
     ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
@@ -132,10 +137,16 @@ function update_MSs!(state::IntraclusterWMMSEState,
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
             Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_imperfect.S)
         end; end
-        for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
-            Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-            robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
-        end; end
+
+        # Take out-of-cluster interference into account if we are using
+        # spectrum sharing clustering. If we are using orthogonal clustering,
+        # there is no out-of-cluster interference.
+        if clustering_type == :spectrum_sharing
+            for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
+                Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
+                robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
+            end; end
+        end
 
         # Intracluster receiver and MSE weight
         F = channel.H[k,i]*state.V[k]
@@ -149,7 +160,8 @@ function update_MSs!(state::IntraclusterWMMSEState,
 end
 
 function update_BSs!(state::IntraclusterWMMSEState,
-    channel::SinglecarrierChannel, Ps, alphas, assignment, aux_params, robustness)
+    channel::SinglecarrierChannel, Ps, alphas, assignment, aux_params,
+    clustering_type, robustness)
 
     for i in active_BSs(assignment)
         coordinators = coordinated_MS_ids(i, assignment)
@@ -160,7 +172,10 @@ function update_BSs!(state::IntraclusterWMMSEState,
             if l in coordinators
                 Gamma += Hermitian(alphas[l]*channel.H[l,i]'*(state.U[l]*state.Z[l]*state.U[l]')*channel.H[l,i])
             else
-                if robustness
+                # Take out-of-cluster interference into account if we are using
+                # spectrum sharing, and we actually want to be robust against
+                # this type of generated interference.
+                if clustering_type == :spectrum_sharing && robustness
                     # Using vecnorm(.)^2 may generate NaNs here!
                     Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
                     # Breaking version: Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))

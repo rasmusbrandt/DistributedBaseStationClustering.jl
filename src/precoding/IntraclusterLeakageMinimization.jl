@@ -32,6 +32,8 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
     alphas = get_user_priorities(network)
     aux_params = get_aux_precoding_params(network)
 
+    clustering_type = get_aux_assignment_param(network, "clustering_type")
+
     state = IntraclusterLeakageMinimizationState(
         Array(Matrix{Complex128}, K),
         Array(Hermitian{Complex128}, K),
@@ -46,7 +48,8 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
 
     iters = 0; conv_crit = Inf
     while iters < aux_params["max_iters"]
-        update_MSs!(state, channel, Ps, sigma2s, assignment, robustness)
+        update_MSs!(state, channel, Ps, sigma2s, assignment,
+            clustering_type, robustness)
         iters += 1
 
         # Results after this iteration
@@ -74,7 +77,8 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
 
         # Begin next iteration, unless the loop will end
         if iters < aux_params["max_iters"]
-            update_BSs!(state, channel, Ps, assignment, aux_params, robustness)
+            update_BSs!(state, channel, Ps, assignment, aux_params,
+                clustering_type, robustness)
         end
     end
     if iters == aux_params["max_iters"]
@@ -107,7 +111,8 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
 end
 
 function update_MSs!(state::IntraclusterLeakageMinimizationState,
-    channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment,
+    clustering_type, robustness)
 
     ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
@@ -122,10 +127,15 @@ function update_MSs!(state::IntraclusterLeakageMinimizationState,
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
             l != k && Base.LinAlg.BLAS.herk!(Psi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Psi_imperfect.S)
         end; end
-        for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
-            Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-            l != k && robustness && (Psi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
-        end; end
+        # Take out-of-cluster interference into account if we are using
+        # spectrum sharing clustering. If we are using orthogonal clustering,
+        # there is no out-of-cluster interference.
+        if clustering_type == :spectrum_sharing
+            for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
+                Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
+                l != k && robustness && (Psi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
+            end; end
+        end
 
         # Zero-forcing receiver
         Psi_imperfect_eigen = eigfact(Psi_imperfect, 1:ds[k])
@@ -139,7 +149,8 @@ function update_MSs!(state::IntraclusterLeakageMinimizationState,
 end
 
 function update_BSs!(state::IntraclusterLeakageMinimizationState,
-    channel::SinglecarrierChannel, Ps, assignment, aux_params, robustness)
+    channel::SinglecarrierChannel, Ps, assignment, aux_params,
+    clustering_type, robustness)
 
     ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
@@ -153,7 +164,10 @@ function update_BSs!(state::IntraclusterLeakageMinimizationState,
                 #Gamma += Hermitian(channel.H[k,i]'*(state.U[k]*state.U[k]')*channel.H[k,i])
                 Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(1.), channel.H[l,i]'*state.U[l], complex(1.), Gamma.S)
             else
-                if robustness
+                # Take out-of-cluster interference into account if we are using
+                # spectrum sharing, and we actually want to be robust against
+                # this type of generated interference.
+                if clustering_type == :spectrum_sharing && robustness
                     # Using vecnorm(.)^2 may generate NaNs here!
                     Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
                     # Breaking version: Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))

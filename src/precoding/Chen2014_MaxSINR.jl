@@ -26,6 +26,8 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     alphas = get_user_priorities(network)
     aux_params = get_aux_precoding_params(network)
 
+    clustering_type = get_aux_assignment_param(network, "clustering_type")
+
     state = Chen2014_MaxSINRState(
         initial_receivers(channel, Ps, sigma2s, ds, assignment, aux_params),
         Array(Hermitian{Complex128}, K),
@@ -40,7 +42,8 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
 
     iters = 0; conv_crit = Inf
     while iters < aux_params["max_iters"]
-        update_MSs!(state, channel, Ps, sigma2s, assignment, robustness)
+        update_MSs!(state, channel, Ps, sigma2s, assignment,
+            clustering_type, robustness)
         iters += 1
 
         # Results after this iteration
@@ -68,7 +71,8 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
 
         # Begin next iteration, unless the loop will end
         if iters < aux_params["max_iters"]
-            update_BSs!(state, channel, Ps, sigma2s, assignment, aux_params, robustness)
+            update_BSs!(state, channel, Ps, sigma2s, assignment, aux_params,
+                clustering_type, robustness)
         end
     end
     if iters == aux_params["max_iters"]
@@ -101,7 +105,8 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
 end
 
 function update_MSs!(state::Chen2014_MaxSINRState,
-    channel::SinglecarrierChannel, Ps, sigma2s, assignment, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment,
+    clustering_type, robustness)
 
     ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
@@ -116,10 +121,16 @@ function update_MSs!(state::Chen2014_MaxSINRState,
             Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
             Base.LinAlg.BLAS.herk!(Phi_imperfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_imperfect.S)
         end; end
-        for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
-            Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
-            robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
-        end; end
+
+        # Take out-of-cluster interference into account if we are using
+        # spectrum sharing clustering. If we are using orthogonal clustering,
+        # there is no out-of-cluster interference.
+        if clustering_type == :spectrum_sharing
+            for j in setdiff(1:channel.I, coordinators); for l in served_MS_ids(j, assignment)
+                Base.LinAlg.BLAS.herk!(Phi_perfect.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_perfect.S)
+                robustness && (Phi_imperfect += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k]))))
+            end; end
+        end
 
         # Per-stream receivers
         for n = 1:ds[k]
@@ -138,8 +149,8 @@ function update_MSs!(state::Chen2014_MaxSINRState,
 end
 
 function update_BSs!(state::Chen2014_MaxSINRState,
-    channel::SinglecarrierChannel, Ps, sigma2s,
-    assignment, aux_params, robustness)
+    channel::SinglecarrierChannel, Ps, sigma2s, assignment, aux_params,
+    clustering_type, robustness)
 
     ds = [ size(state.V[k], 2) for k = 1:channel.K ]
 
@@ -152,7 +163,10 @@ function update_BSs!(state::Chen2014_MaxSINRState,
             if l in coordinators
                 Gamma += Hermitian(channel.H[l,i]'*(state.U[l]*state.U[l]')*channel.H[l,i])
             else
-                if robustness
+                # Take out-of-cluster interference into account if we are using
+                # spectrum sharing, and we actually want to be robust against
+                # this type of generated interference.
+                if clustering_type == :spectrum_sharing && robustness
                     Gamma += Hermitian(complex(channel.large_scale_fading_factor[l,i]^2*eye(channel.Ms[i])))
                 end
             end
