@@ -61,7 +61,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
                     rho = desired_power/sigma2s[k]
 
                     if lower_bound || force_E1_utility_lower_bound
-                        utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho)
+                        utopian_rates[k,1:ds[k]] = 0.5*log2(1 + 2*rho)
                     else
                         rho_r = 1/rho
                         utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
@@ -112,7 +112,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
                     rho = desired_power/int_noise_power
 
                     if lower_bound || force_E1_utility_lower_bound
-                        utopian_rates[k,1:ds[k]] = (1/log(2))*0.5*log(1 + 2rho)
+                        utopian_rates[k,1:ds[k]] = 0.5*log2(1 + 2*rho)
                     else
                         rho_r = 1/rho
                         utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
