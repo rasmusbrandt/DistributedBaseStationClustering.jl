@@ -160,6 +160,7 @@ plot_params_longterm_iters = [
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
+        :yscale => "log",
     ],
 
     "legend" => [
