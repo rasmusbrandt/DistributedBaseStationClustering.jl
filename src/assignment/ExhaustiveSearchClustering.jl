@@ -7,6 +7,7 @@
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     d_max = maximum(get_no_streams(network))
+    alphas = get_user_priorities(network)
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
