@@ -1,5 +1,5 @@
 ##########################################################################
-# Partitions
+# Helper functions for set partitions.
 
 # A block is just a set of integers.
 type Block

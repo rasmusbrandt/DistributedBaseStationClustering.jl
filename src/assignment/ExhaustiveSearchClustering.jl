@@ -1,5 +1,9 @@
-# Exhaustive search over all set partitions with the
-# utility model from utilities.jl
+##########################################################################
+# Optimal base station clustering based on exhaustive search.
+#
+# All possible restricted growth strings (and thus set partitions) are
+# enumerated, and the best (in the utilities.jl utilities sense) is picked.
+
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     d_max = maximum(get_no_streams(network))

@@ -1,5 +1,12 @@
+##########################################################################
+# Helper functions to generate combinations.
+
 # kCombinationIterator gives all k-combinations of the set 1:n. The iterator
-# is based on Ruskey.  Note that a is one-based.
+# is based on
+#
+# Ruskey, "Combinatorial Generation", University of Victoria, 2003.
+#
+# Note that a is one-based here, contrarily to partitions.jl.
 immutable kCombinationIterator
     n::Int
     k::Int

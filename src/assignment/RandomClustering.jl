@@ -1,3 +1,6 @@
+##########################################################################
+# Random base station clustering.
+#
 # A random set partition is found and returned as the cluster. If the given
 # partition has utility == -Inf, we keep searching. This can happen when IA
 # infeasible clusters have -Inf utility.

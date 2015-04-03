@@ -1,5 +1,11 @@
 ##########################################################################
-# IA feasibility checks
+# IA feasibility check functions.
+#
+# These are based off of
+# Liu, Yang, "On the Feasibility of Linear Interference Alignment for MIMO
+# Interference Broadcast Channels With Constant Coefficients", IEEE Trans
+# Signal Process, vol. 61, no. 9, pp. 2178-2191, 2013.
+#
 
 # Returns true if IA is feasible for this partition
 function is_IA_feasible(network, partition::Partition)

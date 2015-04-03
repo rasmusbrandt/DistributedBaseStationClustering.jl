@@ -1,5 +1,10 @@
-# Helper function that gives the grand coalition, i.e. that all BSs
-# cooperate within one huge cluster.
+##########################################################################
+# Grand coalition base station clustering.
+#
+# This means that all BSs cooperate with each other. Note that this might
+# mean that the utilities are either zero or -Inf, since the utility model
+# is only applicable when IA is feasible.
+
 function GrandCoalitionClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)

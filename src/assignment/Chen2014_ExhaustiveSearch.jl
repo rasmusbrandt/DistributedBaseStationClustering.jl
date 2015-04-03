@@ -1,12 +1,11 @@
-# Implementation of exhaustive search (over partitions) to the utility model
-# proposed in
+##########################################################################
+# Optimal base station clustering based on exhaustive search over the
+# utilities proposed in the paper
 #
 # Chen, Cheng, "Clustering for Interference Alignment in Multiuser
 # Interference Network," IEEE Trans. Vehicular Technology, vol. 63, no. 6,
 # pp. 2613-2624, July 2014, doi: 10.1109/TVT.2013.2292897
-#
-# Note that a suboptimal algorithm also was proposed in this paper, but we
-# don't implement that one.
+
 function Chen2014_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)

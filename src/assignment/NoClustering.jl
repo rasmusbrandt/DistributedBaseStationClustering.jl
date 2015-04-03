@@ -1,5 +1,6 @@
-# A helper function giving the non-cooperative scenario, where all BSs
-# belong to their own clusters.
+##########################################################################
+# Non-cooperative clustering, i.e. all coalitions are singleton.
+
 function NoClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)

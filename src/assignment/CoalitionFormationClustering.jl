@@ -36,7 +36,6 @@
 #   will be tried first. :lexicographic means that the mergers are tried
 #   in lexicographic order.
 
-
 ##########################################################################
 # Individual-based stability algorithm
 type CoalitionFormationClustering_IndividualState

@@ -1,3 +1,6 @@
+##########################################################################
+# Greedy base station clustering.
+#
 # A simple greedy clustering method based on path loss and transmit powers.
 # In each step, the method finds the strongest interfering link, and matches
 # the corresponding cells into a cluster, if that is IA feasible. Thus, the

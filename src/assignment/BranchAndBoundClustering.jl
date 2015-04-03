@@ -1,6 +1,15 @@
-# Performs branch and bound on a tree whose leaves describe restricted
-# growth strings. The utilities are taken from utilities.jl, as well as
-# the utopian bounds.
+##########################################################################
+# Optimal base station clustering based on branch and bound.
+#
+# A branch and bound tree is developed which describes all possible
+# restricted growth strings that describe all possible base station
+# clusters. The utilities are taken from utilities.jl. The bounds are
+# very simple: The pre-log factors are bounded by the current pre-log
+# factor for already clustered BSs, and bounded by 1 for non-clustered BSs.
+# The spectral efficiency bounds are assuming that non-clustered BSs do
+# not contribute interference to already clustered BSs, and non-clustered
+# BSs have their utopian (interference-free) spectral efficiencies as bounds.
+
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network)
     aux_params = get_aux_assignment_params(network)
