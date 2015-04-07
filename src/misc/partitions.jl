@@ -2,7 +2,7 @@
 # Helper functions for set partitions.
 
 # A block is just a set of integers.
-type Block
+immutable Block
     elements::IntSet
 end
 Block() = Block(IntSet())
@@ -13,7 +13,7 @@ Base.length(b::Block) = length(b.elements)
 Base.push!(b::Block, e::Int) = push!(b.elements, e)
 
 # The Partition type describes a partition of integers into blocks.
-type Partition
+immutable Partition
     blocks::Set{Block}
 end
 Partition() = Partition(Set{Block}())
