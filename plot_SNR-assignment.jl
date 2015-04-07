@@ -68,6 +68,10 @@ plot_params_instantaneous_sumrate = [
             ("weighted_logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
 
+        "Peters2012_Heuristic" => [
+            ("weighted_logdet_rates", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+        ],
+
 
         "GrandCoalitionClustering" => [
             ("weighted_logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
@@ -127,6 +131,10 @@ plot_params_longterm_sumrate = [
 
         "Chen2014_ExhaustiveSearch" => [
             ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
+        "Peters2012_Heuristic" => [
+            ("utilities", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
 
 
