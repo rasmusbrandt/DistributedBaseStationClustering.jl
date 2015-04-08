@@ -27,6 +27,8 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
+    "geography_length" => 250.,
+    "MS_serving_BS_distance" => 50.,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
@@ -70,7 +72,10 @@ simulation_params = [
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        no_streams=simulation_params["d"],
+        geography_width=simulation_params["geography_length"],
+        geography_height=simulation_params["geography_length"],
+        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
 raw_results = simulate_precoding_convergence(network, simulation_params, loop_over=:assignment_methods)
 
