@@ -51,6 +51,8 @@ function CoalitionFormationClustering_Individual(channel, network)
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 100
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :greedy
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
+
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
     if aux_params["CoalitionFormationClustering_Individual:search_order"] == :greedy
         search_order_greedy = true
@@ -59,6 +61,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     else
         Lumberjack.error("Incorrect CoalitionFormationClustering_Individual:search_order specified.")
     end
+    stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -81,7 +84,8 @@ function CoalitionFormationClustering_Individual(channel, network)
         # first.
         deviation_performed = falses(I)
         for i in sortperm(state.BS_utilities, rev=search_order_greedy)
-            deviation_performed[i] = deviate!(state, i, I, search_budget, channel, network, temp_cell_assignment)
+            deviation_performed[i] = deviate!(state, i, I, search_budget,
+                stability_type, channel, network, temp_cell_assignment)
         end
     end
     utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
@@ -115,7 +119,7 @@ end
 # Lets BS i deviate in the individual stability model.
 # Returns true if it did deviate, otherwise false.
 function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
-    search_budget, channel, network, cell_assignment)
+    search_budget, stability_type, channel, network, cell_assignment)
 
     # First check that we have not exceeded our search budget
     if state.no_searches[i] >= search_budget
@@ -203,8 +207,9 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         # Check if the existing members of this coalition allow BS i to join
         # (this check includes BS i, unnecessarily)
-        BSs_in_block = collect(my_block.elements)
-        if all(deviated_BS_utilities[BSs_in_block,sort_idx] .>= state.BS_utilities[BSs_in_block])
+        BSs_in_new_block = collect(my_block.elements)
+        BSs_in_old_block = collect(old_block.elements)
+        if individual_stability(deviated_BS_utilities[:,sort_idx], state.BS_utilities, i, BSs_in_new_block, BSs_in_old_block, stability_type)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
             state.BS_utilities = deviated_BS_utilities[:,sort_idx]
@@ -213,6 +218,27 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
         end
     end
     return false
+end
+
+# Check stability of a particular deviating BS for the individual
+# coalition formation algorithm.
+function individual_stability(new_BS_utilities, old_BS_utilities,
+    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, stability_type)
+
+    nash = (new_BS_utilities[deviating_BS_idx] > old_BS_utilities[deviating_BS_idx])
+    if stability_type == :nash
+        return nash
+    end
+
+    individual = (nash && all(new_BS_utilities[new_coalition_idxs] .>= old_BS_utilities[new_coalition_idxs]))
+    if stability_type == :individual
+        return individual
+    end
+
+    contractual = (individual && all(new_BS_utilities[old_coalition_idxs] .>= old_BS_utilities[old_coalition_idxs]))
+    if stability_type == :contractual
+        return contractual
+    end
 end
 
 ##########################################################################
@@ -249,7 +275,8 @@ function CoalitionFormationClustering_Group(channel, network)
         # Keep merging until no coalitions want to merge
         merge_performed = true
         while merge_performed
-            merge_performed = merge!(state, I, max_no_merging_coalitions, search_order, channel, network, temp_cell_assignment)
+            merge_performed = merge!(state, I, max_no_merging_coalitions,
+                search_order, channel, network, temp_cell_assignment)
         end
 
         # No more mergers happened with the current r, so decrease it.
