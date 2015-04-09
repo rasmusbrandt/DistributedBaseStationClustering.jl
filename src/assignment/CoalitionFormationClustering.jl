@@ -52,15 +52,8 @@ function CoalitionFormationClustering_Individual(channel, network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 100
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :greedy
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
-
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
-    if aux_params["CoalitionFormationClustering_Individual:search_order"] == :greedy
-        search_order_greedy = true
-    elseif aux_params["CoalitionFormationClustering_Individual:search_order"] == :fair
-        search_order_greedy = false
-    else
-        Lumberjack.error("Incorrect CoalitionFormationClustering_Individual:search_order specified.")
-    end
+    search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
 
     # Perform cell selection
@@ -76,14 +69,22 @@ function CoalitionFormationClustering_Individual(channel, network)
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
     while any(deviation_performed)
-        # Give all BSs a chance to deviate. If search_order_greedy=true, we
+        # Give all BSs a chance to deviate. If search_order == :greedy, we
         # let the BSs deviate in the order of their current utilities, i.e. the
-        # BS doing the best is going first. If search_order_greedy=false instead,
+        # BS doing the best is going first. If search_order == :fair instead,
         # the BS which is doing the worst will go first. This is more similar
         # to GreedyClustering, where the strongest interfering links are clustered
         # first.
+        if search_order == :greedy
+            ordered_BS_list = sortperm(state.BS_utilities, rev=true)
+        elseif search_order == :fair
+            ordered_BS_list = sortperm(state.BS_utilities, rev=false)
+        elseif search_order == :random
+            ordered_BS_list = randperm(I)
+        end
+
         deviation_performed = falses(I)
-        for i in sortperm(state.BS_utilities, rev=search_order_greedy)
+        for i in ordered_BS_list
             deviation_performed[i] = deviate!(state, i, I, search_budget,
                 stability_type, channel, network, temp_cell_assignment)
         end
