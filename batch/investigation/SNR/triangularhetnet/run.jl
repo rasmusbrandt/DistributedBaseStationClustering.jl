@@ -6,7 +6,7 @@ require("../plot_params.jl")
 
 ##########################################################################
 # General settings
-srand(725242)
+seed = 7256141
 start_time = strftime("%Y%m%dT%H%M%S", time())
 SNRs_dB = -20:10:50
 
@@ -74,6 +74,7 @@ unshift!(simulation_params["assignment_methods"], ExhaustiveSearchClustering)
 simulation_params["simulation_name"] = "small-with_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -87,6 +88,7 @@ plot(processed_results, simulation_params, plot_params_longterm_iters)
 simulation_params["simulation_name"] = "small-without_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 

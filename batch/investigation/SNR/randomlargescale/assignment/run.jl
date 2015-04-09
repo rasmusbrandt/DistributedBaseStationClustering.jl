@@ -6,7 +6,7 @@ require("../../plot_params.jl")
 
 ##########################################################################
 # General settings
-srand(725242)
+seed = 2836363
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
@@ -75,6 +75,7 @@ simulation_params = deepcopy(initial_simulation_params)
 simulation_params["simulation_name"] = "group-greedy"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Group:search_order"] = :greedy
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -88,6 +89,7 @@ plot(processed_results, simulation_params, plot_params_longterm_iters)
 simulation_params["simulation_name"] = "group-lexicographic"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Group:search_order"] = :lexicographic
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -106,6 +108,7 @@ simulation_params["simulation_name"] = "individual-greedy,nash"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :greedy
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -120,6 +123,7 @@ simulation_params["simulation_name"] = "individual-greedy,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :greedy
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -134,6 +138,7 @@ simulation_params["simulation_name"] = "individual-greedy,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :greedy
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -148,6 +153,7 @@ simulation_params["simulation_name"] = "individual-fair,nash"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -162,6 +168,7 @@ simulation_params["simulation_name"] = "individual-fair,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -176,6 +183,7 @@ simulation_params["simulation_name"] = "individual-fair,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -190,6 +198,7 @@ simulation_params["simulation_name"] = "individual-random,nash"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -204,6 +213,7 @@ simulation_params["simulation_name"] = "individual-random,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
@@ -218,6 +228,7 @@ simulation_params["simulation_name"] = "individual-random,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
 
+srand(seed)
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
