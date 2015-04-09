@@ -16,7 +16,7 @@ initial_simulation_params = [
     "simulation_name" => "initial",
     "Ic" => 2, "Kc" => 3, "N" => 2, "M" => 2, "d" => 1,
     "pico_centre_distance" => 150.,
-    "Ndrops" => 100, "Nsim" => 10,
+    "Ndrops" => 10, "Nsim" => 1,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
