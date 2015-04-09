@@ -115,7 +115,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
                         utopian_rates[k,1:ds[k]] = 0.5*log2(1 + 2*rho)
                     else
                         rho_r = 1/rho
-                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
+                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r + log(scipy_special.exp1(rho_r))) # exp(rho_r)*E1(rho_r) can become Inf*0 = NaN
                     end
 
                     if IA_feas
