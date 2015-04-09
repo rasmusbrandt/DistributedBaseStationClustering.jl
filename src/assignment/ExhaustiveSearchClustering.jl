@@ -61,5 +61,6 @@ function ExhaustiveSearchClustering(channel, network)
     results["alphas"] = best_alphas
     results["no_iters"] = no_iters
     results["no_utility_calculations"] = no_utility_calculations
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end
