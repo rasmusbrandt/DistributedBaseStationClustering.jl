@@ -85,6 +85,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "group-lexicographic"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Group:search_order"] = :lexicographic
@@ -99,6 +101,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 ##########################################################################
 # Compare different settings for group-based coalition formation
@@ -118,6 +122,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-greedy,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :greedy
@@ -133,6 +139,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-greedy,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :greedy
@@ -148,6 +156,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-fair,nash"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
@@ -163,6 +173,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-fair,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
@@ -178,6 +190,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-fair,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :fair
@@ -193,6 +207,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-random,nash"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
@@ -208,6 +224,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-random,individual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
@@ -223,6 +241,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "individual-random,contractual"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
@@ -238,3 +258,5 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)

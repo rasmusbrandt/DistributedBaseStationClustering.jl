@@ -79,6 +79,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "small-without_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
@@ -93,6 +95,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 ##########################################################################
 # Large scenario with/without overhead
@@ -118,6 +122,8 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 simulation_params["simulation_name"] = "large-without_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
@@ -132,3 +138,5 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
 plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
+plot(processed_results, simulation_params, plot_params_longterm_clusters)
