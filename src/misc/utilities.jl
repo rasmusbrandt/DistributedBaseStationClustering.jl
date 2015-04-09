@@ -23,7 +23,7 @@
 # Notice: this function only returns a bound of the rates for now,
 # since I don't if the E1 exponential integral has been implemented
 # by anyone in Julia yet.
-function longterm_utilities(channel, network, partition; lower_bound::Bool=false)
+function longterm_utilities(channel, network, partition; bound::Symbol=:none)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
@@ -31,7 +31,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
-    force_E1_utility_lower_bound = aux_params["force_E1_utility_lower_bound"]
+    replace_E1_utility_with_lower_bound = aux_params["replace_E1_utility_with_lower_bound"]
 
     utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
     rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
@@ -59,13 +59,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
                     # Rates without interference, assuming IA feasibility
                     desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
                     rho = desired_power/sigma2s[k]
-
-                    if lower_bound || force_E1_utility_lower_bound
-                        utopian_rates[k,1:ds[k]] = 0.5*log2(1 + 2*rho)
-                    else
-                        rho_r = 1/rho
-                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r)*scipy_special.exp1(rho_r)
-                    end
+                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -110,13 +104,7 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
                         int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
                     end
                     rho = desired_power/int_noise_power
-
-                    if lower_bound || force_E1_utility_lower_bound
-                        utopian_rates[k,1:ds[k]] = 0.5*log2(1 + 2*rho)
-                    else
-                        rho_r = 1/rho
-                        utopian_rates[k,1:ds[k]] = (1/log(2))*exp(rho_r + log(scipy_special.exp1(rho_r))) # exp(rho_r)*E1(rho_r) can become Inf*0 = NaN
-                    end
+                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -149,6 +137,18 @@ function longterm_utilities(channel, network, partition; lower_bound::Bool=false
         return throughputs, alphas, utopian_rates
     else
         return rates, alphas, utopian_rates
+    end
+end
+
+# Calculates longterm rate (or bound thereof) as function of rho
+function longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
+    if bound == :upper
+        return log2(1 + rho)
+    elseif bound == :lower || replace_E1_utility_with_lower_bound
+        return 0.5*log2(1 + 2*rho)
+    else
+        rho_r = 1/rho
+        return (1/log(2))*exp(rho_r + log(scipy_special.exp1(rho_r))) # exp(rho_r)*E1(rho_r) can become Inf*0 = NaN
     end
 end
 

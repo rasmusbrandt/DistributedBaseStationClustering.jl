@@ -143,7 +143,7 @@ function bound!(node, channel, network, utopian_utilities, I, assignment)
     if is_leaf(node, I)
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
     else
-        utility_bounds, _ = longterm_utilities(channel, network, partial_partition, lower_bound=true)
+        utility_bounds, _ = longterm_utilities(channel, network, partial_partition, bound=:upper)
     end
 
     # Bound the unclustered users utilities by their utopian utilities.

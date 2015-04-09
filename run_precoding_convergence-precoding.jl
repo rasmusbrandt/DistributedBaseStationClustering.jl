@@ -51,7 +51,7 @@ simulation_params = [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
-        "force_E1_utility_lower_bound" => true,
+        "replace_E1_utility_with_lower_bound" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
