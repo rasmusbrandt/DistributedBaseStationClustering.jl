@@ -21,11 +21,10 @@ srand(83196723)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
-# Indoors network
+# RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "precoding_convergence-precoding_$(start_time)",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "geography_length" => 250.,
     "MS_serving_BS_distance" => 50.,
@@ -71,7 +70,8 @@ network =
         geography_height=simulation_params["geography_length"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
-raw_results = simulate_precoding_convergence(network, simulation_params, loop_over=:precoding_methods)
+raw_results =
+    simulate_precoding_convergence(network, simulation_params, loop_over=:precoding_methods)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",

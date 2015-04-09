@@ -17,11 +17,10 @@ srand(973472333)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
-# Indoors network
+# RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "SNR-precoding_$(start_time)",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "geography_length" => 250.,
     "MS_serving_BS_distance" => 50.,
@@ -48,7 +47,7 @@ simulation_params = [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
-        "force_E1_utility_lower_bound" => true,
+        "force_E1_utility_lower_bound" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
@@ -64,6 +63,7 @@ network =
         geography_width=simulation_params["geography_length"],
         geography_height=simulation_params["geography_length"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
+
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:precoding_methods)
 

@@ -17,11 +17,10 @@ srand(725242)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
-# Indoors network
+# RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "SNR-assignment_$(start_time)",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "geography_length" => 250.,
     "MS_serving_BS_distance" => 50.,
@@ -33,7 +32,7 @@ simulation_params = [
         CoalitionFormationClustering_Individual,
 
         Chen2014_ExhaustiveSearch,
-        Peters2012_Heuristic,
+        # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
         GreedyClustering,
@@ -50,11 +49,11 @@ simulation_params = [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
-        "force_E1_utility_lower_bound" => true,
+        "force_E1_utility_lower_bound" => false,
 
-        "CoalitionFormationClustering_Group:max_merge_size" => 4,
+        "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:search_budget" => 50,
         "CoalitionFormationClustering_Individual:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:stability_type" => :contractual,
     ],
@@ -72,6 +71,7 @@ network =
         geography_width=simulation_params["geography_length"],
         geography_height=simulation_params["geography_length"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
+
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
