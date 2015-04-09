@@ -14,7 +14,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 initial_simulation_params = [
     "simulation_name" => "initial",
     "I" => 15, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 100, "Nsim" => 10,
+    "Ndrops" => 100, "Nsim" => 5,
     "geography_length" => 250.,
     "MS_serving_BS_distance" => 50.,
     "assignment_methods" => [
