@@ -114,6 +114,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     results["alphas"] = alphas
     results["no_searches"] = state.no_searches
     results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end
 
@@ -311,6 +312,7 @@ function CoalitionFormationClustering_Group(channel, network)
     results["alphas"] = alphas
     results["no_iters"] = state.no_iters
     results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end
 
