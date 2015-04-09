@@ -56,6 +56,7 @@ simulation_params = [
         "CoalitionFormationClustering_Group:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:search_budget" => 100,
         "CoalitionFormationClustering_Individual:search_order" => :greedy,
+        "CoalitionFormationClustering_Individual:stability_type" => :contractual,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

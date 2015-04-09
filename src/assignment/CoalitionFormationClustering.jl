@@ -179,21 +179,21 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
         state.no_utility_calculations += 1
     end
 
+    # Preliminary Nash stability check. No need to try to deviate unless
+    # BS i improves in its utility.
+    if !any(deviated_BS_utilities[i,:] .> state.BS_utilities[i])
+        return false
+    end
+
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
     for sort_idx in sortperm(squeeze(deviated_BS_utilities[i,:], 1), rev=true)
-        # Stop searching if we hit a deviation that results in worse performance.
-        # (This is OK since we are looping over a sorted array.)
-        if deviated_BS_utilities[i,sort_idx] < state.BS_utilities[i]
-            return false
-        end
-
         # Stop searching if we otherwise would exceed our search budget.
         if state.no_searches[i] >= search_budget
             return false
         end
 
-        # Let's see if the other BSs allow BS i to join them
+        # Let's try to deviate
         state.no_searches[i] += 1
 
         # Find block that BS i belongs to in this partition
@@ -225,16 +225,19 @@ end
 function individual_stability(new_BS_utilities, old_BS_utilities,
     deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, stability_type)
 
+    # Check that BS i improves
     nash = (new_BS_utilities[deviating_BS_idx] > old_BS_utilities[deviating_BS_idx])
     if stability_type == :nash
         return nash
     end
 
+    # Check if the BSs in the new coalition improve
     individual = (nash && all(new_BS_utilities[new_coalition_idxs] .>= old_BS_utilities[new_coalition_idxs]))
     if stability_type == :individual
         return individual
     end
 
+    # Check if the BSs in the old coalition improve
     contractual = (individual && all(new_BS_utilities[old_coalition_idxs] .>= old_BS_utilities[old_coalition_idxs]))
     if stability_type == :contractual
         return contractual
