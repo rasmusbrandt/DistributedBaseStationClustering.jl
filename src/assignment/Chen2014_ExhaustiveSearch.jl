@@ -80,6 +80,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     results["alphas"] = alphas
     results["no_iters"] = no_iters
     results["Chen2014_objective"] = best_objective
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end
 

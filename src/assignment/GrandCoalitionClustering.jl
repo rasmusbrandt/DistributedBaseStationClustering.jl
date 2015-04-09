@@ -36,5 +36,6 @@ function GrandCoalitionClustering(channel, network)
     results["alphas"] = alphas
     results["no_iters"] = 1
     results["no_utility_calculations"] = 1
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end

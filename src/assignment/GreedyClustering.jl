@@ -101,5 +101,6 @@ function GreedyClustering(channel, network)
     results["alphas"] = alphas
     results["no_iters"] = no_iters
     results["no_IA_feasibility_checks"] = no_IA_feasibility_checks
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end

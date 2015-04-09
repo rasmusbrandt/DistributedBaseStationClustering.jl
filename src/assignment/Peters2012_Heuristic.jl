@@ -99,5 +99,6 @@ function Peters2012_Heuristic(channel, network)
     results["a"] = a
     results["alphas"] = alphas
     results["no_iters"] = no_iters
+    results["no_clusters"] = 1 + maximum(a)
     return results
 end
