@@ -7,7 +7,6 @@
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     d_max = maximum(get_no_streams(network))
-    alphas = get_user_priorities(network)
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
@@ -41,14 +40,14 @@ function ExhaustiveSearchClustering(channel, network)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :sum_utility => best_objective,
           :a => a,
-          :alphas => alphas,
+          :alphas => best_alphas,
           :no_iters => no_iters,
           :no_utility_calculations => no_utility_calculations }
     )
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
+        set_user_priorities!(network, best_alphas)
     end
 
     # Store cluster assignment together with existing cell assignment
@@ -59,7 +58,7 @@ function ExhaustiveSearchClustering(channel, network)
     results = AssignmentResults()
     results["utilities"] = best_utilities
     results["a"] = a
-    results["alphas"] = alphas
+    results["alphas"] = best_alphas
     results["no_iters"] = no_iters
     results["no_utility_calculations"] = no_utility_calculations
     return results
