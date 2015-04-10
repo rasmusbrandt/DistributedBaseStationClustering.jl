@@ -49,9 +49,9 @@ function CoalitionFormationClustering_Individual(channel, network)
     I = get_no_BSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 100
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 10
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :greedy
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :contractual
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
@@ -260,7 +260,7 @@ function CoalitionFormationClustering_Group(channel, network)
     I = get_no_BSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_no_merging_coalitions" 2
+    @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_no_merging_coalitions" 3
     @defaultize_param! aux_params "CoalitionFormationClustering_Group:search_order" :greedy
     max_no_merging_coalitions = aux_params["CoalitionFormationClustering_Group:max_no_merging_coalitions"]
     search_order = aux_params["CoalitionFormationClustering_Group:search_order"]
