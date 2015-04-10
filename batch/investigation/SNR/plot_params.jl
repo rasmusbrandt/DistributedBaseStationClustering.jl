@@ -231,7 +231,7 @@ plot_params_longterm_clusters = [
         ],
 
         "GreedyClustering" => [
-            ("no_IA_feasibility_checks", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
         ],
 
         "RandomClustering" => [
