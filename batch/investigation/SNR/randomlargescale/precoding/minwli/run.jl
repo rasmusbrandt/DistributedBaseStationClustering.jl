@@ -6,17 +6,16 @@ require("../../../plot_params.jl")
 
 ##########################################################################
 # General settings
-seed = 2937363
+seed = 28373636
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 8, "K" => 8, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 100, "Nsim" => 5,
-    "geography_length" => 250.,
-    "MS_serving_BS_distance" => 50.,
+    "geography_size" => (500.,500.),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
@@ -33,7 +32,7 @@ initial_simulation_params = [
         NoClustering,
     ],
     "precoding_methods" => [
-        RobustIntraclusterWMMSE,
+        RobustIntraclusterLeakageMinimization,
     ],
     "aux_network_params" => [
         "no_coherence_symbols" => 1000,
@@ -58,11 +57,9 @@ simulation_params = deepcopy(initial_simulation_params)
 
 network =
     setup_random_large_scale_network(simulation_params["I"],
-        simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
+        simulation_params["K"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_width=simulation_params["geography_length"],
-        geography_height=simulation_params["geography_length"],
-        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
+        geography_size=simulation_params["geography_size"])
 
 # Include high complexity methods for these simulations only
 unshift!(simulation_params["assignment_methods"], Chen2014_ExhaustiveSearch)
@@ -106,14 +103,13 @@ plot(processed_results, simulation_params, plot_params_longterm_clusters)
 simulation_params = deepcopy(initial_simulation_params)
 
 simulation_params["I"] = 2*initial_simulation_params["I"]
+simulation_params["K"] = 2*initial_simulation_params["K"]
 
 network =
     setup_random_large_scale_network(simulation_params["I"],
-        simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
+        simulation_params["K"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_width=simulation_params["geography_length"],
-        geography_height=simulation_params["geography_length"],
-        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
+        geography_size=simulation_params["geography_size"])
 
 simulation_params["simulation_name"] = "large-with_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true

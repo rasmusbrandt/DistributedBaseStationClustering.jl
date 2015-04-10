@@ -13,10 +13,9 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 15, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 15, "K" => 15, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 100, "Nsim" => 5,
-    "geography_length" => 250.,
-    "MS_serving_BS_distance" => 50.,
+    "geography_size" => (500.,500.),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
@@ -33,7 +32,7 @@ initial_simulation_params = [
         NoClustering,
     ],
     "precoding_methods" => [
-        RobustIntraclusterLeakageMinimization,
+        RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
         "no_coherence_symbols" => 1000,
@@ -62,11 +61,9 @@ initial_simulation_params = [
 # Generate network
 network =
     setup_random_large_scale_network(initial_simulation_params["I"],
-        initial_simulation_params["Kc"], initial_simulation_params["N"], initial_simulation_params["M"],
+        initial_simulation_params["K"], initial_simulation_params["N"], initial_simulation_params["M"],
         no_streams=initial_simulation_params["d"],
-        geography_width=initial_simulation_params["geography_length"],
-        geography_height=initial_simulation_params["geography_length"],
-        MS_serving_BS_distance=initial_simulation_params["MS_serving_BS_distance"])
+        geography_size=initial_simulation_params["geography_size"])
 
 ##########################################################################
 # Compare different settings for group-based coalition formation
