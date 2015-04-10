@@ -37,11 +37,8 @@ function GreedyClustering(channel, network)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
-    no_iters = 0
     no_IA_feasibility_checks = 0
     while !all(F .== -Inf)
-        no_iters += 1
-
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
         i, j = ind2sub((I, I), idx)
@@ -54,9 +51,8 @@ function GreedyClustering(channel, network)
         # means that GreedyClustering cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
         # IA_infeasible_negative_inf_utility is set to false.
+        no_IA_feasibility_checks += 1
         if is_IA_feasible(network, Partition(partition_matrix))
-            no_IA_feasibility_checks += 1
-
             # Fix BS j to this cluster
             F[:,j] = -Inf
 
@@ -82,7 +78,6 @@ function GreedyClustering(channel, network)
         { :sum_utility => objective,
           :a => a,
           :alphas => alphas,
-          :no_iters => no_iters,
           :no_IA_feasibility_checks => no_IA_feasibility_checks }
     )
 
@@ -99,7 +94,6 @@ function GreedyClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_iters"] = no_iters
     results["no_IA_feasibility_checks"] = no_IA_feasibility_checks
     results["no_clusters"] = 1 + maximum(a)
     return results
