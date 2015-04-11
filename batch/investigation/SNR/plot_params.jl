@@ -44,7 +44,7 @@ plot_params_instantaneous_sumrate = [
         ],
 
         "GreedyClustering_Multiple" => [
-            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Multiple" ]),
+            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
 
