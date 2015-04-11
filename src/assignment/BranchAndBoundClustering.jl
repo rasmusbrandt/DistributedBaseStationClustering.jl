@@ -51,8 +51,8 @@ function BranchAndBoundClustering(channel, network)
         no_iters += 1
 
         # Select next node to be processed. We use the best first strategy,
-        # i.e. we pick the live node with the lowest (best) upper bound.
-        sort!(live)
+        # i.e. we pick the live node with the highest (best) upper bound.
+        sort!(live, rev=true)
         parent = shift!(live)
 
         # Store incumbent evolution per iteration
@@ -144,7 +144,7 @@ function bound!(node, channel, network, utopian_utilities, I, assignment, bracke
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not
-    # taken into account. If we are at a leaf, calculate exact utilities.
+    # taken into account.
     if is_leaf(node, I) || !bracket_E1
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
     else
