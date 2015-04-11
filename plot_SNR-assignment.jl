@@ -64,6 +64,15 @@ plot_params_instantaneous_sumrate = [
         ],
 
 
+        "GrandCoalitionClustering" => [
+            ("weighted_logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        ],
+
+        "GreedyClustering_Single" => [
+            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+        ],
+
+
         "Chen2014_ExhaustiveSearch" => [
             ("weighted_logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
@@ -73,12 +82,8 @@ plot_params_instantaneous_sumrate = [
         ],
 
 
-        "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
-        ],
-
-        "GreedyClustering" => [
-            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        "GreedyClustering_Multiple" => [
+            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
         "RandomClustering" => [
@@ -129,6 +134,15 @@ plot_params_longterm_sumrate = [
         ],
 
 
+        "GreedyClustering_Single" => [
+            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+        ],
+
+        "GreedyClustering_Multiple" => [
+            ("utilities", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+
         "Chen2014_ExhaustiveSearch" => [
             ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
@@ -140,10 +154,6 @@ plot_params_longterm_sumrate = [
 
         "GrandCoalitionClustering" => [
             ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
-        ],
-
-        "GreedyClustering" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
         ],
 
         "RandomClustering" => [
@@ -195,13 +205,19 @@ plot_params_longterm_no_utility_calculations = [
         ],
 
 
+        "GreedyClustering_Single" => [
+            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+        ],
+
+        "GreedyClustering_Multiple" => [
+            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+
         "GrandCoalitionClustering" => [
             ("no_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
-        "GreedyClustering" => [
-            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
-        ],
 
         "RandomClustering" => [
             ("no_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
@@ -252,12 +268,17 @@ plot_params_longterm_no_longterm_rate_calculations = [
         ],
 
 
-        "GrandCoalitionClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        "GreedyClustering_Single" => [
+            ("no_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
-        "GreedyClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        "GreedyClustering_Multiple" => [
+            ("no_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("no_longterm_rate_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "RandomClustering" => [
@@ -308,12 +329,17 @@ plot_params_longterm_clusters = [
         ],
 
 
-        "GrandCoalitionClustering" => [
-            ("no_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        "GreedyClustering_Single" => [
+            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
-        "GreedyClustering" => [
-            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        "GreedyClustering_Multiple" => [
+            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("no_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "RandomClustering" => [

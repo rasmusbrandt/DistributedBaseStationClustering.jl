@@ -66,6 +66,15 @@ plot_params = [
         ],
 
 
+        "GreedyClustering_Single" => [
+            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+        ],
+
+        "GreedyClustering_Multiple" => [
+            ("utilities", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+
         "Chen2014_ExhaustiveSearch" => [
             ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
@@ -73,10 +82,6 @@ plot_params = [
 
         "GrandCoalitionClustering" => [
             ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
-        ],
-
-        "GreedyClustering" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
         ],
 
         "RandomClustering" => [

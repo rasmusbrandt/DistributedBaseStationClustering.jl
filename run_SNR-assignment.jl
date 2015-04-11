@@ -30,11 +30,13 @@ simulation_params = [
         CoalitionFormationClustering_Group,
         CoalitionFormationClustering_Individual,
 
+        GreedyClustering_Single,
+        GreedyClustering_Multiple,
+
         Chen2014_ExhaustiveSearch,
         # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
-        GreedyClustering,
         RandomClustering,
         NoClustering,
     ],

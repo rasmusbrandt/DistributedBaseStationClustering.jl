@@ -3,17 +3,24 @@
 #
 # A simple greedy clustering method based on path loss and transmit powers.
 # In each step, the method finds the strongest interfering link, and matches
-# the corresponding cells into a cluster, if that is IA feasible. Thus, the
-# bound on the cluster sizes will be given by IA feasibility, and not by the
-# overhead pre-log factor.
-function GreedyClustering(channel, network)
+# the corresponding cells into a cluster, if that is IA feasible. This is
+# done either by putting the offending BS into the cluster of the victim
+# BS (GreedyClustering_Single), or by trying to merge the respective
+# clusters, if possible (GreedyClustering_Multiple). The bound on the
+# cluster sizes will be given by IA feasibility, and not by the overhead
+# pre-log factor. If IA_infeasible_negative_inf_utility is set to false,
+# it will mean that other methods might find solutions where some BSs
+# are put in clusters that are turned off due to IA infeasibility. These
+# methods will not be able to do that.
+
+GreedyClustering_Single(channel, network) =
+    GreedyClustering(channel, network, merge_multiple=false)
+GreedyClustering_Multiple(channel, network) =
+    GreedyClustering(channel, network, merge_multiple=true)
+
+function GreedyClustering(channel, network; merge_multiple::Bool=false)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)
-
-    # Consistency check
-    if aux_params["IA_infeasible_negative_inf_utility"] == false
-        Lumberjack.info("GreedyClustering only finds solutions where all clusters are IA feasible. IA_infeasible_negative_inf_utility is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
-    end
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -43,33 +50,52 @@ function GreedyClustering(channel, network)
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
         i, j = ind2sub((I, I), idx)
-        i_cluster = find(partition_matrix[i,:] .== 1)
 
-        # Assign to cluster
-        partition_matrix[i_cluster,j] = 1; partition_matrix[j,i_cluster] = 1
+        if merge_multiple
+            # Join clusters of BS i and BS j
+            i_cluster = find(partition_matrix[i,:] .== 1)
+            j_cluster = find(partition_matrix[j,:] .== 1)
+            new_partition_matrix = copy(partition_matrix)
+            new_partition_matrix[i_cluster,j_cluster] = 1
+            new_partition_matrix[j_cluster,i_cluster] = 1
 
-        # Check that IA is feasible for this cluster structure. Note that this
-        # means that GreedyClustering cannot handle situations where
-        # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-        # IA_infeasible_negative_inf_utility is set to false.
-        no_utility_calculations += K
-        no_longterm_rate_calculations += 1 + length(i_cluster)
-        if is_IA_feasible(network, Partition(partition_matrix))
-            # Fix BS j to this cluster
-            F[:,j] = -Inf
-
-            if length(i_cluster) == 1
-                # We have effectively put BS i in this cluster as well,
-                # without it really being aware. Do not try to put BS i
-                # in another cluster.
-                F[:,i] = -Inf
+            # Check IA feasibility for this new cluster. (Note that this
+            # means that GreedyClustering cannot handle situations where
+            # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
+            # IA_infeasible_negative_inf_utility is set to false.)
+            no_utility_calculations += K
+            no_longterm_rate_calculations += length(i_cluster) + length(j_cluster)
+            if is_IA_feasible(network, Partition(new_partition_matrix))
+                partition_matrix = new_partition_matrix
             end
-        else
-            # This was not a feasible cluster, undo the assignment.
-            partition_matrix[i_cluster,j] = 0; partition_matrix[j,i_cluster] = 0
 
-            # Do not try to add BS j to the cluster of BS i again
-            F[i_cluster,j] = -Inf
+             # Never consider this link again
+            F[i,j] = -Inf
+        else
+            # Assign BS j to cluster of BS i
+            i_cluster = find(partition_matrix[i,:] .== 1)
+            new_partition_matrix = copy(partition_matrix)
+            new_partition_matrix[i_cluster,j] = 1; new_partition_matrix[j,i_cluster] = 1
+
+            # Check IA feasibility for this new cluster.
+            no_utility_calculations += K
+            no_longterm_rate_calculations += length(i_cluster) + 1
+            if is_IA_feasible(network, Partition(new_partition_matrix))
+                # Fix BS j to this cluster
+                F[:,j] = -Inf
+
+                if length(i_cluster) == 1
+                    # We have effectively put BS i in this cluster as well,
+                    # without it really being aware. Do not try to put BS i
+                    # in another cluster.
+                    F[:,i] = -Inf
+                end
+
+                partition_matrix = new_partition_matrix
+            else
+                # Do not try to add BS j to the cluster of BS i again
+                F[i_cluster,j] = -Inf
+            end
         end
     end
     partition = Partition(partition_matrix)
