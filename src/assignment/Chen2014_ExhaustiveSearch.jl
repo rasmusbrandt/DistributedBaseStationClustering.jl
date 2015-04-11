@@ -14,9 +14,6 @@ function Chen2014_ExhaustiveSearch(channel, network)
     if I != K
         Lumberjack.error("Chen2014_LinearObjClustering can only handle I = K scenarios.")
     end
-    if aux_params["IA_infeasible_negative_inf_utility"] == false
-        Lumberjack.info("Chen2014_ExhaustiveSearch only finds solutions where all clusters are IA feasible. IA_infeasible_negative_inf_utility is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
-    end
     if I >= 12
         Lumberjack.warn("Chen2014_ExhaustiveSearch will be slow since I = $I.")
     end
@@ -29,7 +26,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
 
     # Exhaustive search over partitions
     best_objective = 0.
-    best_partition = Partition()
+    best_partition = Partition([0:(I-1)])
     no_utility_calculations = 0
     for partition in PartitionIterator(I)
         no_utility_calculations += K
@@ -42,7 +39,6 @@ function Chen2014_ExhaustiveSearch(channel, network)
             # Calculate objective
             objective = 0.
             for block in partition.blocks
-                objective = 0.
                 for i in block.elements; for j in block.elements
                     objective += W[i,j]
                 end; end
