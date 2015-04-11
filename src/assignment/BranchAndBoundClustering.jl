@@ -14,7 +14,7 @@ function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1" true
+    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1" false
     bracket_E1 = aux_params["BranchAndBoundClustering:bracket_E1"]
 
     # Warn if this will be slow...
