@@ -50,6 +50,8 @@ simulation_params = [
         "IA_infeasible_negative_inf_utility" => true,
         "replace_E1_utility_with_lower_bound" => false,
 
+        "BranchAndBoundClustering:bracket_E1" => true,
+
         "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:search_budget" => 10,

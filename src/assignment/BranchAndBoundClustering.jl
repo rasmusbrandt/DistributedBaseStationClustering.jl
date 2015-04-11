@@ -12,7 +12,10 @@
 
 function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
+
     aux_params = get_aux_assignment_params(network)
+    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1" true
+    bracket_E1 = aux_params["BranchAndBoundClustering:bracket_E1"]
 
     # Warn if this will be slow...
     if I >= 12
@@ -56,7 +59,7 @@ function BranchAndBoundClustering(channel, network)
         push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_utilities, I, assignment)
+            bound!(child, channel, network, utopian_utilities, I, assignment, bracket_E1)
             no_utility_calculations += K
             no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
@@ -135,14 +138,14 @@ end
 
 # Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities, I, assignment)
+function bound!(node, channel, network, utopian_utilities, I, assignment, bracket_E1)
     # The partial cluster is given by a
     partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not
     # taken into account. If we are at a leaf, calculate exact utilities.
-    if is_leaf(node, I)
+    if is_leaf(node, I) || !bracket_E1
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
     else
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition, bound=:upper)
