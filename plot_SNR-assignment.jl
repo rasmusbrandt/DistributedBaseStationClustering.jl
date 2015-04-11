@@ -282,4 +282,7 @@ for file_name in parsed_args["file_names"]
 
     processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_iters)
     plot(processed_results, data["simulation_params"], plot_params_longterm_iters)
+
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_clusters)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_clusters)
 end
