@@ -42,7 +42,7 @@ type CoalitionFormationClustering_IndividualState
     partition::Partition
     BS_utilities::Vector{Float64}
     no_searches::Vector{Int}
-    no_utility_calculations::Int
+    no_longterm_rate_calculations::Int
 end
 
 function CoalitionFormationClustering_Individual(channel, network)
@@ -96,7 +96,7 @@ function CoalitionFormationClustering_Individual(channel, network)
           :a => a,
           :alphas => alphas,
           :no_searches => state.no_searches,
-          :no_utility_calculations => state.no_utility_calculations }
+          :no_longterm_rate_calculations => state.no_longterm_rate_calculations }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -113,7 +113,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     results["a"] = a
     results["alphas"] = alphas
     results["no_searches"] = state.no_searches
-    results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
     return results
 end
@@ -161,7 +161,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         new_partitions[n] = new_partition
         deviated_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
-        state.no_utility_calculations += 1
+        state.no_longterm_rate_calculations += length(old_block) + length(other_blocks_cp[n])
     end
     if BS_not_singleton_coalition_before
         # BS i was in a non-singleton coalition before deviation. Add the the
@@ -178,7 +178,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         new_partitions[end] = new_partition
         deviated_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
-        state.no_utility_calculations += 1
+        state.no_longterm_rate_calculations += length(old_block) + 1
     end
 
     # Preliminary Nash stability check. No need to try to deviate unless
@@ -253,7 +253,7 @@ type CoalitionFormationClustering_GroupState
     BS_utilities::Vector{Float64}
     r::Int
     no_iters::Int
-    no_utility_calculations::Int
+    no_longterm_rate_calculations::Int
 end
 
 function CoalitionFormationClustering_Group(channel, network)
@@ -294,7 +294,7 @@ function CoalitionFormationClustering_Group(channel, network)
           :a => a,
           :alphas => alphas,
           :no_iters => state.no_iters,
-          :no_utility_calculations => state.no_utility_calculations }
+          :no_longterm_rate_calculations => state.no_longterm_rate_calculations }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -311,7 +311,7 @@ function CoalitionFormationClustering_Group(channel, network)
     results["a"] = a
     results["alphas"] = alphas
     results["no_iters"] = state.no_iters
-    results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
     return results
 end
@@ -351,7 +351,7 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         new_partitions[n] = new_partition
         merged_BSs[n] = collect(merged_block.elements)
         merged_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
-        state.no_utility_calculations += 1
+        state.no_longterm_rate_calculations += length(merged_block)
     end
 
     # Order the potential mergers

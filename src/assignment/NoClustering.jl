@@ -36,7 +36,7 @@ function NoClustering(channel, network)
     results["a"] = a
     results["alphas"] = alphas
     results["no_iters"] = 1
-    results["no_utility_calculations"] = 1
+    results["no_longterm_rate_calculations"] = K
     results["no_clusters"] = 1 + maximum(a)
     return results
 end

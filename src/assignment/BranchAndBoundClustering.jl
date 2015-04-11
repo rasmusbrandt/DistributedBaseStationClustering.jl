@@ -41,7 +41,7 @@ function BranchAndBoundClustering(channel, network)
 
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
-    live = initialize_live(utopian_utilities); no_iters = 0; no_utility_calculations = 0
+    live = initialize_live(utopian_utilities); no_iters = 0; no_longterm_rate_calculations = 0
     while length(live) > 0
         no_iters += 1
 
@@ -55,7 +55,7 @@ function BranchAndBoundClustering(channel, network)
 
         for child in branch(parent)
             bound!(child, channel, network, utopian_utilities, I, assignment)
-            no_utility_calculations += 1
+            no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_sum_utility
@@ -91,7 +91,7 @@ function BranchAndBoundClustering(channel, network)
           :a => incumbent_a,
           :alphas => alphas,
           :no_iters => no_iters,
-          :no_utility_calculations => no_utility_calculations }
+          :no_longterm_rate_calculations => no_longterm_rate_calculations }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -109,7 +109,7 @@ function BranchAndBoundClustering(channel, network)
     results["a"] = incumbent_a
     results["alphas"] = alphas
     results["no_iters"] = no_iters
-    results["no_utility_calculations"] = no_utility_calculations
+    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(incumbent_a)
     return results
 end
