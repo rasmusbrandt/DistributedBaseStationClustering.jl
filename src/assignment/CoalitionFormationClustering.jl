@@ -42,11 +42,12 @@ type CoalitionFormationClustering_IndividualState
     partition::Partition
     BS_utilities::Vector{Float64}
     no_searches::Vector{Int}
+    no_utility_calculations::Int
     no_longterm_rate_calculations::Int
 end
 
 function CoalitionFormationClustering_Individual(channel, network)
-    I = get_no_BSs(network)
+    I = get_no_BSs(network); K = get_no_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 10
@@ -64,7 +65,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     initial_partition = Partition(collect(0:(I-1)))
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
     initial_no_searches = zeros(Int, I)
-    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches, 1)
+    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches, K, K)
 
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
@@ -85,7 +86,7 @@ function CoalitionFormationClustering_Individual(channel, network)
 
         deviation_performed = falses(I)
         for i in ordered_BS_list
-            deviation_performed[i] = deviate!(state, i, I, search_budget,
+            deviation_performed[i] = deviate!(state, i, I, K, search_budget,
                 stability_type, channel, network, temp_cell_assignment)
         end
     end
@@ -93,10 +94,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
         { :sum_utility => sum(utilities),
-          :a => a,
-          :alphas => alphas,
-          :no_searches => state.no_searches,
-          :no_longterm_rate_calculations => state.no_longterm_rate_calculations }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -112,15 +110,16 @@ function CoalitionFormationClustering_Individual(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_searches"] = state.no_searches
-    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
+    results["no_searches"] = state.no_searches
+    results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     return results
 end
 
 # Lets BS i deviate in the individual stability model.
 # Returns true if it did deviate, otherwise false.
-function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
+function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     search_budget, stability_type, channel, network, cell_assignment)
 
     # First check that we have not exceeded our search budget
@@ -158,9 +157,11 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         # Add BS i to coalition n
         push!(other_blocks_cp[n].elements, i)
-
         new_partitions[n] = new_partition
         deviated_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+
+        # Complexity metrics
+        state.no_utility_calculations += K
         state.no_longterm_rate_calculations += length(old_block) + length(other_blocks_cp[n])
     end
     if BS_not_singleton_coalition_before
@@ -175,9 +176,11 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I,
 
         # Add BS i to new singleton coalition
         push!(new_partition.blocks, Block(IntSet(i)))
-
         new_partitions[end] = new_partition
         deviated_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+
+        # Complexity metrics
+        state.no_utility_calculations += K
         state.no_longterm_rate_calculations += length(old_block) + 1
     end
 
@@ -252,12 +255,12 @@ type CoalitionFormationClustering_GroupState
     partition::Partition
     BS_utilities::Vector{Float64}
     r::Int
-    no_iters::Int
+    no_utility_calculations::Int
     no_longterm_rate_calculations::Int
 end
 
 function CoalitionFormationClustering_Group(channel, network)
-    I = get_no_BSs(network)
+    I = get_no_BSs(network); K = get_no_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_no_merging_coalitions" 3
@@ -273,14 +276,14 @@ function CoalitionFormationClustering_Group(channel, network)
     # Initial coalition structure is the non-cooperative state
     initial_partition = Partition(collect(0:(I-1)))
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
-    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_utilities, min(I, aux_params["CoalitionFormationClustering_Group:max_no_merging_coalitions"]), 0, 1)
+    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_utilities, min(I, aux_params["CoalitionFormationClustering_Group:max_no_merging_coalitions"]), K, K)
 
     # Let coalitions merge, until no coalitions want to merge (group-based stability)
     while state.r >= 2 && length(state.partition) > 2
         # Keep merging until no coalitions want to merge
         merge_performed = true
         while merge_performed
-            merge_performed = merge!(state, I, max_no_merging_coalitions,
+            merge_performed = merge!(state, I, K, max_no_merging_coalitions,
                 search_order, channel, network, temp_cell_assignment)
         end
 
@@ -291,10 +294,7 @@ function CoalitionFormationClustering_Group(channel, network)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Group finished.",
         { :sum_utility => sum(utilities),
-          :a => a,
-          :alphas => alphas,
-          :no_iters => state.no_iters,
-          :no_longterm_rate_calculations => state.no_longterm_rate_calculations }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -310,15 +310,15 @@ function CoalitionFormationClustering_Group(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_iters"] = state.no_iters
-    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
+    results["no_utility_calculations"] = state.no_utility_calculations
+    results["no_longterm_rate_calculations"] = state.no_longterm_rate_calculations
     return results
 end
 
 # Enumerates all possible mergers, given the current r and coalition structure,
 # and then tries to perform mergers in a specific order given by the params.
-function merge!(state::CoalitionFormationClustering_GroupState, I,
+function merge!(state::CoalitionFormationClustering_GroupState, I, K,
     max_no_merging_coalitions, search_order, channel, network, cell_assignment)
 
     # Put current blocks in an array for easy indexing
@@ -335,7 +335,6 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
     n = 0
     for merging_blocks_idxs in kCombinationIterator(all_blocks_card, state.r)
         n += 1
-        state.no_iters += 1
 
         # Separate blocks based on who is merging and not
         merged_block = Block()
@@ -351,6 +350,9 @@ function merge!(state::CoalitionFormationClustering_GroupState, I,
         new_partitions[n] = new_partition
         merged_BSs[n] = collect(merged_block.elements)
         merged_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+
+        # Complexity metrics
+        state.no_utility_calculations += K
         state.no_longterm_rate_calculations += length(merged_block)
     end
 

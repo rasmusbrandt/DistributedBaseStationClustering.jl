@@ -155,8 +155,65 @@ plot_params_longterm_sumrate = [
         ],
     ]
 ]
-plot_params_longterm_iters = [
-    "plot_name" => "longterm-iters",
+plot_params_longterm_no_utility_calculations = [
+    "plot_name" => "longterm-no_utility_calculations",
+
+    "objective" => :none,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Number of utility calculations",
+        :yscale => "log",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "ExhaustiveSearchClustering" => [
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+        ],
+
+        "BranchAndBoundClustering" => [
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+        ],
+
+
+        "CoalitionFormationClustering_Group" => [
+            ("no_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("no_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("no_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        ],
+
+        "GreedyClustering" => [
+            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+        ],
+
+        "RandomClustering" => [
+            ("no_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+        ],
+
+        "NoClustering" => [
+            ("no_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+        ],
+    ]
+]
+plot_params_longterm_no_longterm_rate_calculations = [
+    "plot_name" => "longterm-no_longterm_rate_calculations",
 
     "objective" => :none,
 
@@ -280,8 +337,11 @@ for file_name in parsed_args["file_names"]
     processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_sumrate)
     plot(processed_results, data["simulation_params"], plot_params_longterm_sumrate)
 
-    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_iters)
-    plot(processed_results, data["simulation_params"], plot_params_longterm_iters)
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_no_utility_calculations)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_no_utility_calculations)
+
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_no_longterm_rate_calculations)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_no_longterm_rate_calculations)
 
     processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_clusters)
     plot(processed_results, data["simulation_params"], plot_params_longterm_clusters)

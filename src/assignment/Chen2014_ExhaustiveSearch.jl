@@ -17,7 +17,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     if aux_params["IA_infeasible_negative_inf_utility"] == false
         Lumberjack.info("Chen2014_ExhaustiveSearch only finds solutions where all clusters are IA feasible. IA_infeasible_negative_inf_utility is set to false, which means that the other methods might find solutions where some blocks are turned off due to IA infeasibility.")
     end
-    if I > 12
+    if I >= 12
         Lumberjack.warn("Chen2014_ExhaustiveSearch will be slow since I = $I.")
     end
 
@@ -28,11 +28,11 @@ function Chen2014_ExhaustiveSearch(channel, network)
     W = Chen2014_W_matrix(channel, network)
 
     # Exhaustive search over partitions
-    no_iters = 0
     best_objective = 0.
     best_partition = Partition()
+    no_utility_calculations = 0
     for partition in PartitionIterator(I)
-        no_iters += 1
+        no_utility_calculations += K
 
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_ExhaustiveSearch cannot handle situations where
@@ -58,10 +58,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_ExhaustiveSearch finished.",
         { :sum_utility => sum(utilities),
-          :a => a,
-          :alphas => alphas,
-          :no_iters => no_iters,
-          :Chen2014_objective => best_objective }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -78,8 +75,8 @@ function Chen2014_ExhaustiveSearch(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_iters"] = no_iters
     results["no_clusters"] = 1 + maximum(a)
+    results["Chen2014_no_utility_calculations"] = no_utility_calculations
     results["Chen2014_objective"] = best_objective
     return results
 end

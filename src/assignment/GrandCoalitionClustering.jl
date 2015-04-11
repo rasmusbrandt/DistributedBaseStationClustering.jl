@@ -16,8 +16,7 @@ function GrandCoalitionClustering(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, Partition(a))
     Lumberjack.info("GrandCoalitionClustering finished.",
         { :sum_utility => sum(utilities),
-          :a => a,
-          :alphas => alphas }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -34,8 +33,8 @@ function GrandCoalitionClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_iters"] = 1
-    results["no_longterm_rate_calculations"] = K
     results["no_clusters"] = 1 + maximum(a)
+    results["no_utility_calculations"] = K
+    results["no_longterm_rate_calculations"] = K
     return results
 end

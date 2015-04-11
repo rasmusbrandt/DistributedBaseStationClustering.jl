@@ -37,6 +37,7 @@ function GreedyClustering(channel, network)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
+    no_utility_calculations = 0
     no_longterm_rate_calculations = 0
     while !all(F .== -Inf)
         # Find strongest interfering link that is still active
@@ -51,6 +52,7 @@ function GreedyClustering(channel, network)
         # means that GreedyClustering cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
         # IA_infeasible_negative_inf_utility is set to false.
+        no_utility_calculations += K
         no_longterm_rate_calculations += 1 + length(i_cluster)
         if is_IA_feasible(network, Partition(partition_matrix))
             # Fix BS j to this cluster
@@ -76,9 +78,7 @@ function GreedyClustering(channel, network)
     objective = sum(utilities)
     Lumberjack.info("GreedyClustering finished.",
         { :sum_utility => objective,
-          :a => a,
-          :alphas => alphas,
-          :no_longterm_rate_calculations => no_longterm_rate_calculations }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -94,7 +94,8 @@ function GreedyClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
+    results["no_utility_calculations"] = no_utility_calculations
+    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     return results
 end

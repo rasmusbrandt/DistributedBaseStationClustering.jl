@@ -153,37 +153,37 @@ plot_params_longterm_iters = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("no_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("no_longterm_rate_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("no_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("no_longterm_rate_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("no_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("no_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "GreedyClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
+            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering" ]),
         ],
 
         "RandomClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("no_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("no_longterm_rate_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("no_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ],
 ]

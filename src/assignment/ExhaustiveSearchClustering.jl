@@ -10,7 +10,7 @@ function ExhaustiveSearchClustering(channel, network)
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
-    if I > 12
+    if I >= 12
         Lumberjack.warn("ExhaustiveSearchClustering will be slow since I = $I.")
     end
 
@@ -18,12 +18,12 @@ function ExhaustiveSearchClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
-    no_iters = 0
+    no_utility_calculations = 0
     no_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
     best_alphas = Array(Float64, K); best_partition = Partition()
     for partition in PartitionIterator(I)
-        no_iters += 1
+        no_utility_calculations += K
 
         # Calculate utilities
         utilities, alphas, _ = longterm_utilities(channel, network, partition)
@@ -39,10 +39,7 @@ function ExhaustiveSearchClustering(channel, network)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :sum_utility => best_objective,
-          :a => a,
-          :alphas => best_alphas,
-          :no_iters => no_iters,
-          :no_longterm_rate_calculations => no_longterm_rate_calculations }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -59,8 +56,8 @@ function ExhaustiveSearchClustering(channel, network)
     results["utilities"] = best_utilities
     results["a"] = a
     results["alphas"] = best_alphas
-    results["no_iters"] = no_iters
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(a)
+    results["no_utility_calculations"] = no_utility_calculations
+    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     return results
 end

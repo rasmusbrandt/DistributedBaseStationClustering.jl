@@ -11,11 +11,11 @@
 # BSs have their utopian (interference-free) spectral efficiencies as bounds.
 
 function BranchAndBoundClustering(channel, network)
-    I = get_no_BSs(network)
+    I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
-    if I > 12
+    if I >= 12
         Lumberjack.warn("BranchAndBoundClustering will be slow since I = $I.")
     end
 
@@ -41,7 +41,9 @@ function BranchAndBoundClustering(channel, network)
 
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
-    live = initialize_live(utopian_utilities); no_iters = 0; no_longterm_rate_calculations = 0
+    live = initialize_live(utopian_utilities);
+    no_iters = 0
+    no_utility_calculations = 0; no_longterm_rate_calculations = 0
     while length(live) > 0
         no_iters += 1
 
@@ -55,6 +57,7 @@ function BranchAndBoundClustering(channel, network)
 
         for child in branch(parent)
             bound!(child, channel, network, utopian_utilities, I, assignment)
+            no_utility_calculations += K
             no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
             # Is it worthwhile investigating this subtree/leaf more?
@@ -88,10 +91,7 @@ function BranchAndBoundClustering(channel, network)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_utility => incumbent_sum_utility,
-          :a => incumbent_a,
-          :alphas => alphas,
-          :no_iters => no_iters,
-          :no_longterm_rate_calculations => no_longterm_rate_calculations }
+          :a => incumbent_a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -108,9 +108,10 @@ function BranchAndBoundClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = incumbent_a
     results["alphas"] = alphas
-    results["no_iters"] = no_iters
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     results["no_clusters"] = 1 + maximum(incumbent_a)
+    results["no_iters"] = no_iters
+    results["no_utility_calculations"] = no_utility_calculations
+    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     return results
 end
 

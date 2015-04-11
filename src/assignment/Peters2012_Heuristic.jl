@@ -80,9 +80,7 @@ function Peters2012_Heuristic(channel, network)
     objective = sum(utilities)
     Lumberjack.info("Peters2010_Heuristic finished.",
         { :sum_utility => objective,
-          :a => a,
-          :alphas => alphas,
-          :no_iters => no_iters }
+          :a => a }
     )
 
     # Store alphas as user priorities for precoding, if desired
@@ -98,7 +96,7 @@ function Peters2012_Heuristic(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_iters"] = no_iters
     results["no_clusters"] = 1 + maximum(a)
+    results["no_iters"] = no_iters
     return results
 end
