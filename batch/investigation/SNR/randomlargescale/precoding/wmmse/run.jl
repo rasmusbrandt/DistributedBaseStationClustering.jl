@@ -13,8 +13,8 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 8, "K" => 8, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 100, "Nsim" => 5,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (500.,500.),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
@@ -59,7 +59,7 @@ simulation_params = deepcopy(initial_simulation_params)
 
 network =
     setup_random_large_scale_network(simulation_params["I"],
-        simulation_params["K"], simulation_params["N"], simulation_params["M"],
+        simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"])
 
@@ -105,11 +105,10 @@ plot(processed_results, simulation_params, plot_params_longterm_clusters)
 simulation_params = deepcopy(initial_simulation_params)
 
 simulation_params["I"] = 2*initial_simulation_params["I"]
-simulation_params["K"] = 2*initial_simulation_params["K"]
 
 network =
     setup_random_large_scale_network(simulation_params["I"],
-        simulation_params["K"], simulation_params["N"], simulation_params["M"],
+        simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"])
 

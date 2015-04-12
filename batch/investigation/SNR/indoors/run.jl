@@ -14,8 +14,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 initial_simulation_params = [
     "simulation_name" => "initial",
     "I" => 4, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 1,
-    "geography_size" => (500.,500.),
+    "Ndrops" => 10, "Nsim" => 5,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,

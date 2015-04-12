@@ -15,8 +15,8 @@ SNRs_dB = -20:10:50
 initial_simulation_params = [
     "simulation_name" => "initial",
     "Ic" => 2, "Kc" => 3, "N" => 2, "M" => 2, "d" => 1,
-    "pico_centre_distance" => 150.,
-    "Ndrops" => 10, "Nsim" => 1,
+    "pico_centre_distance" => 100.,
+    "Ndrops" => 10, "Nsim" => 5,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
@@ -41,7 +41,8 @@ initial_simulation_params = [
         "no_coherence_symbols" => 1000,
     ],
     "aux_assignment_params" => [
-        "max_MSs_per_BS" => 1, 
+        "max_no_MSs_per_BS" => 1,
+
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,

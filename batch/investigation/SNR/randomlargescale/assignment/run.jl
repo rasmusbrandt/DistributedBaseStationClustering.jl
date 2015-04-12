@@ -13,8 +13,8 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 15, "K" => 15, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 100, "Nsim" => 5,
+    "I" => 15, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (500.,500.),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
@@ -57,7 +57,7 @@ initial_simulation_params = [
 # Generate network
 network =
     setup_random_large_scale_network(initial_simulation_params["I"],
-        initial_simulation_params["K"], initial_simulation_params["N"], initial_simulation_params["M"],
+        initial_simulation_params["Kc"], initial_simulation_params["N"], initial_simulation_params["M"],
         no_streams=initial_simulation_params["d"],
         geography_size=initial_simulation_params["geography_size"])
 
