@@ -337,6 +337,10 @@ plot_params_longterm_clusters = [
             ("no_clusters", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
+        "Chen2014_ExhaustiveSearch" => [
+            ("no_clusters", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
 
         "GrandCoalitionClustering" => [
             ("no_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),

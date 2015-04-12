@@ -204,7 +204,7 @@ function CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
             sum_N += Ns[k]
 
             # Each MS feeds back all its channels. The feedback matrix thus
-            # requires sum_M symbol intervals, assuming that M > N (see notes).
+            # requires sum_M symbol intervals, assuming that M >= N (see notes).
             quad_sum_M += sum_M
 
             # DL effective channel training.
