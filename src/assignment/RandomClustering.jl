@@ -14,7 +14,7 @@ function RandomClustering(channel, network)
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
 
-    random_partition = Partition()
+    random_partition = Partition([0:(I-1)]) # start with non-cooperative, if the loop below fails to find an IA feasible solution
     random_a = Array(Int, I)
     utilities = zeros(Float64, K, max_d)
     alphas = Array(Float64, K)
