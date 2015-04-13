@@ -26,7 +26,7 @@ plot_params = [
 
         "NaiveIntraclusterWMMSE" => [
             ("weighted_logdet_rates", [ :color => "m", :linestyle => ":", :label => "NaiveIntraclusterWMMSE" ]),
-            ("utilities", [ :color => "m", :linestyle => "-.", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
+            # ("utilities", [ :color => "m", :linestyle => "-.", :label => "NaiveIntraclusterWMMSE (utils.)" ]),
         ],
 
 
@@ -37,7 +37,7 @@ plot_params = [
 
         "NaiveIntraclusterLeakageMinimization" => [
             ("weighted_logdet_rates", [ :color => "gray", :linestyle => ":", :label => "NaiveIntraclusterLeakageMinimization" ]),
-            ("utilities", [ :color => "gray", :linestyle => "-.", :label => "NaiveIntraclusterLeakageMinimization (utils.)" ]),
+            # ("utilities", [ :color => "gray", :linestyle => "-.", :label => "NaiveIntraclusterLeakageMinimization (utils.)" ]),
         ],
 
 
@@ -48,7 +48,7 @@ plot_params = [
 
         "NaiveChen2014_MaxSINR" => [
             ("weighted_logdet_rates", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR" ]),
-            ("utilities", [ :color => "y", :linestyle => "-.", :label => "NaiveChen2014_MaxSINR (utils.)" ]),
+            # ("utilities", [ :color => "y", :linestyle => "-.", :label => "NaiveChen2014_MaxSINR (utils.)" ]),
         ],
 
 
