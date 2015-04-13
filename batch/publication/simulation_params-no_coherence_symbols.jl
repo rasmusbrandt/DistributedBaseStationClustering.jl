@@ -1,4 +1,4 @@
-vs_kmh = linspace(1, 100, 10) # km/h
+vs_kmh = linspace(5, 80, 7) # km/h
 vs = vs_kmh*(1e3/3600) # m/s
 
 fds = vs/(λ*Wc)
