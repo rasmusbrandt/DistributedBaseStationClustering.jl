@@ -1,3 +1,9 @@
+fc = 2.6e9 # GHz
+Wc = 300e3 # kHz
+
+c = 300e6 # m/s
+λ = c/fc # m
+
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 1,
     "geography_size" => (250.,250.),
