@@ -14,6 +14,9 @@ function RandomClustering(channel, network)
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
 
+    # Local RNG
+    local_rng = MersenneTwister(int(time()))
+
     random_partition = Partition([0:(I-1)]) # start with non-cooperative, if the loop below fails to find an IA feasible solution
     random_a = Array(Int, I)
     utilities = zeros(Float64, K, max_d)
@@ -27,7 +30,7 @@ function RandomClustering(channel, network)
         no_iters += 1
 
         # Get random partition by finding random rgs
-        random_a = random_restricted_growth_string(I)
+        random_a = random_restricted_growth_string(I, local_rng)
         random_partition = Partition(random_a)
         utilities, alphas, _ = longterm_utilities(channel, network, Partition(random_a))
         no_utility_calculations += K
@@ -68,7 +71,7 @@ function RandomClustering(channel, network)
 end
 
 # Generate random restricted growth string. See Algorithm H in TAoCP 7.2.1.5.
-function random_restricted_growth_string(I)
+function random_restricted_growth_string(I, local_rng)
     a = Array(Int, I); b = Array(Int, I)
     for i = 1:I
         if i == 1
@@ -76,7 +79,7 @@ function random_restricted_growth_string(I)
             a[1] = 0
         else
             b[i] = 1 + maximum(a[1:(i-1)])
-            a[i] = ifloor((b[i] + 1)*rand())
+            a[i] = ifloor((b[i] + 1)*rand(local_rng))
         end
     end
     return a

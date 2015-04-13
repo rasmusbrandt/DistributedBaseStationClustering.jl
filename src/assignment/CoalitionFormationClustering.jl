@@ -80,8 +80,8 @@ function CoalitionFormationClustering_Individual(channel, network)
             ordered_BS_list = sortperm(state.BS_utilities, rev=true)
         elseif search_order == :fair
             ordered_BS_list = sortperm(state.BS_utilities, rev=false)
-        elseif search_order == :random
-            ordered_BS_list = randperm(I)
+        elseif search_order == :lexicographic
+            ordered_BS_list = 1:I
         end
 
         deviation_performed = falses(I)
