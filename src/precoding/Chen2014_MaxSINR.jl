@@ -7,7 +7,8 @@
 
 immutable Chen2014_MaxSINRState
     U::Array{Matrix{Complex128},1}
-    W::Array{Hermitian{Complex128},1} # these are only used for rate calculations
+    W::Array{Hermitian{Complex128},1} # w/ intracluster CSI available
+    Z::Array{Hermitian{Complex128},1} # w/o intracluster CSI available
     V::Array{Matrix{Complex128},1}
 end
 
@@ -31,9 +32,11 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     state = Chen2014_MaxSINRState(
         initial_receivers(channel, Ps, sigma2s, ds, assignment, aux_params),
         Array(Hermitian{Complex128}, K),
+        Array(Hermitian{Complex128}, K),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params)
     )
     objective = Float64[]
+    utilities = Array(Float64, K, max_d, aux_params["max_iters"])
     logdet_rates = Array(Float64, K, max_d, aux_params["max_iters"])
     MMSE_rates = Array(Float64, K, max_d, aux_params["max_iters"])
     weighted_logdet_rates = Array(Float64, K, max_d, aux_params["max_iters"])
@@ -47,10 +50,11 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         iters += 1
 
         # Results after this iteration
+        utilities[:,:,iters] = calculate_utilities(state, alphas)
+        push!(objective, sum(utilities[:,:,iters]))
         logdet_rates[:,:,iters] = calculate_logdet_rates(state)
         MMSE_rates[:,:,iters] = calculate_MMSE_rates(state)
         weighted_logdet_rates[:,:,iters] = calculate_weighted_logdet_rates(state, alphas)
-        push!(objective, sum(weighted_logdet_rates[:,:,iters]))
         weighted_MMSE_rates[:,:,iters] = calculate_weighted_MMSE_rates(state, alphas)
         allocated_power[:,:,iters] = calculate_allocated_power(state)
 
@@ -88,6 +92,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     results = PrecodingResults()
     if aux_params["output_protocol"] == :all_iterations
         results["objective"] = objective
+        results["utilities"] = utilities
         results["logdet_rates"] = logdet_rates
         results["MMSE_rates"] = MMSE_rates
         results["weighted_logdet_rates"] = weighted_logdet_rates
@@ -95,6 +100,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         results["allocated_power"] = allocated_power
     elseif aux_params["output_protocol"] == :final_iteration
         results["objective"] = objective[iters]
+        results["utilities"] = utilities[:,:,iters]
         results["logdet_rates"] = logdet_rates[:,:,iters]
         results["MMSE_rates"] = MMSE_rates[:,:,iters]
         results["weighted_logdet_rates"] = weighted_logdet_rates[:,:,iters]
@@ -141,8 +147,12 @@ function update_MSs!(state::Chen2014_MaxSINRState,
             state.U[k][:,n] = u/norm(u,2)
         end
 
-        # True MSE weights (for rate calculation only)
+        # Intracluster receiver and MSE weight
         F = channel.H[k,i]*state.V[k]
+        U = Phi_imperfect\F
+        state.Z[k] = Hermitian((eye(ds[k]) - U'*F)\eye(ds[k]))
+
+        # True MMSE receiver and MMSE weight
         Ummse = Phi_perfect\F
         state.W[k] = Hermitian((eye(ds[k]) - Ummse'*F)\eye(ds[k]))
     end; end
@@ -185,4 +195,29 @@ function update_BSs!(state::Chen2014_MaxSINRState,
             end
         end
     end
+end
+
+# Weighted rates when the spatial characteristics of the out-of-cluster
+# interference is unknown to the receivers, but all intracluster interference
+# is perfectly known.
+function calculate_utilities(state::Chen2014_MaxSINRState, alphas)
+    K = length(state.V)
+    ds = Int[ size(state.V[k], 2) for k = 1:K ]; max_d = maximum(ds)
+
+    utilities = zeros(Float64, K, max_d)
+    for k = 1:K; if ds[k] > 0
+        # W is p.d., so we should only get abs eigenvalues. Numerically we may
+        # get some imaginary noise however. Also, numerically the eigenvalues
+        # may be less than 1, so we need to handle that to not get negative
+        # rates.
+        r = alphas[k]*log2(max(1, abs(eigvals(state.Z[k]))))
+
+        if ds[k] < max_d
+            utilities[k,:] = cat(1, r, zeros(Float64, max_d - ds[k]))
+        else
+            utilities[k,:] = r
+        end
+    end; end
+
+    return utilities
 end

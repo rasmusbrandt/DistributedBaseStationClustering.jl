@@ -12,8 +12,8 @@
 
 immutable IntraclusterWMMSEState
     U::Array{Matrix{Complex128},1}
-    W::Array{Hermitian{Complex128},1} # for rate calculations
-    Z::Array{Hermitian{Complex128},1} # MSE weights actually used
+    W::Array{Hermitian{Complex128},1} # w/ intracluster CSI available
+    Z::Array{Hermitian{Complex128},1} # w/o intracluster CSI available
     V::Array{Matrix{Complex128},1}
 end
 
