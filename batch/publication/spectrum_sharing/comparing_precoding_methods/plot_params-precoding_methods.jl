@@ -32,10 +32,12 @@ plot_params = [
 
         "RobustIntraclusterLeakageMinimization" => [
             ("weighted_logdet_rates", [ :color => "gray", :linestyle => "-", :label => "RobustIntraclusterLeakageMinimization" ]),
+            ("utilities", [ :color => "gray", :linestyle => "--", :label => "RobustIntraclusterLeakageMinimization (utils.)" ]),
         ],
 
         "NaiveIntraclusterLeakageMinimization" => [
             ("weighted_logdet_rates", [ :color => "gray", :linestyle => ":", :label => "NaiveIntraclusterLeakageMinimization" ]),
+            ("utilities", [ :color => "gray", :linestyle => ".", :label => "NaiveIntraclusterLeakageMinimization (utils.)" ]),
         ],
 
 
