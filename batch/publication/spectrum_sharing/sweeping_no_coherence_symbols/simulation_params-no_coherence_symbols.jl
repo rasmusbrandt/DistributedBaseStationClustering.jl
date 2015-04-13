@@ -1,5 +1,5 @@
 fc = 2.6e9 # GHz
-Wc = 270e3 # kHz
+Wc = 300e3 # kHz
 
 vs_kmh = linspace(1, 100, 10) # km/h
 vs = vs_kmh*(1e3/3600) # m/s

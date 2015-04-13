@@ -37,8 +37,8 @@ simulation_params = [
         "CoalitionFormationClustering_Individual:stability_type" => :contractual,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "eigendirection",
-        "stop_crit" => 1e-2,
+        "initial_precoders" => "dft",
+        "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
 ]
