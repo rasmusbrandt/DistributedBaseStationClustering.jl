@@ -1,5 +1,7 @@
 #!/usr/bin/env julia
 
+SRAND_SEED = 938327343
+
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
@@ -20,7 +22,7 @@ end
 # Simulation (both MinWLI and WMMSE)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
-srand(725242)
+srand(SRAND_SEED)
 simulation_params["simulation_name"] = "SNR-large_network-assignment-MinWLI_$(start_time)"
 simulation_params["precoding_methods"] = [ RobustIntraclusterLeakageMinimization ]
 network =
@@ -43,6 +45,7 @@ save("$(simulation_params["simulation_name"]).jld",
      "raw_precoding_results", raw_precoding_results1,
      "raw_assignment_results", raw_assignment_results1)
 
+srand(SRAND_SEED)
 simulation_params["simulation_name"] = "SNR-large_network-assignment-WMMSE_$(start_time)"
 simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]
 network =

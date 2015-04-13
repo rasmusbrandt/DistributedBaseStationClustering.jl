@@ -1,5 +1,7 @@
 #!/usr/bin/env julia
 
+SRAND_SEED = 9825242
+
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
@@ -17,7 +19,7 @@ plot_params["axes"][:xlabel] = "MS speed [km/h]"
 # Simulation (both MinWLI and WMMSE)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
-srand(725242)
+srand(SRAND_SEED)
 simulation_params["simulation_name"] = "precoding_methods-large_network-precoding_$(start_time)"
 network =
     setup_random_large_scale_network(simulation_params["I"],
