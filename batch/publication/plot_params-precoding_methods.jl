@@ -9,7 +9,6 @@ plot_params = [
     ],
 
     "axes" => [
-        :xlabel => "Signal-to-noise ratio [dB]",
         :ylabel => "Average sum rate [bits/s/Hz]",
     ],
 

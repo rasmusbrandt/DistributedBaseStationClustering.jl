@@ -203,8 +203,8 @@ plot(processed_results, simulation_params, plot_params_longterm_iters)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
-simulation_params["simulation_name"] = "individual-random,nash"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
+simulation_params["simulation_name"] = "individual-lexicographic,nash"
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :lexicographic
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
 
 srand(seed)
@@ -220,8 +220,8 @@ plot(processed_results, simulation_params, plot_params_longterm_iters)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
-simulation_params["simulation_name"] = "individual-random,individual"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
+simulation_params["simulation_name"] = "individual-lexicographic,individual"
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :lexicographic
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
 
 srand(seed)
@@ -237,8 +237,8 @@ plot(processed_results, simulation_params, plot_params_longterm_iters)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
-simulation_params["simulation_name"] = "individual-random,contractual"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
+simulation_params["simulation_name"] = "individual-lexicographic,contractual"
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :lexicographic
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
 
 srand(seed)

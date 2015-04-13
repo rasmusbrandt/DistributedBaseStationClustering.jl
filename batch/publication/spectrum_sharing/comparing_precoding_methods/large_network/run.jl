@@ -4,9 +4,14 @@ include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
 
+include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-large_network.jl"))
-include(joinpath(dirname(@__FILE__), "../simulation_params-precoding_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../plot_params-precoding_methods.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-precoding_methods.jl"))
+include(joinpath(dirname(@__FILE__), "../../../plot_params-precoding_methods.jl"))
+
+##########################################################################
+# Plot setup
+plot_params["axes"][:xlabel] = "MS speed [km/h]"
 
 ##########################################################################
 # Simulation (both MinWLI and WMMSE)

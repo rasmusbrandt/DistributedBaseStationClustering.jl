@@ -1,44 +1,8 @@
-simulation_params = [
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 1,
-    "geography_size" => (250.,250.),
-    "MS_serving_BS_distance" => 50.,
-    "assignment_methods" => [
-        # ExhaustiveSearchClustering,
-        BranchAndBoundClustering,
+simulation_params["I"] = 25
+simulation_params["Kc"] = 1
+simulation_params["N"] = 2
+simulation_params["M"] = 4
+simulation_params["d"] = 1
 
-        CoalitionFormationClustering_Group,
-        CoalitionFormationClustering_Individual,
-
-        GreedyClustering_Single,
-        GreedyClustering_Multiple,
-
-        Chen2014_ExhaustiveSearch,
-        # Peters2012_Heuristic,
-
-        GrandCoalitionClustering,
-        RandomClustering,
-        NoClustering,
-    ],
-    "aux_assignment_params" => [
-        "max_MSs_per_BS" => 1,
-
-        "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
-        "replace_E1_utility_with_lower_bound" => false,
-
-        "BranchAndBoundClustering:bracket_E1" => false,
-
-        "CoalitionFormationClustering_Group:max_merge_size" => 3,
-        "CoalitionFormationClustering_Group:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:search_budget" => 10,
-        "CoalitionFormationClustering_Individual:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:stability_type" => :contractual,
-    ],
-    "aux_precoding_params" => [
-        "initial_precoders" => "dft",
-        "stop_crit" => 1e-3,
-        "max_iters" => 1000,
-    ],
-]
+unshift!(simulation_params["assignment_methods"], BranchAndBoundClustering)
+unshift!(simulation_params["assignment_methods"], Chen2014_ExhaustiveSearch)
