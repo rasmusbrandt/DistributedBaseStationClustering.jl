@@ -62,6 +62,7 @@ save("$(simulation_params["simulation_name"]).jld",
 
 ##########################################################################
 # Generic plots
+simulation_params["simulation_name"] = "SNR-large_network-assignment_$(start_time)"
 for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
     processed_results = postprocess(raw_assignment_results1, simulation_params, p)
     plot(processed_results, simulation_params, p)
