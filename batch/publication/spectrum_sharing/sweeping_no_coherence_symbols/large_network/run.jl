@@ -10,7 +10,7 @@ include(joinpath(dirname(@__FILE__), "../../../plot_params.jl"))
 
 ##########################################################################
 # Plot setup
-for p in (plot_params_instantaneous_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+for p in (plot_params_instantaneous_coord_sumrate, plot_params_instantaneous_noncoord_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
     p["axes"][:xlabel] = "MS speed [km/h]"
     p["xvals"] = vs_kmh
 end
@@ -31,8 +31,10 @@ network =
 raw_precoding_results1, raw_assignment_results1 =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
+processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_coord_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_coord_sumrate)
+processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_noncoord_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_noncoord_sumrate)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",
@@ -51,8 +53,10 @@ network =
 raw_precoding_results2, raw_assignment_results2 =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
+processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_coord_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_coord_sumrate)
+processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_noncoord_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_noncoord_sumrate)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",

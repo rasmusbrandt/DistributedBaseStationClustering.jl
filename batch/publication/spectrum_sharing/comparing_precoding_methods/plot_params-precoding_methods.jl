@@ -1,7 +1,7 @@
 plot_params = [
     "plot_name" => "",
 
-    "objective" => :avgrate,
+    "objective" => :sumrate,
 
     "figure" => [
         :figsize => (8,5),
@@ -10,12 +10,12 @@ plot_params = [
 
     "axes" => [
         :xlabel => "Signal-to-noise ratio [dB]",
-        :ylabel => "Average user rate after precoding [bits/s/Hz]",
+        :ylabel => "Average sum rate [bits/s/Hz]",
     ],
 
     "legend" => [
         :loc => "best",
-        :fontsize => 10,
+        :fontsize => 6,
     ],
 
     "methods" => [
