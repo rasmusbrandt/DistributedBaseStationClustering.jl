@@ -19,7 +19,7 @@ for p in (plot_params_instantaneous_coord_sumrate, plot_params_instantaneous_non
 end
 
 ##########################################################################
-# Simulation (both MinWLI and WMMSE)
+# Simulation (MinWLI)
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 srand(SRAND_SEED)
@@ -45,6 +45,16 @@ save("$(simulation_params["simulation_name"]).jld",
      "raw_precoding_results", raw_precoding_results1,
      "raw_assignment_results", raw_assignment_results1)
 
+##########################################################################
+# Generic plots
+simulation_params["simulation_name"] = "SNR-large_network-assignment_$(start_time)"
+for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+    processed_results = postprocess(raw_assignment_results1, simulation_params, p)
+    plot(processed_results, simulation_params, p)
+end
+
+##########################################################################
+# Simulation (WMMSE)
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "SNR-large_network-assignment-WMMSE_$(start_time)"
 simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]
@@ -67,11 +77,3 @@ save("$(simulation_params["simulation_name"]).jld",
      "simulation_params", clean_simulation_params_for_jld(simulation_params),
      "raw_precoding_results", raw_precoding_results2,
      "raw_assignment_results", raw_assignment_results2)
-
-##########################################################################
-# Generic plots
-simulation_params["simulation_name"] = "SNR-large_network-assignment_$(start_time)"
-for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
-    processed_results = postprocess(raw_assignment_results1, simulation_params, p)
-    plot(processed_results, simulation_params, p)
-end
