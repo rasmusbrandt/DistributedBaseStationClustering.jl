@@ -20,7 +20,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "SNR-precoding_$(start_time)",
-    "I" => 8, "K" => 8, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "geography_size" => (250.,250.),
     "assignment_methods" => [
@@ -57,7 +57,7 @@ simulation_params = [
 ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
-        simulation_params["K"], simulation_params["N"], simulation_params["M"],
+        simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"])
 
