@@ -1,4 +1,4 @@
-fc = 2.6e9 # GHz
+fc = 5e9 # GHz
 Wc = 300e3 # kHz
 
 c = 300e6 # m/s
@@ -8,23 +8,6 @@ simulation_params = [
     "Ndrops" => 10, "Nsim" => 1,
     "geography_size" => (250.,250.),
     "MS_serving_BS_distance" => 50.,
-    "assignment_methods" => [
-        # ExhaustiveSearchClustering,
-        # BranchAndBoundClustering,
-
-        CoalitionFormationClustering_Group,
-        CoalitionFormationClustering_Individual,
-
-        GreedyClustering_Single,
-        GreedyClustering_Multiple,
-
-        # Chen2014_ExhaustiveSearch,
-        # Peters2012_Heuristic,
-
-        GrandCoalitionClustering,
-        RandomClustering,
-        NoClustering,
-    ],
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
 

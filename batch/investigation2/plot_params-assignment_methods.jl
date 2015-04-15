@@ -1,5 +1,5 @@
-plot_params_instantaneous_coord_sumrate = [
-    "plot_name" => "instantaneous-coord",
+plot_params_instantaneous_full_sumrate = [
+    "plot_name" => "instantaneous-full",
 
     "objective" => :sumrate,
 
@@ -19,56 +19,56 @@ plot_params_instantaneous_coord_sumrate = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("weighted_logdet_rates", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("weighted_logdet_rates", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("weighted_logdet_rates", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("weighted_logdet_rates_full", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "GreedyClustering_Single" => [
-            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
 
         "Chen2014_ExhaustiveSearch" => [
-            ("weighted_logdet_rates", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+            ("weighted_logdet_rates_full", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
 
         "Peters2012_Heuristic" => [
-            ("weighted_logdet_rates", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("weighted_logdet_rates_full", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
 
 
         "GreedyClustering_Multiple" => [
-            ("weighted_logdet_rates", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
         "RandomClustering" => [
-            ("weighted_logdet_rates", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("weighted_logdet_rates_full", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("weighted_logdet_rates", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("weighted_logdet_rates_full", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]
-plot_params_instantaneous_noncoord_sumrate = [
-    "plot_name" => "instantaneous-noncoord",
+plot_params_instantaneous_partial_sumrate = [
+    "plot_name" => "instantaneous-partial",
 
     "objective" => :sumrate,
 
@@ -88,51 +88,120 @@ plot_params_instantaneous_noncoord_sumrate = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("utilities", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("weighted_logdet_rates_partial", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("utilities", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("weighted_logdet_rates_partial", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("utilities", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("weighted_logdet_rates_partial", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("utilities", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("weighted_logdet_rates_partial", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("weighted_logdet_rates_partial", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "GreedyClustering_Single" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("weighted_logdet_rates_partial", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
 
         "Chen2014_ExhaustiveSearch" => [
-            ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+            ("weighted_logdet_rates_partial", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
         ],
 
         "Peters2012_Heuristic" => [
-            ("utilities", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("weighted_logdet_rates_partial", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
 
 
         "GreedyClustering_Multiple" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("weighted_logdet_rates_partial", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
         "RandomClustering" => [
-            ("utilities", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("weighted_logdet_rates_partial", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("utilities", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("weighted_logdet_rates_partial", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+        ],
+    ]
+]
+plot_params_instantaneous_LB_sumrate = [
+    "plot_name" => "instantaneous-LB",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :ylabel => "Average sum rate [bits/s/Hz]",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "ExhaustiveSearchClustering" => [
+            ("weighted_logdet_rates_LB", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+        ],
+
+        "BranchAndBoundClustering" => [
+            ("weighted_logdet_rates_LB", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+        ],
+
+
+        "CoalitionFormationClustering_Group" => [
+            ("weighted_logdet_rates_LB", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        ],
+
+        "CoalitionFormationClustering_Individual" => [
+            ("weighted_logdet_rates_LB", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+
+        "GrandCoalitionClustering" => [
+            ("weighted_logdet_rates_LB", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+        ],
+
+        "GreedyClustering_Single" => [
+            ("weighted_logdet_rates_LB", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+        ],
+
+
+        "Chen2014_ExhaustiveSearch" => [
+            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        ],
+
+        "Peters2012_Heuristic" => [
+            ("weighted_logdet_rates_LB", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+        ],
+
+
+        "GreedyClustering_Multiple" => [
+            ("weighted_logdet_rates_LB", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+        ],
+
+        "RandomClustering" => [
+            ("weighted_logdet_rates_LB", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+        ],
+
+        "NoClustering" => [
+            ("weighted_logdet_rates_LB", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]

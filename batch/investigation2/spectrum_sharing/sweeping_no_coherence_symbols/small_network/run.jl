@@ -9,6 +9,7 @@ using HDF5, JLD
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-no_coherence_symbols.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
 ##########################################################################
@@ -34,10 +35,12 @@ network =
 raw_precoding_results1, raw_assignment_results1 =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_coord_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_coord_sumrate)
-processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_noncoord_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_noncoord_sumrate)
+processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_full_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_full_sumrate)
+processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_partial_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_partial_sumrate)
+processed_results = postprocess(raw_precoding_results1, simulation_params, plot_params_instantaneous_LB_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_LB_sumrate)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",
@@ -67,10 +70,12 @@ network =
 raw_precoding_results2, raw_assignment_results2 =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_coord_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_coord_sumrate)
-processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_noncoord_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_noncoord_sumrate)
+processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_full_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_full_sumrate)
+processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_partial_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_partial_sumrate)
+processed_results = postprocess(raw_precoding_results2, simulation_params, plot_params_instantaneous_LB_sumrate)
+plot(processed_results, simulation_params, plot_params_instantaneous_LB_sumrate)
 
 println("-- Saving $(simulation_params["simulation_name"]) results")
 save("$(simulation_params["simulation_name"]).jld",

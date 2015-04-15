@@ -15,7 +15,8 @@ initial_simulation_params = [
     "simulation_name" => "initial",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
-    "geography_size" => (500.,500.),
+    "geography_size" => (250.,250.),
+    "MS_serving_BS_distance" => 50.,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
