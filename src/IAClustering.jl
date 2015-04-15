@@ -48,6 +48,7 @@ include("assignment/NoClustering.jl")
 include("assignment/Peters2012_Heuristic.jl")
 include("assignment/RandomClustering.jl")
 
+include("precoding/precoding.jl")
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
