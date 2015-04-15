@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-include("../../../../src/IAClustering.jl")
+include("../../../src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
 include("../plot_params.jl")
 

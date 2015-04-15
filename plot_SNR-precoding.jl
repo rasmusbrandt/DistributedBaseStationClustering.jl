@@ -80,9 +80,9 @@ plot_params = [
         ],
 
         "NaiveChen2014_MaxSINR" => [
-            ("weighted_logdet_rates_full", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR (full CSI)" ]),
-            ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "-.", :label => "NaiveChen2014_MaxSINR (partial CSI)" ]),
-            ("weighted_logdet_rates_LB", [ :color => "y", :linestyle => "-.", :label => "NaiveChen2014_MaxSINR (lower bound)" ]),
+            ("weighted_logdet_rates_full", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (full CSI)" ]),
+            ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (partial CSI)" ]),
+            ("weighted_logdet_rates_LB", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR (lower bound)" ]),
         ],
 
 
@@ -91,9 +91,9 @@ plot_params = [
         ],
 
         "Eigenprecoding" => [
-            ("intercell_tdma_weighted_logdet_rates", [ :color => "lime", :linestyle => "-", :label => "TDMA" ]),
-            ("intracell_tdma_weighted_logdet_rates", [ :color => "lime", :linestyle => "-.",  :label => "Intracell TDMA" ]),
-            ("uncoord_weighted_logdet_rates", [ :color => "k", :linestyle => "-", :label => "Uncoord. transm." ]),
+            ("intercell_tdma_weighted_logdet_rates", [ :color => "k", :linestyle => "-", :label => "TDMA" ]),
+            ("intracell_tdma_weighted_logdet_rates", [ :color => "k", :linestyle => "--",  :label => "Intracell TDMA" ]),
+            ("uncoord_weighted_logdet_rates", [ :color => "k", :linestyle => ":", :label => "Uncoord. transm." ]),
         ],
     ]
 ]

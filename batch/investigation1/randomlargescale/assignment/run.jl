@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-require("../../../../../src/IAClustering.jl")
+require("../../../../src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
 require("../../plot_params.jl")
 
@@ -60,7 +60,8 @@ network =
     setup_random_large_scale_network(initial_simulation_params["I"],
         initial_simulation_params["Kc"], initial_simulation_params["N"], initial_simulation_params["M"],
         no_streams=initial_simulation_params["d"],
-        geography_size=initial_simulation_params["geography_size"])
+        geography_size=initial_simulation_params["geography_size"],
+        MS_serving_BS_distance=initial_simulation_params["MS_serving_BS_distance"])
 
 ##########################################################################
 # Compare different settings for group-based coalition formation

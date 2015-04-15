@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-require("../../../../../../src/IAClustering.jl")
+require("../../../../../src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
 require("../../../plot_params.jl")
 
@@ -62,7 +62,8 @@ network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_size=simulation_params["geography_size"])
+        geography_size=simulation_params["geography_size"],
+        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
 # Include high complexity methods for these simulations only
 unshift!(simulation_params["assignment_methods"], Chen2014_ExhaustiveSearch)

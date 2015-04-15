@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-require("../../../../src/IAClustering.jl")
+require("../../../src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
 require("../plot_params.jl")
 

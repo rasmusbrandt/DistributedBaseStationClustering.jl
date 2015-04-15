@@ -23,6 +23,7 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
     "geography_size" => (250.,250.),
+    "MS_serving_BS_distance" => 50.,
     "assignment_methods" => [
         BranchAndBoundClustering,
     ],
@@ -59,7 +60,8 @@ network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_size=simulation_params["geography_size"])
+        geography_size=simulation_params["geography_size"],
+        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:precoding_methods)

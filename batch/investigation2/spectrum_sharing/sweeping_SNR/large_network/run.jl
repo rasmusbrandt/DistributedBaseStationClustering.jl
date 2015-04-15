@@ -7,14 +7,14 @@ using IAClustering, CoordinatedPrecoding
 using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-large_network.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-SNR.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
 ##########################################################################
 # Plot setup
-for p in (plot_params_instantaneous_coord_sumrate, plot_params_instantaneous_noncoord_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate, plot_params_instantaneous_LB_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
     p["axes"][:xlabel] = "Signal-to-noise ratio [dB]"
 end
 
