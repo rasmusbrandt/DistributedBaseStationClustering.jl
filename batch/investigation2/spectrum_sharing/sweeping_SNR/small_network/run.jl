@@ -15,7 +15,7 @@ include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl
 ##########################################################################
 # Plot setup
 for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate, plot_params_instantaneous_LB_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
-    p["axes"][:xlabel] = "Signal-to-noise ratio [dB]"
+    p["axes"][:xlabel] = "Transmit power [dBm]"
 end
 
 ##########################################################################

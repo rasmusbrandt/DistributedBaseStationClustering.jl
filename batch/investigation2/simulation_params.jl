@@ -7,7 +7,7 @@ c = 300e6 # m/s
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 1,
     "geography_size" => (250.,250.),
-    "MS_serving_BS_distance" => 50.,
+    "MS_serving_BS_distance" => nothing, # random placement of MSs with greedy user association
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
 

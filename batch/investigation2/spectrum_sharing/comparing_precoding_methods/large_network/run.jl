@@ -14,7 +14,7 @@ include(joinpath(dirname(@__FILE__), "../../../plot_params-precoding_methods.jl"
 
 ##########################################################################
 # Plot setup
-plot_params["axes"][:xlabel] = "Signal-to-noise ratio [dB]"
+plot_params["axes"][:xlabel] = "Transmit power [dBm]"
 
 ##########################################################################
 # Simulation (both MinWLI and WMMSE)
