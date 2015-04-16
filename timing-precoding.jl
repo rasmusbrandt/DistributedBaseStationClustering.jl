@@ -20,6 +20,7 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
     "d" => 1,
     "Ntest" => 100,
+    "assignment_methods" => [ GrandCoalitionClustering ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,

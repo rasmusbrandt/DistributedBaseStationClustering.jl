@@ -44,7 +44,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
                 end; end
             end
 
-            if objective > best_objective
+            if objective >= best_objective
                 best_objective = objective
                 best_partition = partition
             end

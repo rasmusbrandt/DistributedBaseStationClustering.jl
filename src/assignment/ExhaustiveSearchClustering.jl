@@ -21,7 +21,7 @@ function ExhaustiveSearchClustering(channel, network)
     no_utility_calculations = 0
     no_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
-    best_alphas = Array(Float64, K); best_partition = Partition()
+    best_alphas = Array(Float64, K); best_partition = Partition([0:(I-1)])
     for partition in PartitionIterator(I)
         no_utility_calculations += K
 
@@ -29,7 +29,7 @@ function ExhaustiveSearchClustering(channel, network)
         utilities, alphas, _ = longterm_utilities(channel, network, partition)
 
         objective = sum(utilities)
-        if objective > best_objective
+        if objective >= best_objective
             best_objective = objective
             best_utilities = utilities
             best_alphas = alphas

@@ -56,7 +56,7 @@ for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculat
 end
 
 ##########################################################################
-# Simulation (MinWLI)
+# Simulation (WMMSE)
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "SNR-small_network-assignment-WMMSE_$(start_time)"
 simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]

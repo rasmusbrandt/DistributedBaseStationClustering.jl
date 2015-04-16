@@ -157,7 +157,7 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         end
 
         # "Robust" equation solving for potentially singular effective covariance matrix
-        robust_solve(A, B) = try; A\B; catch e; (if isa(e, Base.LinAlg.SingularException); zeros(B); end); end
+        robust_solve(A, B) = try; A\B; catch e; (if isa(e, Base.LinAlg.SingularException); pinv(A)*B; end); end
 
         # Full CSI used for receive filtering. Intracluster CSI tracked.
         # (This is an achievable rate.)
