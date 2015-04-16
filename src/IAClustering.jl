@@ -12,6 +12,10 @@ import Lumberjack, PyCall
 
 PyCall.@pyimport scipy.special as scipy_special
 
+# Since my covariance matrices are small (2x2, 4x4, etc.), there is no
+# gain from using multithreaded BLAS!
+blas_set_num_threads(1)
+
 export
     # assignment
     BranchAndBoundClustering,
