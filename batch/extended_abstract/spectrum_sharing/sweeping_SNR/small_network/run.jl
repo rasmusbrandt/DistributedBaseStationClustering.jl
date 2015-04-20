@@ -8,7 +8,7 @@ using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-raw-small_network.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
@@ -23,7 +23,7 @@ end
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 srand(SRAND_SEED)
-simulation_params["simulation_name"] = "small_network-MinWLI"
+simulation_params["simulation_name"] = "raw-small_network-MinWLI"
 simulation_params["precoding_methods"] = [ RobustIntraclusterLeakageMinimization ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
@@ -49,7 +49,7 @@ save("$(simulation_params["simulation_name"]).jld",
 
 ##########################################################################
 # Generic plots
-simulation_params["simulation_name"] = "small_network"
+simulation_params["simulation_name"] = "raw-small_network"
 for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
     processed_results = postprocess(raw_assignment_results1, simulation_params, p)
     plot(processed_results, simulation_params, p)
@@ -58,7 +58,7 @@ end
 ##########################################################################
 # Simulation (WMMSE)
 srand(SRAND_SEED)
-simulation_params["simulation_name"] = "small_network-WMMSE"
+simulation_params["simulation_name"] = "raw-small_network-WMMSE"
 simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
