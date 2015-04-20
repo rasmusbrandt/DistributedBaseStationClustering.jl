@@ -36,11 +36,6 @@ postprocess_params = [
             ("no_clusters",),
         ],
 
-        "GreedyClustering_Multiple" => [
-            ("utilities",),
-            ("no_clusters",),
-        ],
-
         "GrandCoalitionClustering" => [
             ("utilities",),
             ("no_clusters",),
@@ -78,7 +73,6 @@ ax1 = fig1[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 ax1[:plot](transmit_powers_dBm, results_mean["ExhaustiveSearchClustering"]["utilities"], color="Coral", linestyle="-", label="Exhaustive search (proposed utility model)")
 ax1[:plot](transmit_powers_dBm, results_mean["Chen2014_ExhaustiveSearch"]["utilities"], color="DodgerBlue", linestyle="-", label="Exhaustive search (utility model in [Chen2014])")
 ax1[:plot](transmit_powers_dBm, results_mean["CoalitionFormationClustering_Individual"]["utilities"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax1[:plot](transmit_powers_dBm, results_mean["GreedyClustering_Multiple"]["utilities"], color="DarkOrchid", linestyle="-", label="Centralized greedy algorithm")
 ax1[:plot](transmit_powers_dBm, results_mean["RandomClustering"]["utilities"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
 ax1[:plot](transmit_powers_dBm, results_mean["NoClustering"]["utilities"], color="Pink", linestyle="-", label="Singleton coalitions")
 
@@ -100,7 +94,6 @@ ax2 = fig2[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 ax2[:plot](transmit_powers_dBm, results_mean["ExhaustiveSearchClustering"]["no_clusters"], color="Coral", linestyle="-", label="Exhaustive search (proposed utility model)")
 ax2[:plot](transmit_powers_dBm, results_mean["Chen2014_ExhaustiveSearch"]["no_clusters"], color="DodgerBlue", linestyle="-", label="Exhaustive search (utility model in [Chen2014])")
 ax2[:plot](transmit_powers_dBm, results_mean["CoalitionFormationClustering_Individual"]["no_clusters"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax2[:plot](transmit_powers_dBm, results_mean["GreedyClustering_Multiple"]["no_clusters"], color="DarkOrchid", linestyle="-", label="Centralized greedy algorithm")
 ax2[:plot](transmit_powers_dBm, results_mean["RandomClustering"]["no_clusters"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
 ax2[:plot](transmit_powers_dBm, results_mean["NoClustering"]["no_clusters"], color="Pink", linestyle="-", label="Singleton coalitions")
 

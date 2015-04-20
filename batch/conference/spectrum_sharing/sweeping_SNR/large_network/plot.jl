@@ -26,11 +26,6 @@ postprocess_params_assignment = [
             ("no_clusters",),
         ],
 
-        "GreedyClustering_Multiple" => [
-            ("utilities",),
-            ("no_clusters",),
-        ],
-
         "RandomClustering" => [
             ("utilities",),
             ("no_clusters",),
@@ -48,10 +43,6 @@ postprocess_params_precoding = [
     "objective" => :sumrate,
     "methods" => [
         "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates_partial",),
-        ],
-
-        "GreedyClustering_Multiple" => [
             ("weighted_logdet_rates_partial",),
         ],
 
@@ -87,7 +78,6 @@ fig1 = PyPlot.figure()
 ax1 = fig1[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["CoalitionFormationClustering_Individual"]["utilities"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax1[:plot](transmit_powers_dBm, results_assignment_mean["GreedyClustering_Multiple"]["utilities"], color="DarkOrchid", linestyle="-", label="Centralized greedy algorithm")
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["RandomClustering"]["utilities"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["NoClustering"]["utilities"], color="Pink", linestyle="-", label="Singleton coalitions")
 
@@ -107,7 +97,6 @@ fig2 = PyPlot.figure()
 ax2 = fig2[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 ax2[:plot](transmit_powers_dBm, results_assignment_mean["CoalitionFormationClustering_Individual"]["no_clusters"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax2[:plot](transmit_powers_dBm, results_assignment_mean["GreedyClustering_Multiple"]["no_clusters"], color="DarkOrchid", linestyle="-", label="Centralized greedy algorithm")
 ax2[:plot](transmit_powers_dBm, results_assignment_mean["RandomClustering"]["no_clusters"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
 ax2[:plot](transmit_powers_dBm, results_assignment_mean["NoClustering"]["no_clusters"], color="Pink", linestyle="-", label="Singleton coalitions")
 
@@ -127,7 +116,6 @@ fig3 = PyPlot.figure()
 ax3 = fig3[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_partial"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["GreedyClustering_Multiple"]["weighted_logdet_rates_partial"], color="DarkOrchid", linestyle="-", label="Centralized greedy algorithm")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["RandomClustering"]["weighted_logdet_rates_partial"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_partial"], color="Pink", linestyle="-", label="Singleton coalitions")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_partial"], color="Maroon", linestyle="-", label="Grand coalition")
