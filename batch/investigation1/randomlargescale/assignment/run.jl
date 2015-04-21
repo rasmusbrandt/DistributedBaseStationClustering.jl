@@ -13,10 +13,10 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 15, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 25, "Kc" => 1, "N" => 4, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (250.,250.),
-    "MS_serving_BS_distance" => 50.,
+    "MS_serving_BS_distance" => nothing,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
@@ -38,20 +38,21 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "no_coherence_symbols" => 1440,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
+
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
         "replace_E1_utility_with_lower_bound" => false,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "eigendirection",
+        "initial_precoders" => "dft",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
-    "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
+    "independent_variable" => (set_transmit_powers_dBm!, -80:10:0),
 ]
 
 ##########################################################################
