@@ -14,7 +14,7 @@ include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl
 ##########################################################################
 # Load data
 using HDF5, JLD
-data = load("raw-large_network-WMMSE.jld")
+data = load("raw-large_network.jld")
 
 ##########################################################################
 # Perform post processing

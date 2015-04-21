@@ -11,6 +11,7 @@ plot_params_instantaneous_full_sumrate = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Average sum rate [bits/s/Hz]",
     ],
 
@@ -82,6 +83,7 @@ plot_params_instantaneous_partial_sumrate = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Average sum rate [bits/s/Hz]",
     ],
 
@@ -153,6 +155,7 @@ plot_params_instantaneous_LB_sumrate = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Average sum rate [bits/s/Hz]",
     ],
 
@@ -224,6 +227,7 @@ plot_params_longterm_sumrate = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Longterm sum rate (lower bound) [bits/s/Hz]",
     ],
 
@@ -295,6 +299,7 @@ plot_params_longterm_no_utility_calculations = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
         :yscale => "log",
     ],
@@ -359,6 +364,7 @@ plot_params_longterm_no_clusters = [
     "xvals" => transmit_powers_dBm,
 
     "axes" => [
+        :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of clusters",
     ],
 
