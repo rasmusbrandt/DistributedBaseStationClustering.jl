@@ -17,11 +17,11 @@ simulation_params = [
         "replace_E1_utility_with_lower_bound" => false,
 
         "CoalitionFormationClustering_Individual:search_budget" => 10,
-        "CoalitionFormationClustering_Individual:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:stability_type" => :contractual,
+        "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
+        "CoalitionFormationClustering_Individual:stability_type" => :individual,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "dft",
+        "initial_precoders" => "eigenprecoding",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
