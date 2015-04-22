@@ -82,8 +82,7 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
-plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -98,8 +97,7 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
-plot(processed_results, simulation_params, plot_params_longterm_iters)
+plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -126,8 +124,7 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
-plot(processed_results, simulation_params, plot_params_longterm_iters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -142,7 +139,6 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_iters)
-plot(processed_results, simulation_params, plot_params_longterm_iters)
+plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
