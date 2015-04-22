@@ -105,7 +105,7 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
 ##########################################################################
-# Compare different settings for group-based coalition formation
+# Compare different settings for individual-based coalition formation
 simulation_params = deepcopy(initial_simulation_params)
 
 simulation_params["simulation_name"] = "individual-greedy,nash"
