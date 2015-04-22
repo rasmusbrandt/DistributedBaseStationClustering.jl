@@ -290,6 +290,33 @@ plot_params_longterm_no_longterm_rate_calculations = [
         ],
     ]
 ]
+plot_params_longterm_no_searches = [
+    "plot_name" => "longterm-no_searches",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Number of utility calculations",
+        :yscale => "log",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "CoalitionFormationClustering_Individual" => [
+            ("no_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+    ]
+]
 plot_params_longterm_clusters = [
     "plot_name" => "longterm-clusters",
 
@@ -373,6 +400,9 @@ for file_name in parsed_args["file_names"]
     processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_no_longterm_rate_calculations)
     plot(processed_results, data["simulation_params"], plot_params_longterm_no_longterm_rate_calculations)
 
-    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_clusters)
-    plot(processed_results, data["simulation_params"], plot_params_longterm_clusters)
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_longterm_no_searches)
+    plot(processed_results, data["simulation_params"], plot_params_longterm_no_searches)
+
+    processed_results = postprocess(data["raw_assignment_results"], data["simulation_params"], plot_params_no_searches)
+    plot(processed_results, data["simulation_params"], plot_params_no_searches)
 end
