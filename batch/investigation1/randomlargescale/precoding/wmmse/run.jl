@@ -38,7 +38,7 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1440,
+        "no_coherence_symbols" => 2160,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -48,7 +48,7 @@ initial_simulation_params = [
         "replace_E1_utility_with_lower_bound" => false,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "dft",
+        "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],

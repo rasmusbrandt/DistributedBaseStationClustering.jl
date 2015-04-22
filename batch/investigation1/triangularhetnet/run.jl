@@ -38,7 +38,7 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "no_coherence_symbols" => 2160,
     ],
     "aux_assignment_params" => [
         "max_no_MSs_per_BS" => 1,

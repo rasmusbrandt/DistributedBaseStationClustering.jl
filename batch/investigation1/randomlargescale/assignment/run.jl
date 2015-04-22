@@ -13,7 +13,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # Initial simulation params
 initial_simulation_params = [
     "simulation_name" => "initial",
-    "I" => 25, "Kc" => 1, "N" => 4, "M" => 2, "d" => 1,
+    "I" => 16, "Kc" => 1, "N" => 4, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (250.,250.),
     "MS_serving_BS_distance" => nothing,
@@ -38,7 +38,7 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1440,
+        "no_coherence_symbols" => 2160,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -48,7 +48,7 @@ initial_simulation_params = [
         "replace_E1_utility_with_lower_bound" => false,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "dft",
+        "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],

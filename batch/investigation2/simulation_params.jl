@@ -5,7 +5,7 @@ c = 300e6 # m/s
 λ = c/fc # m
 
 simulation_params = [
-    "Ndrops" => 10, "Nsim" => 1,
+    "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (250.,250.),
     "MS_serving_BS_distance" => nothing, # random placement of MSs with greedy user association
     "aux_assignment_params" => [
@@ -25,7 +25,7 @@ simulation_params = [
         "CoalitionFormationClustering_Individual:stability_type" => :contractual,
     ],
     "aux_precoding_params" => [
-        "initial_precoders" => "dft",
+        "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],

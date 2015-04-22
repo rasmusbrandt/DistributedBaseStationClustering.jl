@@ -43,19 +43,19 @@ postprocess_params_precoding = [
     "objective" => :sumrate,
     "methods" => [
         "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates_partial",),
+            ("weighted_logdet_rates_LB",),
         ],
 
         "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates_partial",),
+            ("weighted_logdet_rates_LB",),
         ],
 
         "RandomClustering" => [
-            ("weighted_logdet_rates_partial",),
+            ("weighted_logdet_rates_LB",),
         ],
 
         "NoClustering" => [
-            ("weighted_logdet_rates_partial",),
+            ("weighted_logdet_rates_LB",),
         ],
     ]
 ]
@@ -115,10 +115,10 @@ PyPlot.setp(legend_frame, linewidth=0.5)
 fig3 = PyPlot.figure()
 ax3 = fig3[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_partial"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["RandomClustering"]["weighted_logdet_rates_partial"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_partial"], color="Pink", linestyle="-", label="Singleton coalitions")
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_partial"], color="Maroon", linestyle="-", label="Grand coalition")
+ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"], color="LimeGreen", linestyle="-", label="Distributed coalition formation")
+ax3[:plot](transmit_powers_dBm, results_precoding_mean["RandomClustering"]["weighted_logdet_rates_LB"], color="Khaki", linestyle="-", label="Random IA feasible coalitions")
+ax3[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_LB"], color="Pink", linestyle="-", label="Singleton coalitions")
+ax3[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_LB"], color="Maroon", linestyle="-", label="Grand coalition")
 
 ax3[:set_ylim](-10, 100)
 
