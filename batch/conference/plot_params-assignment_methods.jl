@@ -418,3 +418,31 @@ plot_params_longterm_no_clusters = [
         ],
     ]
 ]
+plot_params_longterm_no_searches = [
+    "plot_name" => "longterm-no_searches",
+
+    "objective" => :avgrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "xvals" => transmit_powers_dBm,
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Avg. number of searches per user",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "CoalitionFormationClustering_Individual" => [
+            ("no_searches", [ :color => "DarkOrchid", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+    ]
+]

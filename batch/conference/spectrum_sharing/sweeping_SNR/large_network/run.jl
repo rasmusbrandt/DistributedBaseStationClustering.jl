@@ -26,7 +26,7 @@ raw_precoding_results, raw_assignment_results =
 
 ##########################################################################
 # Generic plots
-for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters, plot_params_longterm_no_searches)
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
 end

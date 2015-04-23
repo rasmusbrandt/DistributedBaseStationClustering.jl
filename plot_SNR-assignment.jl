@@ -382,6 +382,33 @@ plot_params_longterm_clusters = [
         ],
     ]
 ]
+plot_params_no_searches = [
+    "plot_name" => "longterm-clusters",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Total number of searches",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "CoalitionFormationClustering_Individual" => [
+            ("no_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+    ]
+]
 
 ##########################################################################
 # Plot it
