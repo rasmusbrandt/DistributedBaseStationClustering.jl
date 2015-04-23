@@ -41,6 +41,7 @@
 type CoalitionFormationClustering_IndividualState
     partition::Partition
     BS_utilities::Vector{Float64}
+    history::Vector{Set{IntSet}}
     no_searches::Vector{Int}
     no_utility_calculations::Int
     no_longterm_rate_calculations::Int
@@ -51,11 +52,13 @@ function CoalitionFormationClustering_Individual(channel, network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_budget" 10
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :greedy
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :contractual
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :lexicographic
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
+    use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -65,7 +68,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     initial_partition = Partition(collect(0:(I-1)))
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
     initial_no_searches = zeros(Int, I)
-    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, initial_no_searches, K, K)
+    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, [ Set{IntSet}() for i = 1:I ], initial_no_searches, K, K)
 
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
@@ -87,7 +90,7 @@ function CoalitionFormationClustering_Individual(channel, network)
         deviation_performed = falses(I)
         for i in ordered_BS_list
             deviation_performed[i] = deviate!(state, i, I, K, search_budget,
-                stability_type, channel, network, temp_cell_assignment)
+                stability_type, use_history, channel, network, temp_cell_assignment)
         end
     end
     utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
@@ -120,7 +123,7 @@ end
 # Lets BS i deviate in the individual stability model.
 # Returns true if it did deviate, otherwise false.
 function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
-    search_budget, stability_type, channel, network, cell_assignment)
+    search_budget, stability_type, use_history, channel, network, cell_assignment)
 
     # First check that we have not exceeded our search budget
     if state.no_searches[i] >= search_budget
@@ -214,10 +217,13 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # (this check includes BS i, unnecessarily)
         BSs_in_new_block = collect(my_block.elements)
         BSs_in_old_block = collect(old_block.elements)
-        if individual_stability(deviated_BS_utilities[:,sort_idx], state.BS_utilities, i, BSs_in_new_block, BSs_in_old_block, stability_type)
+        if individual_stability(deviated_BS_utilities[:,sort_idx], state.BS_utilities, i, BSs_in_new_block, BSs_in_old_block, state.history[i], stability_type, use_history)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
             state.BS_utilities = deviated_BS_utilities[:,sort_idx]
+
+            # Add coalition to history
+            push!(state.history[i], IntSet(BSs_in_new_block))
 
             return true
         end
@@ -228,7 +234,13 @@ end
 # Check stability of a particular deviating BS for the individual
 # coalition formation algorithm.
 function individual_stability(new_BS_utilities, old_BS_utilities,
-    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, stability_type)
+    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, history,
+    stability_type, use_history)
+
+    # Check that this coalition does not exist in the history
+    if use_history && IntSet(new_coalition_idxs) in history
+        return false
+    end
 
     # Check that BS i improves
     nash = (new_BS_utilities[deviating_BS_idx] > old_BS_utilities[deviating_BS_idx])

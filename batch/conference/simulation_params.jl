@@ -18,6 +18,7 @@ simulation_params = [
 
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
+        "CoalitionFormationClustering_Individual:use_history" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
