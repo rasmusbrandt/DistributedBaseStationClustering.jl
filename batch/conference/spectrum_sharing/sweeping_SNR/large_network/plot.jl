@@ -23,6 +23,7 @@ postprocess_params_assignment = [
     "methods" => [
         "CoalitionFormationClustering_Individual" => [
             ("utilities",),
+            ("no_searches",),
         ],
 
         "GrandCoalitionClustering" => [
@@ -84,8 +85,8 @@ grand_col = "#e6ab02"
 fig1 = PyPlot.figure()
 ax1 = fig1[:add_axes]((0.11,0.16,0.95-0.11,0.95-0.16))
 
-ax1[:plot](transmit_powers_dBm, results_assignment_mean["CoalitionFormationClustering_Individual"]["utilities"][:,2], color=cf_col, linestyle="-", marker=".", label=L"Coalition formation ($b_k = 100$)")
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["CoalitionFormationClustering_Individual"]["utilities"][:,1], color=cf_col, linestyle="--", marker=".", label=L"Coalition formation ($b_k = 10$)")
+ax1[:plot](transmit_powers_dBm, results_assignment_mean["CoalitionFormationClustering_Individual"]["utilities"][:,2], color=cf_col, linestyle="-", marker=".", label=L"Coalition formation ($b_k = 100$)")
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["RandomClustering"]["utilities"][:,1], color=random_col, linestyle="-", marker=".", label="Random coalitions")
 ax1[:plot](transmit_powers_dBm, results_assignment_mean["NoClustering"]["utilities"][:,1], color=singleton_col, linestyle="-", marker=".", label="Singleton coalitions")
 ax1[:plot](transmit_powers_dBm, zeros(results_assignment_mean["GrandCoalitionClustering"]["utilities"][:,1]), color=grand_col, linestyle="-", marker=".", label="Grand coalition")
@@ -95,7 +96,23 @@ ax1[:set_ylim](-5, 65)
 ax1[:set_xlabel]("Transmit power [dBm]")
 ax1[:set_ylabel]("Longterm sum throughput [bits/s/Hz]")
 
-legend = ax1[:legend](loc="lower right")
+legend = ax1[:legend](loc="upper left")
+# legend_lines = legend[:get_lines]()
+legend_frame = legend[:get_frame]()
+# PyPlot.setp(legend_lines, linewidth=0.5)
+PyPlot.setp(legend_frame, linewidth=0.5)
+
+
+fig2 = PyPlot.figure()
+ax2 = fig2[:add_axes]((0.11,0.16,0.95-0.11,0.95-0.16))
+
+ax2[:plot](transmit_powers_dBm, (1/data["simulation_params"]["I"])*results_assignment_mean["CoalitionFormationClustering_Individual"]["no_searches"][:,2], color=cf_col, linestyle="-", marker=".", label=L"Coalition formation ($b_k = 100$)")
+ax2[:plot](transmit_powers_dBm, (1/data["simulation_params"]["I"])*results_assignment_mean["CoalitionFormationClustering_Individual"]["no_searches"][:,1], color=cf_col, linestyle="--", marker=".", label=L"Coalition formation ($b_k = 10$)")
+
+ax2[:set_xlabel]("Transmit power [dBm]")
+ax2[:set_ylabel](L"Avgerage number of searches $\eta_k$")
+
+legend = ax2[:legend](loc="upper right")
 # legend_lines = legend[:get_lines]()
 legend_frame = legend[:get_frame]()
 # PyPlot.setp(legend_lines, linewidth=0.5)
@@ -105,8 +122,8 @@ PyPlot.setp(legend_frame, linewidth=0.5)
 fig3 = PyPlot.figure()
 ax3 = fig3[:add_axes]((0.11,0.16,0.95-0.11,0.95-0.16))
 
-ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"][:,2], color=cf_col, linestyle="-", marker=".", label=L"Coalition formation ($b_k = 100$)")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"][:,1], color=cf_col, linestyle="--", marker=".", label=L"Coalition formation ($b_k = 10$)")
+ax3[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"][:,2], color=cf_col, linestyle="-", marker=".", label=L"Coalition formation ($b_k = 100$)")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["RandomClustering"]["weighted_logdet_rates_LB"][:,1], color=random_col, linestyle="-", marker=".", label="Random coalitions")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_LB"][:,1], color=singleton_col, linestyle="-", marker=".", label="Singleton coalitions")
 ax3[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_LB"][:,1], color=grand_col, linestyle="-", marker=".", label="Grand coalition")
@@ -116,7 +133,7 @@ ax3[:set_ylim](-5, 65)
 ax3[:set_xlabel]("Transmit power [dBm]")
 ax3[:set_ylabel]("Avg. instant. sum rate [bits/s/Hz]")
 
-legend = ax3[:legend](loc="best")
+legend = ax3[:legend](loc="lower right")
 # legend_lines = legend[:get_lines]()
 legend_frame = legend[:get_frame]()
 # PyPlot.setp(legend_lines, linewidth=0.5)
@@ -126,4 +143,5 @@ PyPlot.setp(legend_frame, linewidth=0.5)
 ##########################################################################
 # Write files
 fig1[:savefig]("large_network-longterm-sumrate.pdf")
+fig2[:savefig]("large_network-longterm-no_searches.pdf")
 fig3[:savefig]("large_network-instantaneous-sumrate.pdf")
