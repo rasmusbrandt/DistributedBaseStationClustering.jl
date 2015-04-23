@@ -4,9 +4,10 @@ Wc = 300e3 # kHz
 c = 300e6 # m/s
 λ = c/fc # m
 
+BS_density = 1/(1000*1000) # BSs per m^2
+
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
-    "geography_size" => (250.,250.),
     "MS_serving_BS_distance" => nothing, # random placement of MSs with greedy user association
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
