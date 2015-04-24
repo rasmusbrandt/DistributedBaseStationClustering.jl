@@ -80,7 +80,7 @@ ax1[:plot](transmit_powers_dBm, zeros(results_mean["GrandCoalitionClustering"]["
 ax1[:set_ylim](-2, 25)
 
 ax1[:set_xlabel]("Transmit power [dBm]")
-ax1[:set_ylabel]("Longterm throughput [bits/s/Hz]")
+ax1[:set_ylabel]("Longterm sum throughput [bits/s/Hz]")
 
 legend = ax1[:legend](loc="lower right")
 # legend_lines = legend[:get_lines]()

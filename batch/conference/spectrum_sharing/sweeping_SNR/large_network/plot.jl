@@ -110,7 +110,7 @@ ax2[:plot](transmit_powers_dBm, (1/data["simulation_params"]["I"])*results_assig
 ax2[:plot](transmit_powers_dBm, (1/data["simulation_params"]["I"])*results_assignment_mean["CoalitionFormationClustering_Individual"]["no_searches"][:,1], color=cf_col, linestyle="--", marker=".", label=L"Coalition formation ($b_k = 10$)")
 
 ax2[:set_xlabel]("Transmit power [dBm]")
-ax2[:set_ylabel](L"Avgerage number of searches $\eta_k$")
+ax2[:set_ylabel](L"Avgerage number of deviations $\eta_k$")
 
 legend = ax2[:legend](loc="upper right")
 # legend_lines = legend[:get_lines]()
@@ -131,7 +131,7 @@ ax3[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering
 ax3[:set_ylim](-5, 65)
 
 ax3[:set_xlabel]("Transmit power [dBm]")
-ax3[:set_ylabel]("Avg. instant. sum rate [bits/s/Hz]")
+ax3[:set_ylabel]("Avg. instant. sum throughput [bits/s/Hz]")
 
 legend = ax3[:legend](loc="lower right")
 # legend_lines = legend[:get_lines]()
