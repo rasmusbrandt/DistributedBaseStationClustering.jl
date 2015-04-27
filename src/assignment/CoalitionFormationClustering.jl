@@ -55,17 +55,23 @@ function CoalitionFormationClustering_Individual(channel, network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:search_order" :lexicographic
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :grand
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
     use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
+    starting_point = aux_params["CoalitionFormationClustering_Individual:starting_point"]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
     temp_cell_assignment = get_assignment(network)
 
-    # Initial coalition structure is the non-cooperative state
-    initial_partition = Partition(collect(0:(I-1)))
+    # Initial coalition structure
+    if starting_point == :grand
+        initial_partition = Partition(zeros(I))
+    elseif starting_point == :singletons
+        initial_partition = Partition(collect(0:(I-1)))
+    end
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
     initial_no_searches = zeros(Int, I)
     state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, [ Set{IntSet}() for i = 1:I ], initial_no_searches, K, K)
