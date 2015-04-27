@@ -77,6 +77,10 @@ plot_params_instantaneous_sumrate = [
             ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
 
+        "Chen2014_kmeans" => [
+            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+        ],
+
         "Peters2012_Heuristic" => [
             ("weighted_logdet_rates_LB", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
@@ -145,6 +149,10 @@ plot_params_longterm_sumrate = [
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+        ],
+
+        "Chen2014_kmeans" => [
+            ("utilities", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
         ],
 
         "Peters2012_Heuristic" => [
@@ -366,6 +374,10 @@ plot_params_longterm_clusters = [
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("no_clusters", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+        ],
+
+        "Chen2014_kmeans" => [
+            ("no_clusters", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
         ],
 
 

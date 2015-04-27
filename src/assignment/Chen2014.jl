@@ -77,6 +77,76 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     return results
 end
 
+function Chen2014_kmeans(channel, network)
+    I = get_no_BSs(network); K = get_no_MSs(network)
+    aux_params = get_aux_assignment_params(network)
+
+    # Consistency check
+    if I != K
+        Lumberjack.error("Chen2014_kMeans can only handle I = K scenarios.")
+    end
+
+    # Get M and N
+    require_equal_no_BS_antennas(network)
+    require_equal_no_MS_antennas(network)
+    M = get_no_BS_antennas(network)[1]
+    N = get_no_MS_antennas(network)[1]
+    Lmax = M + N - 1
+
+    # Perform cell selection
+    LargeScaleFadingCellAssignment!(channel, network)
+
+    # Cluster assignment matrix
+    partition_matrix = eye(Int, I, I)
+
+    # Get W matrix
+    W = Chen2014_W_matrix(channel, network)
+
+    # k-means clustering on W
+    N_A = iceil(I/Lmax)
+    if N_A == 1
+        # Grand coalition feasible, so no need to perform kmeans
+        partition_matrix[:] = 1
+    else
+        W_eigen = eigfact(W)
+        largest_eigenvalues = sortperm(W_eigen.values, rev=true)
+        X = W_eigen.vectors[:,largest_eigenvalues[1:N_A]]
+        kmeans_clusters = Clustering.kmeans(X', N_A)
+
+        # Convert to partition matrix
+        for c = 1:N_A
+            ks = find(kmeans_clusters.assignments .== c)
+            partition_matrix[ks,ks] = 1
+        end
+    end
+
+    # Get final utilities
+    partition = Partition(partition_matrix)
+    utilities, alphas, _ = longterm_utilities(channel, network, partition)
+    a = restricted_growth_string(partition)
+    Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
+        { :sum_utility => sum(utilities),
+          :a => a }
+    )
+
+    # Store alphas as user priorities for precoding, if desired
+    if aux_params["apply_overhead_prelog"]
+        set_user_priorities!(network, alphas)
+    end
+
+    # Store cluster assignment together with existing cell assignment
+    temp_cell_assignment = get_assignment(network)
+    network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix(network, partition))
+
+    # Return results
+    results = AssignmentResults()
+    results["utilities"] = utilities
+    results["a"] = a
+    results["alphas"] = alphas
+    results["no_clusters"] = 1 + maximum(a)
+    return results
+end
+
 function Chen2014_W_matrix(channel, network)
     I = get_no_BSs(network)
     Ps = get_transmit_powers(network)

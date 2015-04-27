@@ -8,7 +8,7 @@
 module IAClustering
 
 using CoordinatedPrecoding
-import Lumberjack, PyCall
+import Lumberjack, PyCall, Clustering
 
 PyCall.@pyimport scipy.special as scipy_special
 
@@ -20,6 +20,7 @@ export
     # assignment
     BranchAndBoundClustering,
     Chen2014_LinearObj_ExhaustiveSearch,
+    Chen2014_kmeans,
     CoalitionFormationClustering_Group,
     CoalitionFormationClustering_Individual,
     ExhaustiveSearchClustering,
