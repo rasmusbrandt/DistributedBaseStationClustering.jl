@@ -8,7 +8,7 @@ simulation_params["assignment_methods"] = [
     GreedyClustering_Single,
     GreedyClustering_Multiple,
 
-    # Chen2014_ExhaustiveSearch,
+    # Chen2014_LinearObj_ExhaustiveSearch,
     # Peters2012_Heuristic,
 
     GrandCoalitionClustering,

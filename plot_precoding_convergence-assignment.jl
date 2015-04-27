@@ -75,8 +75,8 @@ plot_params = [
         ],
 
 
-        "Chen2014_ExhaustiveSearch" => [
-            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_ExhaustiveSearch" ]),
+        "Chen2014_LinearObj_ExhaustiveSearch" => [
+            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
 
 

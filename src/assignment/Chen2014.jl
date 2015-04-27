@@ -6,16 +6,16 @@
 # Interference Network," IEEE Trans. Vehicular Technology, vol. 63, no. 6,
 # pp. 2613-2624, July 2014, doi: 10.1109/TVT.2013.2292897
 
-function Chen2014_ExhaustiveSearch(channel, network)
+function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Consistency check
     if I != K
-        Lumberjack.error("Chen2014_LinearObjClustering can only handle I = K scenarios.")
+        Lumberjack.error("Chen2014_LinearObj_ExhaustiveSearch can only handle I = K scenarios.")
     end
     if I >= 12
-        Lumberjack.warn("Chen2014_ExhaustiveSearch will be slow since I = $I.")
+        Lumberjack.warn("Chen2014_LinearObj_ExhaustiveSearch will be slow since I = $I.")
     end
 
     # Perform cell selection
@@ -32,7 +32,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
         no_utility_calculations += K
 
         # Check that IA is feasible for this cluster structure. Note that this
-        # means that Chen2014_ExhaustiveSearch cannot handle situations where
+        # means that Chen2014_LinearObj_ExhaustiveSearch cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
         # IA_infeasible_negative_inf_utility is set to false.
         if is_IA_feasible(network, partition)
@@ -52,7 +52,7 @@ function Chen2014_ExhaustiveSearch(channel, network)
     end
     utilities, alphas, _ = longterm_utilities(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
-    Lumberjack.info("Chen2014_ExhaustiveSearch finished.",
+    Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
         { :sum_utility => sum(utilities),
           :a => a }
     )

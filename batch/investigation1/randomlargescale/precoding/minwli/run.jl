@@ -27,7 +27,7 @@ initial_simulation_params = [
         GreedyClustering_Single,
         GreedyClustering_Multiple,
 
-        # Chen2014_ExhaustiveSearch,
+        # Chen2014_LinearObj_ExhaustiveSearch,
         # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
@@ -67,7 +67,7 @@ network =
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
 # Include high complexity methods for these simulations only
-unshift!(simulation_params["assignment_methods"], Chen2014_ExhaustiveSearch)
+unshift!(simulation_params["assignment_methods"], Chen2014_LinearObj_ExhaustiveSearch)
 unshift!(simulation_params["assignment_methods"], BranchAndBoundClustering)
 unshift!(simulation_params["assignment_methods"], ExhaustiveSearchClustering)
 

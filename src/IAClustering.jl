@@ -19,7 +19,7 @@ blas_set_num_threads(1)
 export
     # assignment
     BranchAndBoundClustering,
-    Chen2014_ExhaustiveSearch,
+    Chen2014_LinearObj_ExhaustiveSearch,
     CoalitionFormationClustering_Group,
     CoalitionFormationClustering_Individual,
     ExhaustiveSearchClustering,
@@ -43,7 +43,7 @@ include("misc/utilities.jl")
 
 include("assignment/assignment.jl")
 include("assignment/BranchAndBoundClustering.jl")
-include("assignment/Chen2014_ExhaustiveSearch.jl")
+include("assignment/Chen2014.jl")
 include("assignment/CoalitionFormationClustering.jl")
 include("assignment/ExhaustiveSearchClustering.jl")
 include("assignment/GrandCoalitionClustering.jl")

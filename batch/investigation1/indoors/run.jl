@@ -25,7 +25,7 @@ initial_simulation_params = [
         GreedyClustering_Single,
         GreedyClustering_Multiple,
 
-        # Chen2014_ExhaustiveSearch,
+        # Chen2014_LinearObj_ExhaustiveSearch,
         # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
@@ -62,7 +62,7 @@ network =
         no_streams=simulation_params["d"])
 
 # Include high complexity methods for these simulations only
-unshift!(simulation_params["assignment_methods"], Chen2014_ExhaustiveSearch)
+unshift!(simulation_params["assignment_methods"], Chen2014_LinearObj_ExhaustiveSearch)
 unshift!(simulation_params["assignment_methods"], BranchAndBoundClustering)
 unshift!(simulation_params["assignment_methods"], ExhaustiveSearchClustering)
 
