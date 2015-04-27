@@ -8,7 +8,7 @@ using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-large_network.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network2.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
