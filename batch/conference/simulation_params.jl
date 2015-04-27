@@ -1,10 +1,11 @@
-fc = 5e9 # GHz
+fc = 2e9 # GHz
 Wc = 300e3 # kHz
 
 c = 300e6 # m/s
 λ = c/fc # m
 
-BS_density = 1/(1000*1000) # BSs per m^2
+ISD = 500
+BS_density = 1/(sqrt(3)/2*ISD^2) # BSs per m^2, for hexagonal cells
 
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
@@ -14,12 +15,13 @@ simulation_params = [
 
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
+        "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
 
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
         "CoalitionFormationClustering_Individual:use_history" => true,
+        "CoalitionFormationClustering_Individual:starting_point" => :grand,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

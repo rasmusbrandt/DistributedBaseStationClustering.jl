@@ -8,7 +8,7 @@ using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network1.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
@@ -42,3 +42,5 @@ save("$(simulation_params["simulation_name"]).jld",
      "simulation_params", clean_simulation_params_for_jld(simulation_params),
      "raw_precoding_results", raw_precoding_results,
      "raw_assignment_results", raw_assignment_results)
+
+include(joinpath(dirname(@__FILE__), "plot.jl"))
