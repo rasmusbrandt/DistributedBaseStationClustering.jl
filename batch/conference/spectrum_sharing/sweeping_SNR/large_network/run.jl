@@ -42,5 +42,3 @@ save("$(simulation_params["simulation_name"]).jld",
      "simulation_params", clean_simulation_params_for_jld(simulation_params),
      "raw_precoding_results", raw_precoding_results,
      "raw_assignment_results", raw_assignment_results)
-
-include(joinpath(dirname(@__FILE__), "plot.jl"))

@@ -8,8 +8,6 @@ plot_params_instantaneous_full_sumrate = [
         :dpi => 125,
     ],
 
-    "xvals" => transmit_powers_dBm,
-
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Average sum rate [bits/s/Hz]",
@@ -83,8 +81,6 @@ plot_params_instantaneous_partial_sumrate = [
         :figsize => (8,5),
         :dpi => 125,
     ],
-
-    "xvals" => transmit_powers_dBm,
 
     "axes" => [
         :xlabel => "Transmit power [dBm]",
@@ -160,8 +156,6 @@ plot_params_instantaneous_LB_sumrate = [
         :dpi => 125,
     ],
 
-    "xvals" => transmit_powers_dBm,
-
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Average sum rate [bits/s/Hz]",
@@ -235,8 +229,6 @@ plot_params_longterm_sumrate = [
         :figsize => (8,5),
         :dpi => 125,
     ],
-
-    "xvals" => transmit_powers_dBm,
 
     "axes" => [
         :xlabel => "Transmit power [dBm]",
@@ -312,8 +304,6 @@ plot_params_longterm_no_utility_calculations = [
         :dpi => 125,
     ],
 
-    "xvals" => transmit_powers_dBm,
-
     "axes" => [
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
@@ -376,8 +366,6 @@ plot_params_longterm_no_clusters = [
         :figsize => (8,5),
         :dpi => 125,
     ],
-
-    "xvals" => transmit_powers_dBm,
 
     "axes" => [
         :xlabel => "Transmit power [dBm]",
@@ -447,8 +435,6 @@ plot_params_longterm_no_searches = [
         :figsize => (8,5),
         :dpi => 125,
     ],
-
-    "xvals" => transmit_powers_dBm,
 
     "axes" => [
         :xlabel => "Transmit power [dBm]",
