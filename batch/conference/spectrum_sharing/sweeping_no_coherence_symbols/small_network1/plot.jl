@@ -47,7 +47,7 @@ ax[:plot](vs_kmh, results_assignment_mean["NoClustering"]["utilities"], color=co
 
 ax[:set_ylim]([-1, 26])
 
-ax[:set_xlabel]("User speed [km/h]")
+ax[:set_xlabel]("MS speed [km/h]")
 ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
 
 legend = ax[:legend](loc="best")
