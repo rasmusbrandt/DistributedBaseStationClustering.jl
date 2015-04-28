@@ -47,7 +47,7 @@ ax[:plot](transmit_powers_dBm, results_assignment_mean["Chen2014_kmeans"]["utili
 ax[:plot](transmit_powers_dBm, results_assignment_mean["NoClustering"]["utilities"][:,1], color=colours[:NoClustering], linestyle="-", marker=markers[:NoClustering], label=labels[:NoClustering])
 ax[:plot](transmit_powers_dBm, results_assignment_mean["GrandCoalitionClustering"]["utilities"][:,1], color=colours[:GrandCoalitionClustering], linestyle="-", marker=markers[:GrandCoalitionClustering], label=labels[:GrandCoalitionClustering])
 
-ax[:set_ylim]([-5, 75])
+ax[:set_ylim]([-1, 30])
 
 ax[:set_xlabel]("Transmit power [dBm]")
 ax[:set_ylabel]("Longterm sum throughput [bits/s/Hz]")

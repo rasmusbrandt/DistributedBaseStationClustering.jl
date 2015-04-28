@@ -87,7 +87,7 @@ ax[:set_ylim]([0, 4])
 ax[:set_yticks](0:4)
 
 ax[:set_xlabel]("Transmit power [dBm]")
-ax[:set_ylabel](L"\# deviations $\eta_k$")
+ax[:set_ylabel](L"\# of deviations $\eta_k$")
 
 fig[:tight_layout]()
 

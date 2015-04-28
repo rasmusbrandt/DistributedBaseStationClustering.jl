@@ -1,7 +1,7 @@
 simulation_params["I"] = 8
 simulation_params["Kc"] = 1
-simulation_params["N"] = 3
-simulation_params["M"] = 6
+simulation_params["N"] = 6
+simulation_params["M"] = 12
 simulation_params["d"] = 1
 
 l = sqrt(simulation_params["I"]/BS_density)
