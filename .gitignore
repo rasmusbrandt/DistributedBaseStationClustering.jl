@@ -1,4 +1,5 @@
 *.jld
 *.pdf
+*.eps
 *.mem
 support/.ipynb_checkpoints/

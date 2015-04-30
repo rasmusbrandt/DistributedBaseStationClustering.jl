@@ -56,4 +56,4 @@ legend_frame = legend[:get_frame]()
 # PyPlot.setp(legend_lines, linewidth=0.5)
 PyPlot.setp(legend_frame, linewidth=0.5)
 
-fig[:savefig]("small_network1-coherence-longterm_sumrate.pdf")
+fig[:savefig]("small_network1-coherence-longterm_sumrate.eps")

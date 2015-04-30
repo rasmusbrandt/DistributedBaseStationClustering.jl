@@ -58,7 +58,7 @@ legend_frame = legend[:get_frame]()
 # PyPlot.setp(legend_lines, linewidth=0.5)
 PyPlot.setp(legend_frame, linewidth=0.5)
 
-fig[:savefig]("large_network-SNR-instantaneous_sumrate.pdf")
+fig[:savefig]("large_network-SNR-instantaneous_sumrate.eps")
 
 PyPlot.rc("figure", figsize=(3.5,2.2))
 fig = PyPlot.figure()
@@ -93,4 +93,4 @@ ax[:set_ylabel](L"\# of deviations $\eta_k$")
 
 fig[:tight_layout]()
 
-fig[:savefig]("large_network-SNR-no_clusters-no_searches.pdf")
+fig[:savefig]("large_network-SNR-no_clusters-no_searches.eps")
