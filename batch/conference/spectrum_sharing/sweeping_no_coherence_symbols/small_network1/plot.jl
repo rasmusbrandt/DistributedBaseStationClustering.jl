@@ -24,14 +24,14 @@ results_precoding, results_precoding_mean, results_precoding_var = postprocess(d
 
 ##########################################################################
 # Figure properties
-PyPlot.rc("lines", linewidth=1, markersize=3.5, markeredgewidth=0)
+PyPlot.rc("lines", linewidth=1, markersize=3, markeredgewidth=0)
 PyPlot.rc("font", size=8, family="serif", serif="Computer Modern Sans Serif")
 PyPlot.rc("text", usetex=true)
 PyPlot.rc("text.latex", preamble="\\usepackage{amsmath}")
 PyPlot.rc("axes", linewidth=0.5, labelsize=8)
 PyPlot.rc("xtick", labelsize=8)
 PyPlot.rc("ytick", labelsize=8)
-PyPlot.rc("legend", fancybox=true, fontsize=6)
+PyPlot.rc("legend", fancybox=true, fontsize=6, numpoints=1)
 PyPlot.rc("figure", figsize=(3.5,2.0))
 
 ##########################################################################
@@ -48,7 +48,7 @@ ax[:plot](vs_kmh, results_assignment_mean["NoClustering"]["utilities"], color=co
 ax[:set_ylim]([-1, 26])
 
 ax[:set_xlabel]("MS speed [km/h]")
-ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
+ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]", fontsize=7)
 
 legend = ax[:legend](loc="best")
 # legend_lines = legend[:get_lines]()

@@ -19,7 +19,7 @@ sim_names = [
     "raw-large_network-run2.jld",
     "raw-large_network-run3.jld",
     "raw-large_network-run4.jld",
-    #"raw-large_network-run5.jld",
+    "raw-large_network-run5.jld",
 ]
 
 # Load first
