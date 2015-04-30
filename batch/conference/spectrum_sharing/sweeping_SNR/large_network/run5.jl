@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-SRAND_SEED = 927272
+SRAND_SEED = 55599
 
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
@@ -11,6 +11,8 @@ include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_meth
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-large_network.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
+
+simulation_params["simulation_name"] = "raw-large_network-run5"
 
 ##########################################################################
 # Simulation

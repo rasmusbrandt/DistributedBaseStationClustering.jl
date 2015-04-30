@@ -8,7 +8,7 @@ ISD = 500
 BS_density = 1/(sqrt(3)/2*ISD^2) # BSs per m^2, for hexagonal cells
 
 simulation_params = [
-    "Ndrops" => 10, "Nsim" => 5,
+    "Ndrops" => 100, "Nsim" => 5,
     "MS_serving_BS_distance" => nothing, # random placement of MSs with greedy user association
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
