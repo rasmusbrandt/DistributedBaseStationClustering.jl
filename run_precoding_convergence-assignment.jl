@@ -25,20 +25,21 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params = [
     "simulation_name" => "precoding_convergence-assignment_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 20,
-    "geography_size" => (250.,250.),
+    "Ndrops" => 10, "Nsim" => 5,
+    "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => nothing,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
-        CoalitionFormationClustering_Group,
+        # CoalitionFormationClustering_Group,
         CoalitionFormationClustering_Individual,
 
         GreedyClustering_Single,
         GreedyClustering_Multiple,
 
         Chen2014_LinearObj_ExhaustiveSearch,
+        Chen2014_kmeans,
         # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
@@ -49,19 +50,22 @@ simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "no_coherence_symbols" => 2500,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
+        "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
+
+        "BranchAndBoundClustering:bracket_E1" => false,
 
         "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:search_budget" => 10,
-        "CoalitionFormationClustering_Individual:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:stability_type" => :contractual,
+        "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
+        "CoalitionFormationClustering_Individual:stability_type" => :individual,
+        "CoalitionFormationClustering_Individual:use_history" => true,
+        "CoalitionFormationClustering_Individual:starting_point" => :grand,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
@@ -69,7 +73,7 @@ simulation_params = [
         "max_iters" => 20,
     ],
     "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-30, -10]),
+        (set_transmit_powers_dBm!, [-10, 10]),
     ]
 ]
 network =

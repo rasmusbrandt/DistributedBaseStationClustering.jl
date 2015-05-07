@@ -25,8 +25,8 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params = [
     "simulation_name" => "precoding_convergence-precoding_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 20,
-    "geography_size" => (250.,250.),
+    "Ndrops" => 10, "Nsim" => 5,
+    "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => nothing,
     "assignment_methods" => [
         BranchAndBoundClustering,
@@ -45,13 +45,15 @@ simulation_params = [
         Eigenprecoding,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "no_coherence_symbols" => 2500,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
+        "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
+
+        "BranchAndBoundClustering:bracket_E1" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
@@ -59,7 +61,7 @@ simulation_params = [
         "max_iters" => 20,
     ],
     "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-30, -10]),
+        (set_transmit_powers_dBm!, [-10, 10]),
     ]
 ]
 network =

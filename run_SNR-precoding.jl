@@ -21,12 +21,10 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params = [
     "simulation_name" => "SNR-precoding_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 20,
-    "geography_size" => (250.,250.),
+    "Ndrops" => 10, "Nsim" => 5,
+    "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => nothing,
-    "assignment_methods" => [
-        BranchAndBoundClustering,
-    ],
+    "assignment_methods" => [ BranchAndBoundClustering, ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
@@ -41,20 +39,22 @@ simulation_params = [
         Eigenprecoding,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "no_coherence_symbols" => 2500,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
+        "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
+
+        "BranchAndBoundClustering:bracket_E1" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
-    "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
+    "independent_variable" => (set_transmit_powers_dBm!, -50:5:20),
 ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
