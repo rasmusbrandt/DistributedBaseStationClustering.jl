@@ -35,8 +35,8 @@ function BranchAndBoundClustering(channel, network)
     # utopian_sum_value = sum(utopian_utilities)
     # Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_sum_value => utopian_sum_value })
 
-    # Utility lower bounds by using GreedyClustering as initial incumbent.
-    greedy_results = GreedyClustering(channel, network)
+    # Utility lower bounds by using GreedyClustering_Multiple as initial incumbent.
+    greedy_results = GreedyClustering_Multiple(channel, network)
     incumbent_utilities = greedy_results["utilities"]
     incumbent_a = greedy_results["a"]
     incumbent_sum_utility = sum(incumbent_utilities)
