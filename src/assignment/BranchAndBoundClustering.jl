@@ -14,8 +14,8 @@ function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1" false
-    bracket_E1 = aux_params["BranchAndBoundClustering:bracket_E1"]
+    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1_in_bound" false
+    bracket_E1_in_bound = aux_params["BranchAndBoundClustering:bracket_E1_in_bound"]
 
     # Warn if this will be slow...
     if I >= 12
@@ -52,14 +52,13 @@ function BranchAndBoundClustering(channel, network)
 
         # Select next node to be processed. We use the best first strategy,
         # i.e. we pick the live node with the highest (best) upper bound.
-        sort!(live, rev=true)
-        parent = shift!(live)
+        parent = Base.Collections.heappop!(live, Base.Order.Reverse)
 
         # Store incumbent evolution per iteration
         push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_utilities, I, assignment, bracket_E1)
+            bound!(child, channel, network, utopian_utilities, I, assignment, bracket_E1_in_bound)
             no_utility_calculations += K
             no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
@@ -78,7 +77,7 @@ function BranchAndBoundClustering(channel, network)
                     # Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
                     #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
                     # )
-                    push!(live, child)
+                    Base.Collections.heappush!(live, child, Base.Order.Reverse)
                 end
             else
                 # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
@@ -138,14 +137,14 @@ end
 
 # Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities, I, assignment, bracket_E1)
+function bound!(node, channel, network, utopian_utilities, I, assignment, bracket_E1_in_bound)
     # The partial cluster is given by a
     partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not
     # taken into account.
-    if is_leaf(node, I) || !bracket_E1
+    if is_leaf(node, I) || !bracket_E1_in_bound
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
     else
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition, bound=:upper)

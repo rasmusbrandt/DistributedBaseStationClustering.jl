@@ -44,9 +44,11 @@ simulation_params = [
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => false,
-        "IA_infeasible_negative_inf_utility" => true,
+        "apply_overhead_prelog" => true,
+        "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
+
+        "BranchAndBoundClustering:bracket_E1_in_bound" => true,
 
         "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,

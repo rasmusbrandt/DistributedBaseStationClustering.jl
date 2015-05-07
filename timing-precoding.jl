@@ -45,7 +45,7 @@ simulation_params = [
         "IA_infeasible_negative_inf_utility" => false,
         "replace_E1_utility_with_lower_bound" => false,
 
-        "BranchAndBoundClustering:bracket_E1" => false,
+        "BranchAndBoundClustering:bracket_E1_in_bound" => true,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
