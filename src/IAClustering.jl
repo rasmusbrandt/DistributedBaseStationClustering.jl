@@ -8,9 +8,7 @@
 module IAClustering
 
 using CoordinatedPrecoding
-import Lumberjack, PyCall, Clustering
-
-PyCall.@pyimport scipy.special as scipy_special
+import Lumberjack, Clustering, Polynomials
 
 # Since my covariance matrices are small (2x2, 4x4, etc.), there is no
 # gain from using multithreaded BLAS!
@@ -37,6 +35,7 @@ export
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("misc/combinations.jl")
+include("misc/expint.jl")
 include("misc/partitions.jl")
 include("misc/feasibility.jl")
 include("misc/subsets.jl")

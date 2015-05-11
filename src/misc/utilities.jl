@@ -147,7 +147,7 @@ function longterm_rate(rho, bound)
         return 0.5*log2(1 + 2*rho)
     else
         rho_r = 1/rho
-        return (1/log(2))*exp(rho_r + log(scipy_special.exp1(rho_r))) # exp(rho_r)*E1(rho_r) can become Inf*0 = NaN
+        return (1/log(2))*exp(rho_r + log(expint(rho_r))) # exp(rho_r)*E1(rho_r) can become Inf*0 = NaN
     end
 end
 
