@@ -45,7 +45,6 @@ initial_simulation_params = [
 
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
-        "replace_E1_utility_with_lower_bound" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

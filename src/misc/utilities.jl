@@ -31,7 +31,6 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
-    replace_E1_utility_with_lower_bound = aux_params["replace_E1_utility_with_lower_bound"]
 
     utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
     rates = zeros(Float64, K, max_d) # raw spectral efficiency, zero or -Inf if IA not feasible
@@ -59,7 +58,7 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
                     # Rates without interference, assuming IA feasibility
                     desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
                     rho = desired_power/sigma2s[k]
-                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
+                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound)
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -104,7 +103,7 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
                         int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
                     end
                     rho = desired_power/int_noise_power
-                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
+                    utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound)
 
                     if IA_feas
                         # These rates are achievable using IA
@@ -141,10 +140,10 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
 end
 
 # Calculates longterm rate (or bound thereof) as function of rho
-function longterm_rate(rho, bound, replace_E1_utility_with_lower_bound)
+function longterm_rate(rho, bound)
     if bound == :upper
         return log2(1 + rho)
-    elseif bound == :lower || replace_E1_utility_with_lower_bound
+    elseif bound == :lower
         return 0.5*log2(1 + 2*rho)
     else
         rho_r = 1/rho
