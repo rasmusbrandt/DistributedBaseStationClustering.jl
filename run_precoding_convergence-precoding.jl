@@ -28,9 +28,7 @@ simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => nothing,
-    "assignment_methods" => [
-        BranchAndBoundClustering,
-    ],
+    "assignment_methods" => [ BranchAndBoundClustering, ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
