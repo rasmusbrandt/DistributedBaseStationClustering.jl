@@ -53,7 +53,7 @@ simulation_params = [
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => false,
 
-        "BranchAndBoundClustering:bracket_E1_in_bound" => true,
+        "BranchAndBoundClustering:E1_bound_in_rate_bound" => true,
 
         "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,

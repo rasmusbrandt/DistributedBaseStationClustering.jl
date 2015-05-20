@@ -14,8 +14,8 @@ function BranchAndBoundClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1_in_bound" false
-    bracket_E1_in_bound = aux_params["BranchAndBoundClustering:bracket_E1_in_bound"]
+    @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
+    E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
 
     # Warn if this will be slow...
     if I >= 12
@@ -58,7 +58,7 @@ function BranchAndBoundClustering(channel, network)
         push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_utilities, I, assignment, bracket_E1_in_bound)
+            bound!(child, channel, network, utopian_utilities, I, assignment, E1_bound_in_rate_bound)
             no_utility_calculations += K
             no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
@@ -137,14 +137,14 @@ end
 
 # Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities, I, assignment, bracket_E1_in_bound)
+function bound!(node, channel, network, utopian_utilities, I, assignment, E1_bound_in_rate_bound)
     # The partial cluster is given by a
     partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
 
     # Rates for MSs already in clusters. These are utility bounds, since
     # the out-of-cluster interference of the unclustered users are not
     # taken into account.
-    if is_leaf(node, I) || !bracket_E1_in_bound
+    if is_leaf(node, I) || !E1_bound_in_rate_bound
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
     else
         utility_bounds, _ = longterm_utilities(channel, network, partial_partition, bound=:upper)
