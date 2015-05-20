@@ -6,6 +6,10 @@
 # clusters.
 
 function BranchAndBoundClustering(channel, network)
+    # Perform cell selection
+    LargeScaleFadingCellAssignment!(channel, network)
+    assignment = get_assignment(network)
+
     # We require symmetric networks, so we can write down the IA feasibility
     # condition in closed-form in the bound.
     check_Liu2013_applicability(network)
@@ -32,10 +36,6 @@ function BranchAndBoundClustering(channel, network)
     end
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
-
-    # Perform cell selection
-    LargeScaleFadingCellAssignment!(channel, network)
-    assignment = get_assignment(network)
 
     # Utility lower bounds by using GreedyClustering_Multiple as initial incumbent.
     greedy_results = GreedyClustering_Multiple(channel, network)
