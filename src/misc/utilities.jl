@@ -19,10 +19,6 @@
 # clusters are turned off, and thus giving up their temporal degrees of
 # freedom and CSI acquisition overhead to the other clusters. In the current
 # implementation, we are not taking this into consideration however.
-#
-# Notice: this function only returns a bound of the rates for now,
-# since I don't if the E1 exponential integral has been implemented
-# by anyone in Julia yet.
 function longterm_utilities(channel, network, partition; bound::Symbol=:none)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
@@ -56,7 +52,7 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
                     alphas[k] = alpha
 
                     # Rates without interference, assuming IA feasibility
-                    desired_power = channel.large_scale_fading_factor[k,i]^2*(Ps[i]/(Nserved*ds[k]))
+                    desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
                     rho = desired_power/sigma2s[k]
                     utopian_rates[k,1:ds[k]] = longterm_rate(rho, bound)
 
