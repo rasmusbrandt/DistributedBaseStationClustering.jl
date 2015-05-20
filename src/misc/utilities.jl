@@ -75,20 +75,13 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
             end
         end
     elseif aux_params["clustering_type"] == :spectrum_sharing
-        # Only the BSs that are in the partition will be active in generating
-        # interference to the other 
-        active_BSs = IntSet()
-        for block in partition.blocks
-            union!(active_BSs, block.elements)
-        end
-
         # Calculate rates for all MSs in clusters
         for block in partition.blocks
             # Check IA feasibility for this block
             IA_feas = is_IA_feasible(network, block)
 
             # Find out-of-cluster interferers
-            intercluster_interferers = setdiff(active_BSs, block.elements) # setdiff is efficient if both arguments are IntSets.
+            intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
             for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)
                 for k in served
