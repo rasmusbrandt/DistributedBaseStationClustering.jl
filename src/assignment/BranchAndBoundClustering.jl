@@ -3,23 +3,32 @@
 #
 # A branch and bound tree is developed which describes all possible
 # restricted growth strings that describe all possible base station
-# clusters. The utilities are taken from utilities.jl. The bounds are
-# very simple: The pre-log factors are bounded by the current pre-log
-# factor for already clustered BSs, and bounded by 1 for non-clustered BSs.
-# The spectral efficiency bounds are assuming that non-clustered BSs do
-# not contribute interference to already clustered BSs, and non-clustered
-# BSs have their utopian (interference-free) spectral efficiencies as bounds.
+# clusters.
 
 function BranchAndBoundClustering(channel, network)
+    # We require symmetric networks, so we can write down the IA feasibility
+    # condition in closed-form in the bound.
+    check_Liu2013_applicability(network)
+    check_Liu2013_symmetry(network)
+
+    # Network parameters in symmetric network
     I = get_no_BSs(network); K = get_no_MSs(network)
+    Kc = int(K/I)
+    M = get_no_MS_antennas(network)[1]; N = get_no_BS_antennas(network)[1]
+    d = get_no_streams(network)[1]
+    Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
+    IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
 
-    # Warn if this will be slow...
+    # Consistency checks
     if I >= 12
         Lumberjack.warn("BranchAndBoundClustering will be slow since I = $I.")
+    end
+    if aux_params["clustering_type"] != :spectrum_sharing
+        Lumberjack.error("BranchAndBoundClustering only works with spectrum sharing clustering.")
     end
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
@@ -27,13 +36,6 @@ function BranchAndBoundClustering(channel, network)
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
     assignment = get_assignment(network)
-
-    # Utility upper bounds by assuming feasibility of grand coalition.
-    grand_coalition_a = zeros(Int, I) # restricted growth string with all zeros
-    grand_coalition = Partition(grand_coalition_a)
-    _, _, utopian_utilities = longterm_utilities(channel, network, grand_coalition)
-    # utopian_sum_value = sum(utopian_utilities)
-    # Lumberjack.debug("Utopian (fully cooperative) utilities calculated.", { :utopian_utilities => utopian_utilities, :utopian_sum_value => utopian_sum_value })
 
     # Utility lower bounds by using GreedyClustering_Multiple as initial incumbent.
     greedy_results = GreedyClustering_Multiple(channel, network)
@@ -44,9 +46,8 @@ function BranchAndBoundClustering(channel, network)
 
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
-    live = initialize_live(utopian_utilities);
-    no_iters = 0
-    no_utility_calculations = 0; no_longterm_rate_calculations = 0
+    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+    no_iters = 0; no_utility_calculations = 0; no_longterm_rate_calculations = 0
     while length(live) > 0
         no_iters += 1
 
@@ -58,7 +59,7 @@ function BranchAndBoundClustering(channel, network)
         push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         for child in branch(parent)
-            bound!(child, channel, network, utopian_utilities, I, assignment, E1_bound_in_rate_bound)
+            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
             no_utility_calculations += K
             no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
@@ -93,6 +94,7 @@ function BranchAndBoundClustering(channel, network)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_utility => incumbent_sum_utility,
+          :no_evaluated_partitions => no_utility_calculations/K,
           :a => incumbent_a }
     )
 
@@ -129,35 +131,90 @@ Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < 
 is_leaf(node, I) = (length(node.a) == I)
 
 # Initialize the live structure by creating the root node.
-function initialize_live(utopian_utilities)
-    root = BranchAndBoundNode([0], sum(utopian_utilities))
+function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+    root = BranchAndBoundNode([0], Inf)
+    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
     # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
 # Bound a node by testing feasibility and calculating the utilities for the
 # clustered BSs and unclustered BSs.
-function bound!(node, channel, network, utopian_utilities, I, assignment, E1_bound_in_rate_bound)
-    # The partial cluster is given by a
-    partial_partition = Partition(node.a, skip_check=true) # By construction, a is a valid restricted growth string.
+function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+    utility_bounds = zeros(Float64, I*Kc, d)
 
-    # Rates for MSs already in clusters. These are utility bounds, since
-    # the out-of-cluster interference of the unclustered users are not
-    # taken into account.
-    if is_leaf(node, I) || !E1_bound_in_rate_bound
-        utility_bounds, _ = longterm_utilities(channel, network, partial_partition)
-    else
-        utility_bounds, _ = longterm_utilities(channel, network, partial_partition, bound=:upper)
+    # Create pseudo-cluster where the unclustered BSs are in singletons
+    N_already_clustered = length(node.a); m = 1 + maximum(node.a)
+    partition = Partition(cat(1, node.a, m:(m + (I-N_already_clustered-1))), skip_check=true) # valid restricted growth string by construction.
+
+    # Calculate throughput bounds for all MSs
+    for block in partition.blocks # N.B. all BSs are included!
+        # The bound is based on the number of available 'IA slots' left
+        # in this cluster. This is given by Liu's closed form.
+        N_free_IA_slots = int((M + N - d)/(Kc*d) - length(block))
+
+        if N_free_IA_slots < 0
+            # IA infeasible partition
+            if IA_infeasible_negative_inf_utility
+                for i in block.elements; for k in served_MS_ids(i, assignment)
+                    utility_bounds[k,:] = -Inf
+                end; end
+            else
+                for i in block.elements; for k in served_MS_ids(i, assignment)
+                    utility_bounds[k,:] = 0
+                end; end
+            end
+        else
+            # IA feasible partition
+            intercluster_interferers = setdiff(IntSet(1:I), block.elements)
+            N_intercluster_interferers = length(intercluster_interferers)
+            for i in block.elements; for k in served_MS_ids(i, assignment)
+                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't user ^2 for performance reasons
+
+                # Bound the SNR if we are not at a leaf
+                if is_leaf(node, I)
+                    # Sum all interference
+                    intercluster_interference_levels = Float64[]
+                    for j in intercluster_interferers
+                        Base.Collections.heappush!(intercluster_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j], Base.Order.Reverse)
+                    end
+                    rho = desired_power/(sigma2s[k] + sum(intercluster_interference_levels))
+                else
+                    # Local SNR bound for this MS. This is a bound since we are not
+                    # directly checking the disjoint condition required in the
+                    # partition.
+                    if N_free_IA_slots >= N_intercluster_interferers
+                        # We can accommodate all interferers in this cluster.
+                        rho = desired_power/sigma2s[k]
+                    else
+                        # We need to pick the N_free_IA_slots strongest interferers to include.
+                        intercluster_interference_levels = Float64[]
+                        for j in intercluster_interferers
+                            Base.Collections.heappush!(intercluster_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j], Base.Order.Reverse)
+                        end
+                        rho = desired_power/(sigma2s[k] + sum(intercluster_interference_levels[N_free_IA_slots+1:end]))
+                    end
+                end
+
+                # alpha is upper bounded by the current partition, since each
+                # BS contributes the least towards CSI acquisition when it is
+                # in a singleton cluster. This is the case for the 'unclustered'
+                # BSs considered here. For the BSs that are 'clustered', we
+                # know exactly their current CSI acquisition contribution.
+                alpha = spectrum_sharing_prelog_factor(network, partition)
+
+                # Finally, we can also bound the calculation of
+                # exp(1/rho)*E1(1/rho) if that is wanted.
+                if E1_bound_in_rate_bound && !is_leaf(node, I)
+                    utility_bounds[k,:] = alpha*longterm_rate(rho, :upper)
+                else
+                    utility_bounds[k,:] = alpha*longterm_rate(rho, :none)
+                end
+            end; end
+        end
     end
 
-    # Bound the unclustered users utilities by their utopian utilities.
-    for j in setdiff(IntSet(1:I), IntSet(1:length(node.a))); for l in served_MS_ids(j, assignment)
-        utility_bounds[l,:] = utopian_utilities[l,:]
-    end; end
-
-    # Sum utility bound. This might be -Inf, if any of the utilities are -Inf.
-    # This can happen when a particular block is not IA feasible, and
-    # the aux_assignment_param IA_infeasible_utility_inf is set to true.
+    # The final sum utility bound is obtained by summing the individual bounds.
     node.upper_bound = sum(utility_bounds)
 
     # Lumberjack.debug("Bounding.", { :node => node })

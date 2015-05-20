@@ -39,6 +39,7 @@ function ExhaustiveSearchClustering(channel, network)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :sum_utility => best_objective,
+          :no_evaluated_partitions => no_utility_calculations/K,
           :a => a }
     )
 
