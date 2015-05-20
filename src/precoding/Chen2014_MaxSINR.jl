@@ -10,9 +10,9 @@ immutable Chen2014_MaxSINRState
     V::Array{Matrix{Complex128},1}
 
     # See IntraclusterWMMSEState for description of these.
-    E_full::Array{Hermitian{Complex128},1}
-    E_partial::Array{Hermitian{Complex128},1}
-    E_LB::Array{Hermitian{Complex128},1}
+    E_full::Array{Diagonal{Float64},1}
+    E_partial::Array{Diagonal{Float64},1}
+    E_LB::Array{Diagonal{Float64},1}
 end
 
 NaiveChen2014_MaxSINR(channel, network) =
@@ -35,9 +35,9 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     state = Chen2014_MaxSINRState(
         initial_receivers(channel, Ps, sigma2s, ds, assignment, aux_params),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params),
-        Array(Hermitian{Complex128}, K),
-        Array(Hermitian{Complex128}, K),
-        Array(Hermitian{Complex128}, K)
+        Array(Diagonal{Float64}, K),
+        Array(Diagonal{Float64}, K),
+        Array(Diagonal{Float64}, K)
     )
     objective = Float64[]
     weighted_logdet_rates_full = Array(Float64, K, max_d, aux_params["max_iters"])
@@ -159,29 +159,25 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         # "Robust" equation solving for potentially singular effective covariance matrix
         robust_solve(A, B) = try; A\B; catch e; (if isa(e, Base.LinAlg.SingularException); pinv(A)*B; end); end
 
-        # Full CSI used for receive filtering. Intracluster CSI tracked.
+        # Full CSI, without linear receive filter. Intracluster CSI tracked.
         # (This is an achievable rate.)
-        U_full = Phi_full\Fiki
-        G_full = U_full'*Fiki # effective channel after receive filtering
-        Kappa_full = U_full'*Phi_full*U_full # (true) covariance after receive filtering
-        S_full = robust_solve(Kappa_full, G_full) # MMSE filter after "original" receive filtering
-        state.E_full[k] = Hermitian(eye(ds[k]) - G_full'*S_full)
+        state.E_full[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - (Phi_full\Fiki)'*Fiki))))
 
-        # Partial CSI used for receive filtering. Intracluster CSI tracked.
+        # Partial CSI used for linear receive filtering. Intracluster CSI tracked.
         # (This is an achievable rate.)
         U_partial = state.U[k]
         G_partial = U_partial'*Fiki # effective channel after receive filtering
         Kappa_partial = U_partial'*Phi_full*U_partial # (true) covariance after receive filtering
         S_partial = robust_solve(Kappa_partial, G_partial) # MMSE filter after "original" receive filtering
-        state.E_partial[k] = Hermitian(eye(ds[k]) - G_partial'*S_partial)
+        state.E_partial[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_partial'*S_partial))))
 
-        # Partial CSI used for receive filtering. Intracluster CSI _not_ tracked.
+        # Partial CSI used for linear receive filtering. Intracluster CSI _not_ tracked.
         # (This is a rate bound)
         U_bound = state.U[k]
         G_bound = U_bound'*Fiki # effective channel after receive filtering
         Kappa_bound = U_bound'*Phi_partial_robust*U_bound # (bound) covariance after receive filtering
         S_bound = robust_solve(Kappa_bound, G_bound) # MMSE filter after "original" receive filtering
-        state.E_LB[k] = Hermitian(eye(ds[k]) - G_bound'*S_bound)
+        state.E_LB[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_bound'*S_bound))))
     end; end
 end
 

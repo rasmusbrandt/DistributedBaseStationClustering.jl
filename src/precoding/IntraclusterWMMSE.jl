@@ -15,22 +15,22 @@ immutable IntraclusterWMMSEState
     V::Array{Matrix{Complex128},1}
 
     # utility-optimal weight
-    Z::Array{Hermitian{Complex128},1}
+    Z::Array{Diagonal{Float64},1}
 
     # logdet(inv(E_full[k])) is the optimal rate for MS k, i.e. with full CSI-R.
     # (That is, E_full is the MMSE matrix.)
-    E_full::Array{Hermitian{Complex128},1}
+    E_full::Array{Diagonal{Float64},1}
 
     # logdet(inv(E_partial[k])) is the rate for MS k when the receive filter is
     # based on intercluster CSI-R only. It is still assumed that the MS can
     # track all intracluster interference, in order to be able to interpret
     # this as an achievable rate.
-    E_partial::Array{Hermitian{Complex128},1}
+    E_partial::Array{Diagonal{Float64},1}
 
     # logdet(inv(E_LB[k])) is a rate lower bound for MS k when the receive filter
     # is based on intercluster CSI-R only. It is _not_ assumed that the MS can
     # track all intracluster interference, and that is why this is a lower bound.
-    E_LB::Array{Hermitian{Complex128},1}
+    E_LB::Array{Diagonal{Float64},1}
 end
 
 NaiveIntraclusterWMMSE(channel, network) =
@@ -58,10 +58,10 @@ function IntraclusterWMMSE(channel, network; robustness::Bool=true)
     state = IntraclusterWMMSEState(
         Array(Matrix{Complex128}, K),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params),
-        Array(Hermitian{Complex128}, K),
-        Array(Hermitian{Complex128}, K),
-        Array(Hermitian{Complex128}, K),
-        Array(Hermitian{Complex128}, K)
+        Array(Diagonal{Float64}, K),
+        Array(Diagonal{Float64}, K),
+        Array(Diagonal{Float64}, K),
+        Array(Diagonal{Float64}, K)
     )
     objective = Float64[]
     utilities = Array(Float64, K, max_d, aux_params["max_iters"])
@@ -158,7 +158,7 @@ function update_MSs!(state::IntraclusterWMMSEState,
         if clustering_type == :spectrum_sharing
             for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
                 Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_full.S)
-                Phi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
+                Phi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*trace(state.V[l]'*state.V[l])*eye(channel.Ns[k])))
             end; end
         end
 
@@ -171,34 +171,30 @@ function update_MSs!(state::IntraclusterWMMSEState,
         else
             state.U[k] = Phi_partial_naive\Fiki
         end
-        state.Z[k] = Hermitian((eye(ds[k]) - state.U[k]'*Fiki)\eye(ds[k]))
+        state.Z[k] = Diagonal(1./min(1, abs(diag((eye(ds[k]) - state.U[k]'*Fiki))))) # same structure regardless of robustness
 
         # "Robust" equation solving for potentially singular effective covariance matrix
         robust_solve(A, B) = try; A\B; catch e; (if isa(e, Base.LinAlg.SingularException); pinv(A)*B; end); end
 
-        # Full CSI used for receive filtering. Intracluster CSI tracked.
+        # Full CSI, without linear receive filter. Intracluster CSI tracked.
         # (This is an achievable rate.)
-        U_full = Phi_full\Fiki
-        G_full = U_full'*Fiki # effective channel after receive filtering
-        Kappa_full = U_full'*Phi_full*U_full # (true) covariance after receive filtering
-        S_full = robust_solve(Kappa_full, G_full) # MMSE filter after "original" receive filtering
-        state.E_full[k] = Hermitian(eye(ds[k]) - G_full'*S_full)
+        state.E_full[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - (Phi_full\Fiki)'*Fiki))))
 
-        # Partial CSI used for receive filtering. Intracluster CSI tracked.
+        # Partial CSI used for linear receive filtering. Intracluster CSI tracked.
         # (This is an achievable rate.)
         U_partial = state.U[k]
         G_partial = U_partial'*Fiki # effective channel after receive filtering
         Kappa_partial = U_partial'*Phi_full*U_partial # (true) covariance after receive filtering
         S_partial = robust_solve(Kappa_partial, G_partial) # MMSE filter after "original" receive filtering
-        state.E_partial[k] = Hermitian(eye(ds[k]) - G_partial'*S_partial)
+        state.E_partial[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_partial'*S_partial))))
 
-        # Partial CSI used for receive filtering. Intracluster CSI _not_ tracked.
+        # Partial CSI used for linear receive filtering. Intracluster CSI _not_ tracked.
         # (This is a rate bound)
         U_bound = state.U[k]
         G_bound = U_bound'*Fiki # effective channel after receive filtering
         Kappa_bound = U_bound'*Phi_partial_robust*U_bound # (bound) covariance after receive filtering
         S_bound = robust_solve(Kappa_bound, G_bound) # MMSE filter after "original" receive filtering
-        state.E_LB[k] = Hermitian(eye(ds[k]) - G_bound'*S_bound)
+        state.E_LB[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_bound'*S_bound))))
     end; end
 end
 
@@ -220,7 +216,7 @@ function update_BSs!(state::IntraclusterWMMSEState,
                 # this type of generated interference.
                 if clustering_type == :spectrum_sharing && robustness
                     # Using vecnorm(.)^2 may generate NaNs here!
-                    Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l])*eye(channel.Ms[i])))
+                    Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U[l]'*state.U[l]*state.Z[l])*eye(channel.Ms[i])))
                     # Breaking version: Gamma += Hermitian(complex(alphas[l]*channel.large_scale_fading_factor[l,i]^2*vecnorm(state.U[l])^2*eye(channel.Ms[i])))
                 end
             end
