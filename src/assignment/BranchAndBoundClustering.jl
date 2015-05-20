@@ -138,22 +138,32 @@ function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignme
     return [ root ]
 end
 
-# Bound a node by testing feasibility and calculating the utilities for the
-# clustered BSs and unclustered BSs.
+# Bound works by optimistically removing interference for unclustered BSs.
 function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+    # Create pseudo cluster where the unclustered BSs are put in singletons.
+    all_BSs = IntSet(1:I)
+    N_clustered = length(node.a); m = 1 + maximum(node.a)
+    partition = Partition(cat(1, node.a, m:(m + (I-N_clustered-1))), skip_check=true) # valid restricted growth string by construction
+
+    # Calculate number of IA slots available in all clusters. The number is
+    # given by the closed form in Liu2013.
+    N_available_IA_slots = Dict{Block,Int64}()
+    BSs_in_full_clusters = IntSet()
+    max_cluster_size = int((M + N - d)/(Kc*d))
+    for block in partition.blocks
+        N_free = max_cluster_size - length(block)
+        N_available_IA_slots[block] = N_free
+        if N_free <= 0
+            union!(BSs_in_full_clusters, block.elements)
+        end
+    end
+
+    # Find bounds for all MSs
     utility_bounds = zeros(Float64, I*Kc, d)
-
-    # Create pseudo-cluster where the unclustered BSs are in singletons
-    N_already_clustered = length(node.a); m = 1 + maximum(node.a)
-    partition = Partition(cat(1, node.a, m:(m + (I-N_already_clustered-1))), skip_check=true) # valid restricted growth string by construction.
-
-    # Calculate throughput bounds for all MSs
-    for block in partition.blocks # N.B. all BSs are included!
-        # The bound is based on the number of available 'IA slots' left
-        # in this cluster. This is given by Liu's closed form.
-        N_free_IA_slots = int((M + N - d)/(Kc*d) - length(block))
-
-        if N_free_IA_slots < 0
+    node_is_leaf = is_leaf(node, I)
+    for block in partition.blocks
+        N_available_IA_slots_ = N_available_IA_slots[block]
+        if N_available_IA_slots_ < 0
             # IA infeasible partition
             if IA_infeasible_negative_inf_utility
                 for i in block.elements; for k in served_MS_ids(i, assignment)
@@ -166,33 +176,40 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
             end
         else
             # IA feasible partition
-            intercluster_interferers = setdiff(IntSet(1:I), block.elements)
-            N_intercluster_interferers = length(intercluster_interferers)
+            BSs_outside_cluster = setdiff(all_BSs, block.elements)
+            if !node_is_leaf
+                BSs_outside_cluster_in_full_clusters = intersect(BSs_outside_cluster, BSs_in_full_clusters)
+                BSs_outside_cluster_in_nonfull_clusters = setdiff(BSs_outside_cluster, BSs_outside_cluster_in_full_clusters)
+                N_BSs_outside_cluster_in_nonfull_clusters = length(BSs_outside_cluster_in_nonfull_clusters)
+            end
             for i in block.elements; for k in served_MS_ids(i, assignment)
-                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't user ^2 for performance reasons
+                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
 
-                # Bound the SNR if we are not at a leaf
-                if is_leaf(node, I)
-                    # Sum all interference
-                    intercluster_interference_levels = Float64[]
-                    for j in intercluster_interferers
-                        Base.Collections.heappush!(intercluster_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j], Base.Order.Reverse)
+                # Leaves get true utility, other nodes get bound.
+                if node_is_leaf
+                    nonreducible_interference_sum = 0.
+                    for j in BSs_outside_cluster
+                        nonreducible_interference_sum += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                     end
-                    rho = desired_power/(sigma2s[k] + sum(intercluster_interference_levels))
+                    rho = desired_power/(sigma2s[k] + nonreducible_interference_sum)
                 else
-                    # Local SNR bound for this MS. This is a bound since we are not
-                    # directly checking the disjoint condition required in the
-                    # partition.
-                    if N_free_IA_slots >= N_intercluster_interferers
-                        # We can accommodate all interferers in this cluster.
-                        rho = desired_power/sigma2s[k]
+                    # Interference that cannot be removed.
+                    nonreducible_interference_sum = 0.
+                    for j in BSs_outside_cluster_in_full_clusters
+                        nonreducible_interference_sum += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                    end
+
+                    # Interference that potentially could be removed
+                    if N_available_IA_slots_ >= N_BSs_outside_cluster_in_nonfull_clusters
+                        # We could accommodate all willing BSs into our cluster.
+                        rho = desired_power/(sigma2s[k] + nonreducible_interference_sum)
                     else
-                        # We need to pick the N_free_IA_slots strongest interferers to include.
-                        intercluster_interference_levels = Float64[]
-                        for j in intercluster_interferers
-                            Base.Collections.heappush!(intercluster_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j], Base.Order.Reverse)
+                        # We need to pick the N_available_IA_slots strongest interferers to include.
+                        reducible_interference_levels = Float64[]
+                        for j in BSs_outside_cluster_in_nonfull_clusters
+                            Base.Collections.heappush!(reducible_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j], Base.Order.Reverse)
                         end
-                        rho = desired_power/(sigma2s[k] + sum(intercluster_interference_levels[N_free_IA_slots+1:end]))
+                        rho = desired_power/(sigma2s[k] + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
                     end
                 end
 
@@ -205,7 +222,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
 
                 # Finally, we can also bound the calculation of
                 # exp(1/rho)*E1(1/rho) if that is wanted.
-                if E1_bound_in_rate_bound && !is_leaf(node, I)
+                if E1_bound_in_rate_bound && !node_is_leaf
                     utility_bounds[k,:] = alpha*longterm_rate(rho, :upper)
                 else
                     utility_bounds[k,:] = alpha*longterm_rate(rho, :none)
