@@ -26,6 +26,7 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
     ds = get_no_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
+    apply_overhead_prelog = aux_params["apply_overhead_prelog"]
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
 
     utopian_rates = zeros(Float64, K, max_d) # raw spectral efficiency upper bound, disregarding IA feasiblility and model applicability
@@ -121,7 +122,7 @@ function longterm_utilities(channel, network, partition; bound::Symbol=:none)
 
     # By having apply_overhead_prelog as an assignment parameter, we can easily
     # run the simulations with and without overhead prelog applied.
-    if aux_params["apply_overhead_prelog"]
+    if apply_overhead_prelog
         return throughputs, alphas, utopian_rates
     else
         return rates, alphas, utopian_rates
