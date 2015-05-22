@@ -37,7 +37,7 @@ function expint(x::Float64)
         bm2 = 1.
         am1 = 1.
         bm1 = x
-        f = am1 ./ bm1
+        f = am1/bm1
         oldf = Inf
         j = 2
 
@@ -50,7 +50,7 @@ function expint(x::Float64)
             am2 = am1/b
             bm2 = bm1/b
             am1 = a/b
-            bm1 = 1
+            bm1 = 1.
        
             f = am1
             j += 1
@@ -62,7 +62,7 @@ function expint(x::Float64)
             am2 = am1/b
             bm2 = bm1/b
             am1 = a/b
-            bm1 = 1
+            bm1 = 1.
             oldf = f
             f = am1
             j += 1
