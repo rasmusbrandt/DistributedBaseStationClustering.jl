@@ -23,41 +23,57 @@ function BranchAndBoundClustering(channel, network)
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
+    @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 1e-1
+    max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
     apply_overhead_prelog = aux_params["apply_overhead_prelog"]
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
 
     # Consistency checks
-    if I >= 12
-        Lumberjack.warn("BranchAndBoundClustering will be slow since I = $I.")
-    end
     if aux_params["clustering_type"] != :spectrum_sharing
         Lumberjack.error("BranchAndBoundClustering only works with spectrum sharing clustering.")
     end
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
-    # Utility lower bounds by using GreedyClustering_Multiple as initial incumbent.
-    greedy_results = GreedyClustering_Multiple(channel, network)
-    incumbent_utilities = greedy_results["utilities"]
-    incumbent_a = greedy_results["a"]
-    incumbent_sum_utility = sum(incumbent_utilities)
-    # Lumberjack.debug("Incumbent (greedy) utilities calculated.", { :incumbent_utilities => incumbent_utilities, :incumbent_sum_utility => incumbent_sum_utility })
+    # Utility lower bounds by trying different heuristics.
+    incumbent_utilities = zeros(Float64, K, d)
+    incumbent_a = zeros(Int, I)
+    incumbent_sum_utility = -Inf
+    for heuristic in [NoClustering, GrandCoalitionClustering, GreedyClustering_Single, GreedyClustering_Multiple]
+        heuristic_results = heuristic(channel, network)
+        heuristic_sum_utility = sum(heuristic_results["utilities"])
+        if heuristic_sum_utility > incumbent_sum_utility
+            incumbent_utilities = heuristic_results["utilities"]
+            incumbent_a = heuristic_results["a"]
+            incumbent_sum_utility = heuristic_sum_utility
+        end
+        # Lumberjack.debug("Potential incumbent utilities calculated.", { :heuristic => heuristic, :incumbent_sum_utility => incumbent_sum_utility })
+    end
 
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
     no_iters = 0; no_utility_calculations = 0; no_longterm_rate_calculations = 0
+    abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
         no_iters += 1
+
+        # Store incumbent evolution per iteration
+        push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
 
         # Select next node to be processed. We use the best first strategy,
         # i.e. we pick the live node with the highest (best) upper bound.
         parent = Base.Collections.heappop!(live, Base.Order.Reverse)
 
-        # Store incumbent evolution per iteration
-        push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
+        # Check convergence (parent has the highest upper bound)
+        abs_conv_crit = parent.upper_bound - incumbent_sum_utility
+        if abs_conv_crit < max_abs_optimality_gap
+            # Lumberjack.debug("Converged.", { :abs_conv_crit => abs_conv_crit, :max_abs_optimality_gap => max_abs_optimality_gap })
+            premature_ending = true
+            break
+        end
 
         for child in branch(parent)
             bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
@@ -89,6 +105,11 @@ function BranchAndBoundClustering(channel, network)
         end
     end
 
+    # Did we find the global optimum?
+    if (abs_conv_crit < 0.) || !premature_ending
+        abs_conv_crit = 0.
+    end
+
     # Calculate final alphas
     final_partition = Partition(incumbent_a)
     utilities, alphas, _ = longterm_utilities(channel, network, final_partition)
@@ -96,6 +117,8 @@ function BranchAndBoundClustering(channel, network)
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_utility => incumbent_sum_utility,
           :no_evaluated_partitions => no_utility_calculations/K,
+          :abs_conv_crit => abs_conv_crit,
+          :max_abs_optimality_gap => max_abs_optimality_gap,
           :a => incumbent_a }
     )
 
