@@ -55,7 +55,7 @@ function BranchAndBoundClustering(channel, network)
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
-    no_iters = 0; no_utility_calculations = 0; no_longterm_rate_calculations = 0
+    no_iters = 0; no_utility_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
         no_iters += 1
@@ -78,7 +78,6 @@ function BranchAndBoundClustering(channel, network)
         for child in branch(parent)
             bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
             no_utility_calculations += K
-            no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_sum_utility
@@ -139,7 +138,6 @@ function BranchAndBoundClustering(channel, network)
     results["no_clusters"] = 1 + maximum(incumbent_a)
     results["no_iters"] = no_iters
     results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
     return results
 end
 
@@ -152,7 +150,7 @@ end
 Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < N2.upper_bound)
 
 # Helper functions
-is_leaf(node, I) = (length(node.a) == I)
+is_leaf(node, I) = (size(node.a, 1) == I)
 
 # Initialize the live structure by creating the root node.
 function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
@@ -172,8 +170,15 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
 
     # For looping over clusters, we create a pseudo partition, where the
     # unclustered BSs belong to singleton blocks.
+    pseudo_partition_a = Array(Int64, I)
+    for i = 1:N_clustered
+        pseudo_partition_a[i] = node.a[i]
+    end
     m = 1 + maximum(node.a)
-    pseudo_partition = Partition(cat(1, node.a, m:(m + (I-N_clustered-1))), skip_check=true)
+    for i = (N_clustered+1):I
+        pseudo_partition_a[i] = m + (i - N_clustered - 1)
+    end
+    pseudo_partition = Partition(pseudo_partition_a, skip_check=true)
 
     # The pre-log factor is upper bounded by the current pseudo_partition,
     # since each BS contributes the least towards CSI acquisition when it is
