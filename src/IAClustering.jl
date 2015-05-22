@@ -32,7 +32,8 @@ export
     # precoding
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
     RobustIntraclusterLeakageMinimization, NaiveIntraclusterLeakageMinimization,
-    RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
+    RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE,
+    NoPrecoding
 
 include("misc/combinations.jl")
 include("misc/expint.jl")
@@ -56,6 +57,7 @@ include("precoding/precoding.jl")
 include("precoding/Chen2014_MaxSINR.jl")
 include("precoding/IntraclusterLeakageMinimization.jl")
 include("precoding/IntraclusterWMMSE.jl")
+include("precoding/NoPrecoding.jl")
 
 ##########################################################################
 # Logging defaults
