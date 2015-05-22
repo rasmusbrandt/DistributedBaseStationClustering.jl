@@ -50,7 +50,8 @@ simulation_params = [
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => false,
 
-        "BranchAndBoundClustering:E1_bound_in_rate_bound" => true,
+        "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
+        "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

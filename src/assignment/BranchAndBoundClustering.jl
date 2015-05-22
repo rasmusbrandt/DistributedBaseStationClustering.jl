@@ -23,7 +23,7 @@ function BranchAndBoundClustering(channel, network)
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
-    @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 1e-1
+    @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
