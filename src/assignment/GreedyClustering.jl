@@ -65,7 +65,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             # IA_infeasible_negative_inf_utility is set to false.)
             no_utility_calculations += K
             no_longterm_rate_calculations += length(i_cluster) + length(j_cluster)
-            if is_IA_feasible(network, Partition(new_partition_matrix))
+            if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 partition_matrix = new_partition_matrix
             end
 
@@ -80,7 +80,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             # Check IA feasibility for this new cluster.
             no_utility_calculations += K
             no_longterm_rate_calculations += length(i_cluster) + 1
-            if is_IA_feasible(network, Partition(new_partition_matrix))
+            if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 # Fix BS j to this cluster
                 F[:,j] = -Inf
 
