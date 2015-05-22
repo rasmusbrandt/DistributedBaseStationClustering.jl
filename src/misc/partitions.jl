@@ -43,8 +43,8 @@ function Partition(a::Vector; skip_check::Bool=false)
 end
 
 # Create partition from assignment matrix
-Partition(A::Matrix) =
-    Partition(restricted_growth_string(A))
+Partition(A::Matrix; skip_check::Bool=false) =
+    Partition(restricted_growth_string(A); skip_check=skip_check)
 
 # Convert from partition to restricted growth string
 restricted_growth_string(p::Partition) = restricted_growth_string(logical_matrix(p))
