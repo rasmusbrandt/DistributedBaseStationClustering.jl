@@ -19,3 +19,14 @@ function cluster_assignment_matrix(network, partition)
 
     return A
 end
+
+function avg_cluster_size(a)
+    num_clusters = 1 + maximum(a)
+
+    num_members = zeros(Int, num_clusters)
+    for i = 1:num_clusters
+        num_members[i] = length(find(a .== (i-1)))
+    end
+
+    return mean(num_members)
+end

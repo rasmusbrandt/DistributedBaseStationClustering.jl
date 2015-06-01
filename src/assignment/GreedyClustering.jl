@@ -44,8 +44,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = 0
+    num_sum_utility_calculations = 0
     while !all(F .== -Inf)
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
@@ -63,8 +62,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             # means that GreedyClustering cannot handle situations where
             # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
             # IA_infeasible_negative_inf_utility is set to false.)
-            no_utility_calculations += K
-            no_longterm_rate_calculations += length(i_cluster) + length(j_cluster)
+            num_sum_utility_calculations += 1
             if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 partition_matrix = new_partition_matrix
             end
@@ -78,8 +76,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             new_partition_matrix[i_cluster,j] = 1; new_partition_matrix[j,i_cluster] = 1
 
             # Check IA feasibility for this new cluster.
-            no_utility_calculations += K
-            no_longterm_rate_calculations += length(i_cluster) + 1
+            num_sum_utility_calculations += 1
             if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 # Fix BS j to this cluster
                 F[:,j] = -Inf
@@ -118,10 +115,10 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
+    results["num_sum_utility_calculations"] = num_sum_utility_calculations
     return results
 end

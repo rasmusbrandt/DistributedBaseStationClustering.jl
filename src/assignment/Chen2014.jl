@@ -27,9 +27,9 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     # Exhaustive search over partitions
     best_objective = 0.
     best_partition = Partition([0:(I-1)])
-    no_utility_calculations = 0
+    num_sum_utility_calculations = 0
     for partition in PartitionIterator(I)
-        no_utility_calculations += K
+        num_sum_utility_calculations += 1
 
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_LinearObj_ExhaustiveSearch cannot handle situations where
@@ -69,10 +69,11 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["Chen2014_no_utility_calculations"] = no_utility_calculations
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
+    results["num_sum_utility_calculations"] = num_sum_utility_calculations
     results["Chen2014_objective"] = best_objective
     return results
 end
@@ -124,7 +125,7 @@ function Chen2014_kmeans(channel, network)
     partition = Partition(partition_matrix)
     utilities, alphas, _ = longterm_utilities(channel, network, partition)
     a = restricted_growth_string(partition)
-    Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
+    Lumberjack.info("Chen2014_kMeans finished.",
         { :sum_utility => sum(utilities),
           :a => a }
     )
@@ -141,9 +142,10 @@ function Chen2014_kmeans(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
     return results
 end
 

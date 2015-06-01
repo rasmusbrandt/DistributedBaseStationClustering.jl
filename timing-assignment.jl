@@ -50,7 +50,7 @@ simulation_params = [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
-        "CoalitionFormationClustering_Group:max_merge_size" => 3,
+        "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,

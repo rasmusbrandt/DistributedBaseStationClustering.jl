@@ -23,12 +23,12 @@ function BranchAndBoundClustering(channel, network)
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
+    apply_overhead_prelog = aux_params["apply_overhead_prelog"]
+    IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
     @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
-    apply_overhead_prelog = aux_params["apply_overhead_prelog"]
-    IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
 
     # Consistency checks
     if aux_params["clustering_type"] != :spectrum_sharing
@@ -55,10 +55,10 @@ function BranchAndBoundClustering(channel, network)
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
-    no_iters = 0; no_utility_calculations = 0
+    num_iters = 0; num_sum_utility_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
-        no_iters += 1
+        num_iters += 1
 
         # Store incumbent evolution per iteration
         push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
@@ -77,7 +77,7 @@ function BranchAndBoundClustering(channel, network)
 
         for child in branch(parent)
             bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
-            no_utility_calculations += K
+            num_sum_utility_calculations += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_sum_utility
@@ -115,7 +115,7 @@ function BranchAndBoundClustering(channel, network)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_utility => incumbent_sum_utility,
-          :no_evaluated_partitions => no_utility_calculations/K,
+          :num_sum_utility_calculations => num_sum_utility_calculations,
           :abs_conv_crit => abs_conv_crit,
           :max_abs_optimality_gap => max_abs_optimality_gap,
           :a => incumbent_a }
@@ -133,11 +133,12 @@ function BranchAndBoundClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = incumbent_a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(incumbent_a)
-    results["no_iters"] = no_iters
-    results["no_utility_calculations"] = no_utility_calculations
+    results["a"] = incumbent_a
+    results["num_clusters"] = 1 + maximum(incumbent_a)
+    results["avg_cluster_size"] = avg_cluster_size(incumbent_a)
+    results["num_sum_utility_calculations"] = num_sum_utility_calculations
+    results["num_iters"] = num_iters
     return results
 end
 
@@ -301,10 +302,10 @@ end
 function branch(parent)
     m = 1 + maximum(parent.a)
 
-    no_children = m + 1
-    children = Array(BranchAndBoundNode, no_children)
+    num_children = m + 1
+    children = Array(BranchAndBoundNode, num_children)
 
-    for p = 1:no_children
+    for p = 1:num_children
         child_a = push!(copy(parent.a), p - 1)
         child = BranchAndBoundNode(child_a, parent.upper_bound)
         children[p] = child

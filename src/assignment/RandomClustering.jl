@@ -23,24 +23,22 @@ function RandomClustering(channel, network)
     alphas = Array(Float64, K)
 
     # Find a set partition whose utility is not -Inf
-    no_iters = 0
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = 0
-    while no_iters <= aux_params["RandomClustering:max_iters"]
-        no_iters += 1
+    num_iters = 0
+    num_sum_utility_calculations = 0
+    while num_iters <= aux_params["RandomClustering:max_iters"]
+        num_iters += 1
 
         # Get random partition by finding random rgs
         random_a = random_restricted_growth_string(I, local_rng)
         random_partition = Partition(random_a)
         utilities, alphas, _ = longterm_utilities(channel, network, Partition(random_a))
-        no_utility_calculations += K
-        no_longterm_rate_calculations += K
+        num_sum_utility_calculations += 1
 
         if sum(utilities) > -Inf
             break
         end
     end
-    if no_iters == aux_params["RandomClustering:max_iters"]
+    if num_iters == aux_params["RandomClustering:max_iters"]
         Lumberjack.warn("Max iterations reached for RandomClustering. This probably means that an IA infeasible coalition structure was chosen.")
     end
 
@@ -61,12 +59,11 @@ function RandomClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = random_a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(random_a)
-    results["no_iters"] = no_iters
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["a"] = random_a
+    results["num_clusters"] = 1 + maximum(random_a)
+    results["avg_cluster_size"] = avg_cluster_size(random_a)
+    results["num_sum_utility_calculations"] = num_sum_utility_calculations
     return results
 end
 

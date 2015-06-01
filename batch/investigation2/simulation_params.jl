@@ -17,7 +17,7 @@ simulation_params = [
 
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
-        "CoalitionFormationClustering_Group:max_merge_size" => 3,
+        "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:search_budget" => 10,
         "CoalitionFormationClustering_Individual:search_order" => :greedy,

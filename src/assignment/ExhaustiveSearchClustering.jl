@@ -18,12 +18,11 @@ function ExhaustiveSearchClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
+    num_sum_utility_calculations = 0
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
     best_alphas = Array(Float64, K); best_partition = Partition([0:(I-1)])
     for partition in PartitionIterator(I)
-        no_utility_calculations += K
+        num_sum_utility_calculations += 1
 
         # Calculate utilities
         utilities, alphas, _ = longterm_utilities(channel, network, partition)
@@ -39,7 +38,7 @@ function ExhaustiveSearchClustering(channel, network)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
         { :sum_utility => best_objective,
-          :no_evaluated_partitions => no_utility_calculations/K,
+          :num_sum_utility_calculations => num_sum_utility_calculations,
           :a => a }
     )
 
@@ -55,10 +54,10 @@ function ExhaustiveSearchClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = best_utilities
-    results["a"] = a
     results["alphas"] = best_alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
+    results["num_sum_utility_calculations"] = num_sum_utility_calculations
     return results
 end

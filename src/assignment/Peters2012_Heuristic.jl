@@ -32,9 +32,9 @@ function Peters2012_Heuristic(channel, network)
     unclustered_BSs = IntSet(1:I) # K_A in paper
     clusters = [ IntSet() for p = 1:P ] # K_P in paper
 
-    no_iters = 0
+    num_iters = 0
     while length(unclustered_BSs) > 0
-        no_iters += 1
+        num_iters += 1
 
         # Build clustering metric
         rate_approx = zeros(Float64, I, P) # already clustered BSs will have zero metric
@@ -94,9 +94,10 @@ function Peters2012_Heuristic(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_iters"] = no_iters
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
+    results["num_iters"] = num_iters
     return results
 end

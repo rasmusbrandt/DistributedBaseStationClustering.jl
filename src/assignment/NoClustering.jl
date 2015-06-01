@@ -28,10 +28,10 @@ function NoClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["utilities"] = utilities
-    results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = K
-    results["no_longterm_rate_calculations"] = K
+    results["a"] = a
+    results["num_clusters"] = 1 + maximum(a)
+    results["avg_cluster_size"] = avg_cluster_size(a)
+    results["num_sum_utility_calculations"] = 1
     return results
 end
