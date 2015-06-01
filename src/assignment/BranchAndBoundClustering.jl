@@ -53,19 +53,20 @@ function BranchAndBoundClustering(channel, network)
     end
 
     # Perform eager branch and bound
-    incumbent_sum_utility_evolution = Float64[]
+    lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
     num_iters = 0; num_sum_utility_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
         num_iters += 1
 
-        # Store incumbent evolution per iteration
-        push!(incumbent_sum_utility_evolution, incumbent_sum_utility)
-
         # Select next node to be processed. We use the best first strategy,
         # i.e. we pick the live node with the highest (best) upper bound.
         parent = Base.Collections.heappop!(live, Base.Order.Reverse)
+
+        # Store bound evolution per iteration
+        push!(lower_bound_evolution, incumbent_sum_utility)
+        push!(upper_bound_evolution, parent.upper_bound)
 
         # Check convergence (parent has the highest upper bound)
         abs_conv_crit = parent.upper_bound - incumbent_sum_utility
@@ -139,6 +140,8 @@ function BranchAndBoundClustering(channel, network)
     results["avg_cluster_size"] = avg_cluster_size(incumbent_a)
     results["num_sum_utility_calculations"] = num_sum_utility_calculations
     results["num_iters"] = num_iters
+    results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
+    results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
     return results
 end
 
