@@ -1,12 +1,12 @@
 #!/usr/bin/env julia
 
-require("../../../../../src/IAClustering.jl")
+include("../../../src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
-require("../../../plot_params.jl")
+include("../plot_params.jl")
 
 ##########################################################################
 # General settings
-seed = 28373636
+seed = 8367353
 start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
@@ -15,13 +15,14 @@ initial_simulation_params = [
     "simulation_name" => "initial",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
-    "geography_size" => (250.,250.),
-    "MS_serving_BS_distance" => nothing,
+    "geography_size" => (1500.,1500.),
+    # "MS_serving_BS_distance" => nothing,
+    "MS_serving_BS_distance" => 150.,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
 
-        CoalitionFormationClustering_Group,
+        # CoalitionFormationClustering_Group,
         CoalitionFormationClustering_Individual,
 
         GreedyClustering_Single,
@@ -34,24 +35,21 @@ initial_simulation_params = [
         RandomClustering,
         NoClustering,
     ],
-    "precoding_methods" => [
-        RobustIntraclusterLeakageMinimization,
-    ],
+    "precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 2160,
+        "no_coherence_symbols" => 2700,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
-
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => true,
+        "IA_infeasible_negative_inf_utility" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ],
-    "independent_variable" => (set_transmit_powers_dBm!, -80:10:0),
+    # "independent_variable" => (set_transmit_powers_dBm!, -50:10:30),
+    "independent_variable" => (set_average_SNRs_dB!, -10:10:50),
 ]
 
 ##########################################################################
@@ -62,13 +60,11 @@ network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_size=simulation_params["geography_size"],
-        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
+        geography_size=initial_simulation_params["geography_size"],
+        MS_serving_BS_distance=initial_simulation_params["MS_serving_BS_distance"])
 
 # Include high complexity methods for these simulations only
-unshift!(simulation_params["assignment_methods"], Chen2014_LinearObj_ExhaustiveSearch)
 unshift!(simulation_params["assignment_methods"], BranchAndBoundClustering)
-unshift!(simulation_params["assignment_methods"], ExhaustiveSearchClustering)
 
 simulation_params["simulation_name"] = "small-with_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true
@@ -81,12 +77,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
-plot(processed_results, simulation_params, plot_params_longterm_clusters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
+plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
 
 simulation_params["simulation_name"] = "small-without_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
@@ -99,12 +93,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
-plot(processed_results, simulation_params, plot_params_longterm_clusters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
+plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
 
 ##########################################################################
 # Large scenario with/without overhead
@@ -116,7 +108,8 @@ network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
         no_streams=simulation_params["d"],
-        geography_size=simulation_params["geography_size"])
+        geography_size=initial_simulation_params["geography_size"],
+        MS_serving_BS_distance=initial_simulation_params["MS_serving_BS_distance"])
 
 simulation_params["simulation_name"] = "large-with_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true
@@ -129,12 +122,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
-plot(processed_results, simulation_params, plot_params_longterm_clusters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
+plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
 
 simulation_params["simulation_name"] = "large-without_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
@@ -147,9 +138,7 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
-plot(processed_results, simulation_params, plot_params_longterm_clusters)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
+plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
