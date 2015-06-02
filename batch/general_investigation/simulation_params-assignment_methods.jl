@@ -16,4 +16,4 @@ simulation_params["assignment_methods"] = [
     NoClustering,
 ]
 
-simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]
+simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE, ]
