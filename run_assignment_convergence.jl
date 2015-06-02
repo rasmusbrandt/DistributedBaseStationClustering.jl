@@ -28,7 +28,6 @@ simulation_params = [
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => nothing,
     "assignment_methods" => [ BranchAndBoundClustering, ],
-    #"precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
         "no_coherence_symbols" => 2500,
     ],
