@@ -274,3 +274,30 @@ plot_params_longterm_num_sum_utility_calculations = [
         ],
     ]
 ]
+plot_params_longterm_num_searches = [
+    "plot_name" => "longterm-num_searches",
+
+    "objective" => :sumrate,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Transmit power [dBm]",
+        :ylabel => "Total number of searches",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 10,
+    ],
+
+    "methods" => [
+        "CoalitionFormationClustering_Individual" => [
+            ("num_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+        ],
+
+    ]
+]
