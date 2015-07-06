@@ -6,7 +6,6 @@ function calculate_weighted_logdet_rates(state, alphas)
 
     weighted_logdet_rates_full = zeros(Float64, K, max_d)
     weighted_logdet_rates_partial = zeros(Float64, K, max_d)
-    weighted_logdet_rates_LB = zeros(Float64, K, max_d)
     for k = 1:K; if ds[k] > 0
         # W is p.d., so we should only get abs eigenvalues. Numerically we may
         # get some imaginary noise however. Also, numerically the eigenvalues
@@ -14,18 +13,15 @@ function calculate_weighted_logdet_rates(state, alphas)
         # rates. (Same goes for E, but in reverse.)
         r_full = alphas[k]*log2(1./(min(1, abs(eigvals(state.E_full[k])))))
         r_partial = alphas[k]*log2(1./(min(1, abs(eigvals(state.E_partial[k])))))
-        r_lower_bound = alphas[k]*log2(1./(min(1, abs(eigvals(state.E_LB[k])))))
 
         if ds[k] < max_d
             weighted_logdet_rates_full[k,:] = cat(1, r_full, zeros(Float64, max_d - ds[k]))
             weighted_logdet_rates_partial[k,:] = cat(1, r_partial, zeros(Float64, max_d - ds[k]))
-            weighted_logdet_rates_LB[k,:] = cat(1, r_lower_bound, zeros(Float64, max_d - ds[k]))
         else
             weighted_logdet_rates_full[k,:] = r_full
             weighted_logdet_rates_partial[k,:] = r_partial
-            weighted_logdet_rates_LB[k,:] = r_lower_bound
         end
     end; end
 
-    return weighted_logdet_rates_full, weighted_logdet_rates_partial, weighted_logdet_rates_LB
+    return weighted_logdet_rates_full, weighted_logdet_rates_partial
 end

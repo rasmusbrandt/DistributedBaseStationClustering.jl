@@ -32,7 +32,7 @@ for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculat
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
 end
-for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate, plot_params_instantaneous_LB_sumrate)
+for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate)
     processed_results = postprocess(raw_precoding_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
 end

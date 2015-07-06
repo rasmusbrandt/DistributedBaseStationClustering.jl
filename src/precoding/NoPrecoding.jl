@@ -19,14 +19,12 @@ function NoPrecoding(channel, network)
         results["utilities"] = utilities
         results["weighted_logdet_rates_full"] = z2
         results["weighted_logdet_rates_partial"] = z2
-        results["weighted_logdet_rates_LB"] = z2
         results["allocated_power"] = z2
     elseif aux_params["output_protocol"] == :final_iteration
         results["objective"] = z1[end]
         results["utilities"] = utilities[:,:,end]
         results["weighted_logdet_rates_full"] = z2[:,:,end]
         results["weighted_logdet_rates_partial"] = z2[:,:,end]
-        results["weighted_logdet_rates_LB"] = z2[:,:,end]
         results["allocated_power"] = z2[:,:,end]
     end
     return results

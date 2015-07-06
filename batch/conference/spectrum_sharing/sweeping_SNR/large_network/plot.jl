@@ -41,11 +41,11 @@ PyPlot.rc("figure", figsize=(3.5,2.0))
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.16,0.95-0.11,0.95-0.16))
 
-ax[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"][:,2], color=colours[:CoalitionFormationClustering_Individual], linestyle="-", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 10$)")
-ax[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_LB"][:,1], color=colours[:CoalitionFormationClustering_Individual], linestyle="--", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 2$)")
-ax[:plot](transmit_powers_dBm, results_precoding_mean["Chen2014_kmeans"]["weighted_logdet_rates_LB"][:,1], markeredgewidth=1, color=colours[:Chen2014_kmeans], linestyle="-", marker=markers[:Chen2014_kmeans], label=labels[:Chen2014_kmeans])
-ax[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_LB"][:,1], color=colours[:GrandCoalitionClustering], linestyle="-", marker=markers[:GrandCoalitionClustering], label=labels[:GrandCoalitionClustering])
-ax[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_LB"][:,1], color=colours[:NoClustering], linestyle="-", marker=markers[:NoClustering], label=labels[:NoClustering])
+ax[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_partial"][:,2], color=colours[:CoalitionFormationClustering_Individual], linestyle="-", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 10$)")
+ax[:plot](transmit_powers_dBm, results_precoding_mean["CoalitionFormationClustering_Individual"]["weighted_logdet_rates_partial"][:,1], color=colours[:CoalitionFormationClustering_Individual], linestyle="--", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 2$)")
+ax[:plot](transmit_powers_dBm, results_precoding_mean["Chen2014_kmeans"]["weighted_logdet_rates_partial"][:,1], markeredgewidth=1, color=colours[:Chen2014_kmeans], linestyle="-", marker=markers[:Chen2014_kmeans], label=labels[:Chen2014_kmeans])
+ax[:plot](transmit_powers_dBm, results_precoding_mean["GrandCoalitionClustering"]["weighted_logdet_rates_partial"][:,1], color=colours[:GrandCoalitionClustering], linestyle="-", marker=markers[:GrandCoalitionClustering], label=labels[:GrandCoalitionClustering])
+ax[:plot](transmit_powers_dBm, results_precoding_mean["NoClustering"]["weighted_logdet_rates_partial"][:,1], color=colours[:NoClustering], linestyle="-", marker=markers[:NoClustering], label=labels[:NoClustering])
 
 ax[:set_ylim]([0, 65])
 

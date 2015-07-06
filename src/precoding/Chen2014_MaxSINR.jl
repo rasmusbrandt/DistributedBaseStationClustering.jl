@@ -12,7 +12,6 @@ immutable Chen2014_MaxSINRState
     # See IntraclusterWMMSEState for description of these.
     E_full::Array{Diagonal{Float64},1}
     E_partial::Array{Diagonal{Float64},1}
-    E_LB::Array{Diagonal{Float64},1}
 end
 
 NaiveChen2014_MaxSINR(channel, network) =
@@ -36,13 +35,11 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         initial_receivers(channel, Ps, sigma2s, ds, assignment, aux_params),
         initial_precoders(channel, Ps, sigma2s, ds, assignment, aux_params),
         Array(Diagonal{Float64}, K),
-        Array(Diagonal{Float64}, K),
         Array(Diagonal{Float64}, K)
     )
     objective = Float64[]
     weighted_logdet_rates_full = Array(Float64, K, max_d, aux_params["max_iters"])
     weighted_logdet_rates_partial = Array(Float64, K, max_d, aux_params["max_iters"])
-    weighted_logdet_rates_LB = Array(Float64, K, max_d, aux_params["max_iters"])
     allocated_power = Array(Float64, K, max_d, aux_params["max_iters"])
 
     iters = 0; conv_crit = Inf
@@ -52,7 +49,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         iters += 1
 
         # Results after this iteration
-        weighted_logdet_rates_full[:,:,iters], weighted_logdet_rates_partial[:,:,iters], weighted_logdet_rates_LB[:,:,iters] = calculate_weighted_logdet_rates(state, alphas)
+        weighted_logdet_rates_full[:,:,iters], weighted_logdet_rates_partial[:,:,iters] = calculate_weighted_logdet_rates(state, alphas)
         push!(objective, sum(weighted_logdet_rates_full[:,:,iters]))
         allocated_power[:,:,iters] = calculate_allocated_power(state)
 
@@ -92,13 +89,11 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
         results["objective"] = objective
         results["weighted_logdet_rates_full"] = weighted_logdet_rates_full
         results["weighted_logdet_rates_partial"] = weighted_logdet_rates_partial
-        results["weighted_logdet_rates_LB"] = weighted_logdet_rates_LB
         results["allocated_power"] = allocated_power
     elseif aux_params["output_protocol"] == :final_iteration
         results["objective"] = objective[iters]
         results["weighted_logdet_rates_full"] = weighted_logdet_rates_full[:,:,iters]
         results["weighted_logdet_rates_partial"] = weighted_logdet_rates_partial[:,:,iters]
-        results["weighted_logdet_rates_LB"] = weighted_logdet_rates_LB[:,:,iters]
         results["allocated_power"] = allocated_power[:,:,iters]
     end
     return results
@@ -156,28 +151,14 @@ function update_MSs!(state::Chen2014_MaxSINRState,
             end
         end
 
-        # "Robust" equation solving for potentially singular effective covariance matrix
-        robust_solve(A, B) = try; A\B; catch e; (if isa(e, Base.LinAlg.SingularException); pinv(A)*B; end); end
-
-        # Full CSI, without linear receive filter. Intracluster CSI tracked.
-        # (This is an achievable rate.)
+        # Full CSI, i.e. intracluster CSI is estimated in a final training stage.
+        # This is an achievable rate.
         state.E_full[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - (Phi_full\Fiki)'*Fiki))))
 
-        # Partial CSI used for linear receive filtering. Intracluster CSI tracked.
-        # (This is an achievable rate.)
-        U_partial = state.U[k]
-        G_partial = U_partial'*Fiki # effective channel after receive filtering
-        Kappa_partial = U_partial'*Phi_full*U_partial # (true) covariance after receive filtering
-        S_partial = robust_solve(Kappa_partial, G_partial) # MMSE filter after "original" receive filtering
-        state.E_partial[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_partial'*S_partial))))
-
-        # Partial CSI used for linear receive filtering. Intracluster CSI _not_ tracked.
-        # (This is a rate bound)
-        U_bound = state.U[k]
-        G_bound = U_bound'*Fiki # effective channel after receive filtering
-        Kappa_bound = U_bound'*Phi_partial_robust*U_bound # (bound) covariance after receive filtering
-        S_bound = robust_solve(Kappa_bound, G_bound) # MMSE filter after "original" receive filtering
-        state.E_LB[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - G_bound'*S_bound))))
+        # Partial CSI, i.e. intracluster CSI is _NOT_ estimated.
+        # This is either a rate bound (if the receiver is aware that intracluster interference exists),
+        # or an achievable rate (if the receiver is oblivious of the intracluster interference). Cf. Lapidoth1996.
+        state.E_partial[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - (Phi_partial_robust\Fiki)'*Fiki))))
     end; end
 end
 

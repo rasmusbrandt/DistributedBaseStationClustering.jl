@@ -65,27 +65,27 @@ postprocess_params_precoding = [
     "objective" => :sumrate,
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
 
         "Chen2014_kmeans" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
 
         "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
 
         "RandomClustering" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
 
         "NoClustering" => [
-            ("weighted_logdet_rates_LB",),
+            ("weighted_logdet_rates_partial",),
         ],
     ]
 ]
