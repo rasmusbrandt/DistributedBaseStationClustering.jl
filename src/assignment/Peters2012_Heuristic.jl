@@ -75,26 +75,24 @@ function Peters2012_Heuristic(channel, network)
     end
 
     # Get result
-    utilities, alphas, _ = longterm_utilities(channel, network, partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
-    objective = sum(utilities)
+    objective = sum(throughputs)
     Lumberjack.info("Peters2010_Heuristic finished.",
-        { :sum_utility => objective,
+        { :sum_throughput => objective,
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, best_prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, best_prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

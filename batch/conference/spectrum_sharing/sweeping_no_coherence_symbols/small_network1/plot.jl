@@ -8,7 +8,7 @@ using LaTeXStrings
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network1.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-no_coherence_symbols.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-num_coherence_symbols.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-final.jl"))
 
@@ -39,11 +39,11 @@ PyPlot.rc("figure", figsize=(3.5,2.0))
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.16,0.95-0.11,0.95-0.16))
 
-ax[:plot](vs_kmh, results_assignment_mean["ExhaustiveSearchClustering"]["utilities"], color=colours[:ExhaustiveSearchClustering], linestyle="-", marker=markers[:ExhaustiveSearchClustering], label=labels[:ExhaustiveSearchClustering])
-ax[:plot](vs_kmh, results_assignment_mean["CoalitionFormationClustering_Individual"]["utilities"], color=colours[:CoalitionFormationClustering_Individual], linestyle="-", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 10$)")
-ax[:plot](vs_kmh, results_assignment_mean["GrandCoalitionClustering"]["utilities"], color=colours[:GrandCoalitionClustering], linestyle="-", marker=markers[:GrandCoalitionClustering], label=labels[:GrandCoalitionClustering])
-ax[:plot](vs_kmh, results_assignment_mean["RandomClustering"]["utilities"], color=colours[:RandomClustering], linestyle="-", marker=markers[:RandomClustering], label=labels[:RandomClustering])
-ax[:plot](vs_kmh, results_assignment_mean["NoClustering"]["utilities"], color=colours[:NoClustering], linestyle="-", marker=markers[:NoClustering], label=labels[:NoClustering])
+ax[:plot](vs_kmh, results_assignment_mean["ExhaustiveSearchClustering"]["throughputs"], color=colours[:ExhaustiveSearchClustering], linestyle="-", marker=markers[:ExhaustiveSearchClustering], label=labels[:ExhaustiveSearchClustering])
+ax[:plot](vs_kmh, results_assignment_mean["CoalitionFormationClustering_Individual"]["throughputs"], color=colours[:CoalitionFormationClustering_Individual], linestyle="-", marker=markers[:CoalitionFormationClustering_Individual], label=L"Coalition formation ($b_k = 10$)")
+ax[:plot](vs_kmh, results_assignment_mean["GrandCoalitionClustering"]["throughputs"], color=colours[:GrandCoalitionClustering], linestyle="-", marker=markers[:GrandCoalitionClustering], label=labels[:GrandCoalitionClustering])
+ax[:plot](vs_kmh, results_assignment_mean["RandomClustering"]["throughputs"], color=colours[:RandomClustering], linestyle="-", marker=markers[:RandomClustering], label=labels[:RandomClustering])
+ax[:plot](vs_kmh, results_assignment_mean["NoClustering"]["throughputs"], color=colours[:NoClustering], linestyle="-", marker=markers[:NoClustering], label=labels[:NoClustering])
 
 ax[:set_ylim]([-1, 26])
 

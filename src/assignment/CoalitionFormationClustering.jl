@@ -2,7 +2,7 @@
 # Base station clustering based on coalitional formation. Two solution
 # concepts are used: individual-based stability and group-based stability.
 #
-# In both algorithms, we have *BS_utilities*, which are the MS utilities
+# In both algorithms, we have *BS_throughputs*, which are the MS throughputs
 # for the served MSs summed up. (This *could* be generalized to other functions.)
 #
 # In the individual-based stability algorithm (CoalitionFormationClustering_Individual),
@@ -17,8 +17,8 @@
 #   The way the possible deviations are ordered
 #       CoalitionFormationClustering_Individual:search_order
 #   This can be either :greedy or :fair, where :greedy means that the BS
-#   with the largest utility is allowed to deviate first, and :fair means
-#   that the BS with the smallest utility is allowed to deviate first.
+#   with the largest throughput is allowed to deviate first, and :fair means
+#   that the BS with the smallest throughput is allowed to deviate first.
 #
 # The group-based stability algorithm (CoalitionFormationClustering_Group) works
 # directly on coalitions, rather than on BSs as the individual-based stability
@@ -32,7 +32,7 @@
 #   The way the possible mergers are ordered
 #       CoalitionFormationClustering_Group:search_order
 #   This can be either :greedy or :lexicographic, where :greedy means that
-#   the merger which leads to the largest sum utility (over the entire network)
+#   the merger which leads to the largest sum throughput (over the entire network)
 #   will be tried first. :lexicographic means that the mergers are tried
 #   in lexicographic order.
 
@@ -40,10 +40,10 @@
 # Individual-based stability algorithm
 type CoalitionFormationClustering_IndividualState
     partition::Partition
-    BS_utilities::Vector{Float64}
+    BS_throughputs::Vector{Float64}
     history::Vector{Set{IntSet}}
     num_searches::Vector{Int}
-    num_sum_utility_calculations::Int
+    num_sum_throughput_calculations::Int
 end
 
 function CoalitionFormationClustering_Individual(channel, network)
@@ -71,23 +71,23 @@ function CoalitionFormationClustering_Individual(channel, network)
     elseif starting_point == :singletons
         initial_partition = Partition(collect(0:(I-1)))
     end
-    initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
+    initial_BS_throughputs = longterm_BS_throughputs(channel, network, initial_partition, temp_cell_assignment, I)
     initial_num_searches = zeros(Int, I)
-    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, [ Set{IntSet}() for i = 1:I ], initial_num_searches, K)
+    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_throughputs, [ Set{IntSet}() for i = 1:I ], initial_num_searches, K)
 
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
     while any(deviation_performed)
         # Give all BSs a chance to deviate. If search_order == :greedy, we
-        # let the BSs deviate in the order of their current utilities, i.e. the
+        # let the BSs deviate in the order of their current throughputs, i.e. the
         # BS doing the best is going first. If search_order == :fair instead,
         # the BS which is doing the worst will go first. This is more similar
         # to GreedyClustering, where the strongest interfering links are clustered
         # first.
         if search_order == :greedy
-            ordered_BS_list = sortperm(state.BS_utilities, rev=true)
+            ordered_BS_list = sortperm(state.BS_throughputs, rev=true)
         elseif search_order == :fair
-            ordered_BS_list = sortperm(state.BS_utilities, rev=false)
+            ordered_BS_list = sortperm(state.BS_throughputs, rev=false)
         elseif search_order == :lexicographic
             ordered_BS_list = 1:I
         end
@@ -98,29 +98,27 @@ function CoalitionFormationClustering_Individual(channel, network)
                 stability_type, use_history, channel, network, temp_cell_assignment)
         end
     end
-    utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = state.num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = state.num_sum_throughput_calculations
     results["num_searches"] = state.num_searches
     return results
 end
@@ -151,7 +149,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     BS_not_singleton_coalition_before = length(old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
     num_new_partitions = length(other_blocks) + int(BS_not_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
-    deviated_BS_utilities = zeros(Float64, I, num_new_partitions)
+    deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
     for n = 1:length(other_blocks)
         # Loop over the deviations where BS i joins an existing coalition
         new_partition = Partition()
@@ -166,10 +164,10 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # Add BS i to coalition n
         push!(other_blocks_cp[n].elements, i)
         new_partitions[n] = new_partition
-        deviated_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
 
         # Complexity metrics
-        state.num_sum_utility_calculations += 1
+        state.num_sum_throughput_calculations += 1
     end
     if BS_not_singleton_coalition_before
         # BS i was in a non-singleton coalition before deviation. Add the the
@@ -184,21 +182,21 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # Add BS i to new singleton coalition
         push!(new_partition.blocks, Block(IntSet(i)))
         new_partitions[end] = new_partition
-        deviated_BS_utilities[:,end] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
 
         # Complexity metrics
-        state.num_sum_utility_calculations += 1
+        state.num_sum_throughput_calculations += 1
     end
 
     # Preliminary Nash stability check. No need to try to deviate unless
     # BS i improves in its utility.
-    if !any(deviated_BS_utilities[i,:] .> state.BS_utilities[i])
+    if !any(deviated_BS_throughputs[i,:] .> state.BS_throughputs[i])
         return false
     end
 
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
-    for sort_idx in sortperm(squeeze(deviated_BS_utilities[i,:], 1), rev=true)
+    for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
         # Stop searching if we otherwise would exceed our search budget.
         if state.num_searches[i] >= search_budget
             return false
@@ -220,10 +218,10 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # (this check includes BS i, unnecessarily)
         BSs_in_new_block = collect(my_block.elements)
         BSs_in_old_block = collect(old_block.elements)
-        if individual_stability(deviated_BS_utilities[:,sort_idx], state.BS_utilities, i, BSs_in_new_block, BSs_in_old_block, state.history[i], stability_type, use_history)
+        if individual_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_new_block, BSs_in_old_block, state.history[i], stability_type, use_history)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
-            state.BS_utilities = deviated_BS_utilities[:,sort_idx]
+            state.BS_throughputs = deviated_BS_throughputs[:,sort_idx]
 
             # Add coalition to history
             push!(state.history[i], IntSet(BSs_in_new_block))
@@ -236,7 +234,7 @@ end
 
 # Check stability of a particular deviating BS for the individual
 # coalition formation algorithm.
-function individual_stability(new_BS_utilities, old_BS_utilities,
+function individual_stability(new_BS_throughputs, old_BS_throughputs,
     deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, history,
     stability_type, use_history)
 
@@ -246,19 +244,19 @@ function individual_stability(new_BS_utilities, old_BS_utilities,
     end
 
     # Check that BS i improves
-    nash = (new_BS_utilities[deviating_BS_idx] > old_BS_utilities[deviating_BS_idx])
+    nash = (new_BS_throughputs[deviating_BS_idx] > old_BS_throughputs[deviating_BS_idx])
     if stability_type == :nash
         return nash
     end
 
     # Check if the BSs in the new coalition improve
-    individual = (nash && all(new_BS_utilities[new_coalition_idxs] .>= old_BS_utilities[new_coalition_idxs]))
+    individual = (nash && all(new_BS_throughputs[new_coalition_idxs] .>= old_BS_throughputs[new_coalition_idxs]))
     if stability_type == :individual
         return individual
     end
 
     # Check if the BSs in the old coalition improve
-    contractual = (individual && all(new_BS_utilities[old_coalition_idxs] .>= old_BS_utilities[old_coalition_idxs]))
+    contractual = (individual && all(new_BS_throughputs[old_coalition_idxs] .>= old_BS_throughputs[old_coalition_idxs]))
     if stability_type == :contractual
         return contractual
     end
@@ -268,9 +266,9 @@ end
 # Group-based stability algorithm
 type CoalitionFormationClustering_GroupState
     partition::Partition
-    BS_utilities::Vector{Float64}
+    BS_throughputs::Vector{Float64}
     r::Int
-    num_sum_utility_calculations::Int
+    num_sum_throughput_calculations::Int
 end
 
 function CoalitionFormationClustering_Group(channel, network)
@@ -289,8 +287,8 @@ function CoalitionFormationClustering_Group(channel, network)
 
     # Initial coalition structure is the non-cooperative state
     initial_partition = Partition(collect(0:(I-1)))
-    initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
-    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_utilities, min(I, aux_params["CoalitionFormationClustering_Group:max_num_merging_coalitions"]), K)
+    initial_BS_throughputs = longterm_BS_throughputs(channel, network, initial_partition, temp_cell_assignment, I)
+    state = CoalitionFormationClustering_GroupState(initial_partition, initial_BS_throughputs, min(I, aux_params["CoalitionFormationClustering_Group:max_num_merging_coalitions"]), K)
 
     # Let coalitions merge, until no coalitions want to merge (group-based stability)
     while state.r >= 2 && length(state.partition) > 2
@@ -304,29 +302,27 @@ function CoalitionFormationClustering_Group(channel, network)
         # No more mergers happened with the current r, so decrease it.
         state.r -= 1
     end
-    utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Group finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, state.partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = state.num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = state.num_sum_throughput_calculations
     return results
 end
 
@@ -342,7 +338,7 @@ function merge!(state::CoalitionFormationClustering_GroupState, I, K,
     # Create all possible r-mergers
     num_new_partitions = binomial(all_blocks_card, state.r) # all_blocks_card choose r
     new_partitions = Array(Partition, num_new_partitions)
-    merged_BS_utilities = zeros(Float64, I, num_new_partitions)
+    merged_BS_throughputs = zeros(Float64, I, num_new_partitions)
     merged_BSs = Array(Vector{Int}, num_new_partitions)
 
     # Loop lexicographically over all r-combinations of the current coalitions
@@ -363,16 +359,16 @@ function merge!(state::CoalitionFormationClustering_GroupState, I, K,
         union!(new_partition.blocks, other_blocks)
         new_partitions[n] = new_partition
         merged_BSs[n] = collect(merged_block.elements)
-        merged_BS_utilities[:,n] = longterm_BS_utilities(channel, network, new_partition, cell_assignment, I)
+        merged_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
 
         # Complexity metrics
-        state.num_sum_utility_calculations += 1
+        state.num_sum_throughput_calculations += 1
     end
 
     # Order the potential mergers
     ordered_mergers = Int[]
     if search_order == :greedy
-        ordered_mergers = sortperm(squeeze(sum(merged_BS_utilities, 1), 1), rev=true)
+        ordered_mergers = sortperm(squeeze(sum(merged_BS_throughputs, 1), 1), rev=true)
     elseif search_order == :lexicographic
         ordered_mergers = 1:num_new_partitions
     end
@@ -380,9 +376,9 @@ function merge!(state::CoalitionFormationClustering_GroupState, I, K,
     # Try to merge
     for sort_idx in ordered_mergers
         # Merge coalitions if everybody benefits
-        if all(merged_BS_utilities[merged_BSs[sort_idx],sort_idx] .>= state.BS_utilities[merged_BSs[sort_idx]])
+        if all(merged_BS_throughputs[merged_BSs[sort_idx],sort_idx] .>= state.BS_throughputs[merged_BSs[sort_idx]])
             state.partition = new_partitions[sort_idx]
-            state.BS_utilities = merged_BS_utilities[:,sort_idx]
+            state.BS_throughputs = merged_BS_throughputs[:,sort_idx]
             state.r = min(length(new_partitions[sort_idx]), max_num_merging_coalitions)
 
             return true
@@ -398,11 +394,11 @@ end
 # Calculates the sum utility of the served MSs for each BS.
 # cell_assignment and I are sent as part of the function signature to speed up
 # evaluation slightly.
-function longterm_BS_utilities(channel, network, partition, cell_assignment, I)
-    BS_utilities = zeros(Float64, I)
-    utilities, _ = longterm_utilities(channel, network, partition)
+function longterm_BS_throughputs(channel, network, partition, cell_assignment, I)
+    BS_throughputs = zeros(Float64, I)
+    throughputs, = longterm_throughputs(channel, network, partition)
     for j = 1:I; for l in served_MS_ids(j, cell_assignment)
-        BS_utilities[j] += utilities[l]
+        BS_throughputs[j] += throughputs[l]
     end; end
-    return BS_utilities
+    return BS_throughputs
 end

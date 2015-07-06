@@ -32,7 +32,7 @@ network =
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_utility_calculations, plot_params_longterm_num_searches)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations, plot_params_longterm_num_searches)
     p["axes"][:xlabel] = "SNR [dB]"
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
@@ -56,7 +56,7 @@ network =
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_utility_calculations, plot_params_longterm_num_searches)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations, plot_params_longterm_num_searches)
     p["axes"][:xlabel] = "SNR [dB]"
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
@@ -80,7 +80,7 @@ network =
 raw_precoding_results, raw_assignment_results =
     simulate(network, simulation_params, loop_over=:assignment_methods)
 
-for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_utility_calculations, plot_params_longterm_num_searches)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations, plot_params_longterm_num_searches)
     p["axes"][:xlabel] = "SNR [dB]"
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)

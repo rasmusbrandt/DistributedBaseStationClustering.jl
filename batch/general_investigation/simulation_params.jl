@@ -9,9 +9,7 @@ simulation_params = [
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => 150.,
     "aux_assignment_params" => [
-        "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => false,
+        "IA_infeasible_negative_inf_throughput" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

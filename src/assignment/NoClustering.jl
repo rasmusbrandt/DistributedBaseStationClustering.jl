@@ -11,27 +11,25 @@ function NoClustering(channel, network)
 
     a = [0:(I-1)]
     partition = Partition(a)
-    utilities, alphas, _ = longterm_utilities(channel, network, partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
     Lumberjack.info("NoClustering finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = 1
+    results["num_sum_throughput_calculations"] = 1
     return results
 end

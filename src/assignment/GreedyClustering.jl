@@ -8,7 +8,7 @@
 # BS (GreedyClustering_Single), or by trying to merge the respective
 # clusters, if possible (GreedyClustering_Multiple). The bound on the
 # cluster sizes will be given by IA feasibility, and not by the overhead
-# pre-log factor. If IA_infeasible_negative_inf_utility is set to false,
+# pre-log factor. If IA_infeasible_negative_inf_throughput is set to false,
 # it will mean that other methods might find solutions where some BSs
 # are put in clusters that are turned off due to IA infeasibility. These
 # methods will not be able to do that.
@@ -44,7 +44,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
-    num_sum_utility_calculations = 0
+    num_sum_throughput_calculations = 0
     while !all(F .== -Inf)
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
@@ -61,8 +61,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             # Check IA feasibility for this new cluster. (Note that this
             # means that GreedyClustering cannot handle situations where
             # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-            # IA_infeasible_negative_inf_utility is set to false.)
-            num_sum_utility_calculations += 1
+            # IA_infeasible_negative_inf_throughput is set to false.)
+            num_sum_throughput_calculations += 1
             if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 partition_matrix = new_partition_matrix
             end
@@ -76,7 +76,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             new_partition_matrix[i_cluster,j] = 1; new_partition_matrix[j,i_cluster] = 1
 
             # Check IA feasibility for this new cluster.
-            num_sum_utility_calculations += 1
+            num_sum_throughput_calculations += 1
             if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 # Fix BS j to this cluster
                 F[:,j] = -Inf
@@ -96,29 +96,27 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
         end
     end
     partition = Partition(partition_matrix)
-    utilities, alphas, _ = longterm_utilities(channel, network, partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition_matrix)
-    objective = sum(utilities)
+    objective = sum(throughputs)
     Lumberjack.info("GreedyClustering finished.",
-        { :sum_utility => objective,
+        { :sum_throughput => objective,
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
     return results
 end

@@ -27,14 +27,14 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     # Exhaustive search over partitions
     best_objective = 0.
     best_partition = Partition([0:(I-1)])
-    num_sum_utility_calculations = 0
+    num_sum_throughput_calculations = 0
     for partition in PartitionIterator(I)
-        num_sum_utility_calculations += 1
+        num_sum_throughput_calculations += 1
 
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_LinearObj_ExhaustiveSearch cannot handle situations where
         # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-        # IA_infeasible_negative_inf_utility is set to false.
+        # IA_infeasible_negative_inf_throughput is set to false.
         if is_IA_feasible(network, partition)
             # Calculate objective
             objective = 0.
@@ -50,17 +50,16 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
             end
         end
     end
-    utilities, alphas, _ = longterm_utilities(channel, network, best_partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
@@ -68,12 +67,11 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
     results["Chen2014_objective"] = best_objective
     return results
 end
@@ -121,19 +119,18 @@ function Chen2014_kmeans(channel, network)
         end
     end
 
-    # Get final utilities
+    # Get final throughputs
     partition = Partition(partition_matrix)
-    utilities, alphas, _ = longterm_utilities(channel, network, partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
     Lumberjack.info("Chen2014_kMeans finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
@@ -141,8 +138,7 @@ function Chen2014_kmeans(channel, network)
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

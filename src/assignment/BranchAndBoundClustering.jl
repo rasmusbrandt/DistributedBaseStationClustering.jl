@@ -23,39 +23,33 @@ function BranchAndBoundClustering(channel, network)
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
-    apply_overhead_prelog = aux_params["apply_overhead_prelog"]
-    IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
+    IA_infeasible_negative_inf_throughput = aux_params["IA_infeasible_negative_inf_throughput"]
     @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
 
-    # Consistency checks
-    if aux_params["clustering_type"] != :spectrum_sharing
-        Lumberjack.error("BranchAndBoundClustering only works with spectrum sharing clustering.")
-    end
-
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
-    # Utility lower bounds by trying different heuristics.
-    incumbent_utilities = zeros(Float64, K, d)
+    # Throughput lower bounds by trying different heuristics.
+    incumbent_throughputs = zeros(Float64, K, d)
     incumbent_a = zeros(Int, I)
-    incumbent_sum_utility = -Inf
+    incumbent_sum_throughput = -Inf
     for heuristic in [NoClustering, GrandCoalitionClustering, GreedyClustering_Single, GreedyClustering_Multiple]
         heuristic_results = heuristic(channel, network)
-        heuristic_sum_utility = sum(heuristic_results["utilities"])
-        if heuristic_sum_utility > incumbent_sum_utility
-            incumbent_utilities = heuristic_results["utilities"]
+        heuristic_sum_throughput = sum(heuristic_results["throughputs"])
+        if heuristic_sum_throughput > incumbent_sum_throughput
+            incumbent_throughputs = heuristic_results["throughputs"]
             incumbent_a = heuristic_results["a"]
-            incumbent_sum_utility = heuristic_sum_utility
+            incumbent_sum_throughput = heuristic_sum_throughput
         end
-        # Lumberjack.debug("Potential incumbent utilities calculated.", { :heuristic => heuristic, :incumbent_sum_utility => incumbent_sum_utility })
+        # Lumberjack.debug("Potential incumbent throughputs calculated.", { :heuristic => heuristic, :incumbent_sum_throughput => incumbent_sum_throughput })
     end
 
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]
-    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
-    num_iters = 0; num_sum_utility_calculations = 0
+    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+    num_iters = 0; num_sum_throughput_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
         num_iters += 1
@@ -65,11 +59,11 @@ function BranchAndBoundClustering(channel, network)
         parent = Base.Collections.heappop!(live, Base.Order.Reverse)
 
         # Store bound evolution per iteration
-        push!(lower_bound_evolution, incumbent_sum_utility)
+        push!(lower_bound_evolution, incumbent_sum_throughput)
         push!(upper_bound_evolution, parent.upper_bound)
 
         # Check convergence (parent has the highest upper bound)
-        abs_conv_crit = parent.upper_bound - incumbent_sum_utility
+        abs_conv_crit = parent.upper_bound - incumbent_sum_throughput
         if abs_conv_crit < max_abs_optimality_gap
             # Lumberjack.debug("Converged.", { :abs_conv_crit => abs_conv_crit, :max_abs_optimality_gap => max_abs_optimality_gap })
             premature_ending = true
@@ -77,29 +71,29 @@ function BranchAndBoundClustering(channel, network)
         end
 
         for child in branch(parent)
-            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
-            num_sum_utility_calculations += 1
+            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+            num_sum_throughput_calculations += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
-            if child.upper_bound > incumbent_sum_utility
+            if child.upper_bound > incumbent_sum_throughput
                 if is_leaf(child, I)
                     # For leaves, the upper bound is tight. Thus, we
                     # have found a new incumbent!
-                    incumbent_sum_utility = child.upper_bound
+                    incumbent_sum_throughput = child.upper_bound
                     incumbent_a = child.a
 
                     # Lumberjack.debug("Found new incumbent solution.",
-                    #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
+                    #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                     # )
                 else
                     # Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
-                    #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
+                    #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                     # )
                     Base.Collections.heappush!(live, child, Base.Order.Reverse)
                 end
             else
                 # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
-                #     { :node => child, :incumbent_sum_utility => incumbent_sum_utility }
+                #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                 # )
             end
         end
@@ -110,22 +104,21 @@ function BranchAndBoundClustering(channel, network)
         abs_conv_crit = 0.
     end
 
-    # Calculate final alphas
+    # Calculate final prelogs
     final_partition = Partition(incumbent_a)
-    utilities, alphas, _ = longterm_utilities(channel, network, final_partition)
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, final_partition)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_utility => incumbent_sum_utility,
-          :num_sum_utility_calculations => num_sum_utility_calculations,
+        { :sum_throughput => incumbent_sum_throughput,
+          :num_sum_throughput_calculations => num_sum_throughput_calculations,
           :abs_conv_crit => abs_conv_crit,
           :max_abs_optimality_gap => max_abs_optimality_gap,
           :a => incumbent_a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
@@ -133,12 +126,11 @@ function BranchAndBoundClustering(channel, network)
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = incumbent_a
     results["num_clusters"] = 1 + maximum(incumbent_a)
     results["avg_cluster_size"] = avg_cluster_size(incumbent_a)
-    results["num_sum_utility_calculations"] = num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
     results["num_iters"] = num_iters
     results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
     results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
@@ -157,15 +149,15 @@ Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < 
 is_leaf(node, I) = (size(node.a, 1) == I)
 
 # Initialize the live structure by creating the root node.
-function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
     root = BranchAndBoundNode([0], Inf)
-    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
     # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
 # Bound works by optimistically removing interference for unclustered BSs.
-function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, apply_overhead_prelog, IA_infeasible_negative_inf_utility, E1_bound_in_rate_bound)
+function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
     # The BSs are grouped based on their position in the graph. If they are put
     # in a cluster, they are 'clustered', otherwise they are 'unclustered'.
     all_BSs = IntSet(1:I)
@@ -189,11 +181,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
     # in a singleton cluster. This is the case for the 'unclustered'
     # BSs considered here. For the BSs that are 'clustered', we
     # know exactly their current CSI acquisition contribution.
-    if apply_overhead_prelog
-        alpha = spectrum_sharing_prelog_factor(network, pseudo_partition)
-    else
-        alpha = 1.
-    end
+    _, prelogs_network_sdma = longterm_prelogs(network, pseudo_partition)
 
     # The number of IA slots available will be important in the bound.
     # This number is given by the closed form in Liu2013. We also store
@@ -210,22 +198,22 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
         end
     end
 
-    # Bound the utilities
+    # Bound the throughputs
     node_is_leaf = is_leaf(node, I)
-    utility_bounds = zeros(Float64, I*Kc, d)
+    throughput_bounds = zeros(Float64, I*Kc, d)
     for block in pseudo_partition.blocks
         N_available_IA_slots_ = N_available_IA_slots[block]
 
-        # If this cluster is overloaded, the utilities suffer significantly.
+        # If this cluster is overloaded, the throughputs suffer significantly.
         if N_available_IA_slots_ < 0
             # This cluster is overloaded since it violates the IA feasibility.
-            if IA_infeasible_negative_inf_utility
+            if IA_infeasible_negative_inf_throughput
                 for i in block.elements; for k in served_MS_ids(i, assignment)
-                    utility_bounds[k,:] = -Inf
+                    throughput_bounds[k,:] = -Inf
                 end; end
             else
                 for i in block.elements; for k in served_MS_ids(i, assignment)
-                    utility_bounds[k,:] = 0
+                    throughput_bounds[k,:] = 0
                 end; end
             end
         else
@@ -233,7 +221,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
             for i in block.elements; for k in served_MS_ids(i, assignment)
                 desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
 
-                # Leaves get true utility, other nodes get bound.
+                # Leaves get true throughput, other nodes get bound.
                 if node_is_leaf
                     # All BSs outside my cluster contribute irreducible interference.
                     irreducible_interference_power = 0.
@@ -285,16 +273,16 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
                 # Finally, we can also bound the calculation of
                 # exp(1/rho)*E1(1/rho) if that is desired.
                 if E1_bound_in_rate_bound && !node_is_leaf
-                    utility_bounds[k,:] = alpha*longterm_rate(rho, :upper)
+                    throughput_bounds[k,:] = prelogs_network_sdma[k]*longterm_rate(rho, bound=:upper)
                 else
-                    utility_bounds[k,:] = alpha*longterm_rate(rho, :none)
+                    throughput_bounds[k,:] = prelogs_network_sdma[k]*longterm_rate(rho, bound=:none)
                 end
             end; end
         end
     end
 
-    # The final sum utility bound is obtained by summing the individual bounds.
-    node.upper_bound = sum(utility_bounds)
+    # The final sum throughput bound is obtained by summing the individual bounds.
+    node.upper_bound = sum(throughput_bounds)
 
     # Lumberjack.debug("Bounding.", { :node => node })
 end

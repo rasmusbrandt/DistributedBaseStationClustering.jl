@@ -29,33 +29,33 @@ postprocess_params_assignment = [
     "objective" => :sumrate,
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
             ("no_searches",),
         ],
 
         "Chen2014_kmeans" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
         ],
 
         "GrandCoalitionClustering" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
         ],
 
         "RandomClustering" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
         ],
 
         "NoClustering" => [
-            ("utilities",),
+            ("throughputs",),
             ("no_clusters",),
         ],
     ]

@@ -7,7 +7,7 @@ using HDF5, JLD
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-no_coherence_symbols.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-num_coherence_symbols.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
 ##########################################################################
@@ -25,7 +25,7 @@ raw_precoding_results, raw_assignment_results =
 
 ##########################################################################
 # Plot
-for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_utility_calculations)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations)
     p["axes"][:xlabel] = "MS speed [km/h]"
     p["xvals"] = vs_kmh
     processed_results = postprocess(raw_assignment_results, simulation_params, p)

@@ -13,9 +13,7 @@ simulation_params = [
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
 
-        "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => false,
+        "IA_infeasible_negative_inf_throughput" => false,
 
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,

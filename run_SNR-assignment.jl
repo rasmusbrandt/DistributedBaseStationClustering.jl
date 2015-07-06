@@ -44,12 +44,11 @@ simulation_params = [
     ],
     "precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 2500,
+        "num_coherence_symbols" => 2500,
+        "alpha_network_sdma" => 0.8,
     ],
     "aux_assignment_params" => [
-        "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
-        "IA_infeasible_negative_inf_utility" => false,
+        "IA_infeasible_negative_inf_throughput" => false,
 
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,

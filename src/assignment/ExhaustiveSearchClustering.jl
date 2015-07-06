@@ -2,7 +2,7 @@
 # Optimal base station clustering based on exhaustive search.
 #
 # All possible restricted growth strings (and thus set partitions) are
-# enumerated, and the best (in the utilities.jl utilities sense) is picked.
+# enumerated, and the best (in the utilities.jl throughputs sense) is picked.
 
 function ExhaustiveSearchClustering(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
@@ -18,34 +18,33 @@ function ExhaustiveSearchClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
-    num_sum_utility_calculations = 0
-    best_objective = 0.; best_utilities = Array(Float64, K, d_max)
-    best_alphas = Array(Float64, K); best_partition = Partition([0:(I-1)])
+    num_sum_throughput_calculations = 0
+    best_sum_throughput = 0.; best_throughputs = Array(Float64, K, d_max)
+    best_prelogs = (Array(Float64, K), Array(Float64, K)); best_partition = Partition([0:(I-1)])
     for partition in PartitionIterator(I)
-        num_sum_utility_calculations += 1
+        num_sum_throughput_calculations += 1
 
-        # Calculate utilities
-        utilities, alphas, _ = longterm_utilities(channel, network, partition)
+        # Calculate throughputs
+        throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
 
-        objective = sum(utilities)
-        if objective >= best_objective
-            best_objective = objective
-            best_utilities = utilities
-            best_alphas = alphas
+        objective = sum(throughputs)
+        if objective >= best_sum_throughput
+            best_sum_throughput = objective
+            best_throughputs = throughputs
+            best_prelogs = prelogs
             best_partition = partition
         end
     end
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
-        { :sum_utility => best_objective,
-          :num_sum_utility_calculations => num_sum_utility_calculations,
+        { :sum_throughput => best_sum_throughput,
+          :num_sum_throughput_calculations => num_sum_throughput_calculations,
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, best_alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, best_prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, best_prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     temp_cell_assignment = get_assignment(network)
@@ -53,11 +52,10 @@ function ExhaustiveSearchClustering(channel, network)
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = best_utilities
-    results["alphas"] = best_alphas
+    results["throughputs"] = best_throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = num_sum_utility_calculations
+    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
     return results
 end

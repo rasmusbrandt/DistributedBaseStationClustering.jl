@@ -37,11 +37,10 @@ initial_simulation_params = [
     ],
     "precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 2700,
+        "num_coherence_symbols" => 2700,
     ],
     "aux_assignment_params" => [
-        "clustering_type" => :spectrum_sharing,
-        "IA_infeasible_negative_inf_utility" => false,
+        "IA_infeasible_negative_inf_throughput" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
@@ -53,7 +52,7 @@ initial_simulation_params = [
 ]
 
 ##########################################################################
-# Small scenario with/without overhead
+# Small scenario
 simulation_params = deepcopy(initial_simulation_params)
 
 network =
@@ -66,8 +65,7 @@ network =
 # Include high complexity methods for these simulations only
 unshift!(simulation_params["assignment_methods"], BranchAndBoundClustering)
 
-simulation_params["simulation_name"] = "small-with_overhead"
-simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true
+simulation_params["simulation_name"] = "small"
 
 srand(seed)
 raw_precoding_results, raw_assignment_results =
@@ -79,27 +77,11 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
 plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-
-simulation_params["simulation_name"] = "small-without_overhead"
-simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
-
-srand(seed)
-raw_precoding_results, raw_assignment_results =
-    simulate(network, simulation_params, loop_over=:assignment_methods)
-
-processed_results = postprocess(raw_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
-plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
-plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_throughput_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_throughput_calculations)
 
 ##########################################################################
-# Large scenario with/without overhead
+# Large scenario
 simulation_params = deepcopy(initial_simulation_params)
 
 simulation_params["I"] = 2*initial_simulation_params["I"]
@@ -111,8 +93,7 @@ network =
         geography_size=initial_simulation_params["geography_size"],
         MS_serving_BS_distance=initial_simulation_params["MS_serving_BS_distance"])
 
-simulation_params["simulation_name"] = "large-with_overhead"
-simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true
+simulation_params["simulation_name"] = "large"
 
 srand(seed)
 raw_precoding_results, raw_assignment_results =
@@ -124,21 +105,5 @@ processed_results = postprocess(raw_assignment_results, simulation_params, plot_
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
 plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-
-simulation_params["simulation_name"] = "large-without_overhead"
-simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = false
-
-srand(seed)
-raw_precoding_results, raw_assignment_results =
-    simulate(network, simulation_params, loop_over=:assignment_methods)
-
-processed_results = postprocess(raw_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
-plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
-plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_avg_cluster_size)
-plot(processed_results, simulation_params, plot_params_longterm_avg_cluster_size)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_num_sum_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_sum_throughput_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_sum_throughput_calculations)

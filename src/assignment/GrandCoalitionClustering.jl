@@ -2,7 +2,7 @@
 # Grand coalition base station clustering.
 #
 # This means that all BSs cooperate with each other. Note that this might
-# mean that the utilities are either zero or -Inf, since the utility model
+# mean that the throughputs are either zero or -Inf, since the utility model
 # is only applicable when IA is feasible.
 
 function GrandCoalitionClustering(channel, network)
@@ -13,16 +13,15 @@ function GrandCoalitionClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     a = zeros(Int, I)
-    utilities, alphas, _ = longterm_utilities(channel, network, Partition(a))
+    throughputs, _, _, prelogs = longterm_throughputs(channel, network, Partition(a))
     Lumberjack.info("GrandCoalitionClustering finished.",
-        { :sum_utility => sum(utilities),
+        { :sum_throughput => sum(throughputs),
           :a => a }
     )
 
-    # Store alphas as user priorities for precoding, if desired
-    if aux_params["apply_overhead_prelog"]
-        set_user_priorities!(network, alphas)
-    end
+    # Store prelogs for precoding
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     temp_assignment = get_assignment(network)
@@ -30,11 +29,10 @@ function GrandCoalitionClustering(channel, network)
 
     # Return results
     results = AssignmentResults()
-    results["utilities"] = utilities
-    results["alphas"] = alphas
+    results["throughputs"] = throughputs
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_utility_calculations"] = 1
+    results["num_sum_throughput_calculations"] = 1
     return results
 end
