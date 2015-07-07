@@ -40,8 +40,6 @@ initial_simulation_params = [
     ],
     "aux_assignment_params" => [
         "max_no_MSs_per_BS" => 1,
-
-        "IA_infeasible_negative_inf_throughput" => false,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

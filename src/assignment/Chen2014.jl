@@ -33,8 +33,7 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
 
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_LinearObj_ExhaustiveSearch cannot handle situations where
-        # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-        # IA_infeasible_negative_inf_throughput is set to false.
+        # IA infeasible blocks are turned off.
         if is_IA_feasible(network, partition)
             # Calculate objective
             objective = 0.

@@ -27,38 +27,27 @@ function longterm_rates(channel, network, partition)
     sigma2s = get_receiver_noise_powers(network)
     ds = get_no_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
-    aux_params = get_aux_assignment_params(network)
-    IA_infeasible_negative_inf_throughput = aux_params["IA_infeasible_negative_inf_throughput"]
 
-    rates_cluster_sdma = zeros(Float64, K, max_d)
-    rates_network_sdma = zeros(Float64, K, max_d)
-
+    rates_cluster_sdma = zeros(Float64, K, max_d); rates_network_sdma = zeros(Float64, K, max_d)
     for block in partition.blocks
-        if is_IA_feasible(network, block)
-            # Find out-of-cluster interferers
-            intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
-            for i in block.elements
-                served = served_MS_ids(i, assignment); Nserved = length(served)
-                for k in served
-                    desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
+        intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
+        for i in block.elements
+            served = served_MS_ids(i, assignment); Nserved = length(served)
+            for k in served
+                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
 
-                    # Rates when SDMA is perfomed orthogonally over clusters
-                    rho = desired_power/sigma2s[k]
-                    rates_cluster_sdma[k,1:ds[k]] = longterm_rate(rho)
+                # Rates when SDMA is perfomed orthogonally over clusters
+                rho = desired_power/sigma2s[k]
+                rates_cluster_sdma[k,1:ds[k]] = longterm_rate(rho)
 
-                    # Rates when SDMA is performed over entire network
-                    int_noise_power = sigma2s[k]
-                    for j in intercluster_interferers
-                        int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
-                    end
-                    rho = desired_power/int_noise_power
-                    rates_network_sdma[k,1:ds[k]] = longterm_rate(rho)
+                # Rates when SDMA is performed over entire network
+                int_noise_power = sigma2s[k]
+                for j in intercluster_interferers
+                    int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
                 end
+                rho = desired_power/int_noise_power
+                rates_network_sdma[k,1:ds[k]] = longterm_rate(rho)
             end
-        else
-            for i in block.elements; for k in served_MS_ids(i, assignment)
-                IA_infeasible_negative_inf_throughput ? rates_network_sdma[k,1:ds[k]] = -Inf : rates_network_sdma[k,1:ds[k]] = 0
-            end; end
         end
     end
 
@@ -71,38 +60,46 @@ function longterm_prelogs(network, partition)
     Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
     ds = get_no_streams(network)
     assignment = get_assignment(network)
-    aux_params = get_aux_assignment_params(network)
 
-    Lcoh = get_aux_network_param(network, "num_coherence_symbols")
+    num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")
     alpha_network_sdma = get_aux_network_param(network, "alpha_network_sdma")
     if !(0 <= alpha_network_sdma <= 1)
         Lumberjack.error("Incorrect alpha_network_sdma. Must be between 0 and 1.")
     end
     alpha_cluster_sdma = 1 - alpha_network_sdma
 
-    # number of symbols owned per BS in the cluster_sdma regime (fair split)
-    # we don't floor this to an integer, because we only use this value in the
+    # Number of symbols owned per BS in the cluster SDMA regime (fair split).
+    # We don't floor this to an integer, because we only use this value in the
     # prelog calculation.
-    Lorth = alpha_cluster_sdma*Lcoh
-    Lorth_per_BS = Lorth/I
+    num_cluster_sdma_symbols = alpha_cluster_sdma*num_coherence_symbols
+    num_cluster_sdma_symbols_per_BS = num_cluster_sdma_symbols/I
 
-    prelogs_cluster_sdma = zeros(Float64, K)
-    prelogs_network_sdma = zeros(Float64, K)
-
+    prelogs_cluster_sdma = zeros(Float64, K); prelogs_network_sdma = zeros(Float64, K)
     for block in partition.blocks
-        cluster_size = length(block.elements)
-        Lcsi = CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment) # Symbols needed for CSI acquisition in this cluster
-        cluster_sdma_prelog = alpha_cluster_sdma*(cluster_size/I)*max(0., 1 - Lcsi/(cluster_size*Lorth_per_BS))
-        for i in block.elements; for k in served_MS_ids(i, assignment)
-            prelogs_cluster_sdma[k] = cluster_sdma_prelog
+        # If the cluster is not IA feasible, then neither cluster SDMA nor
+        # network SDMA will be feasible, and the throughputs are zero. We
+        # model this by setting the prelogs as zero, but keeping the rates
+        # (calculated in longterm_rates) to their "utopian" versions.
+        # Note that we _do not_ turn off the BSs that are in IA infeasible
+        # clusters; they are thus radiating interference, but no usefuls signal.
+        if is_IA_feasible(network, block)
+            # Calculate cluster SDMA prelog based on CSI acquisition feedback overhead.
+            cluster_size = length(block.elements)
+            num_CSI_acquisition_symbols = CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
+            cluster_sdma_prelog = alpha_cluster_sdma*(cluster_size/I)*max(0., 1 - num_CSI_acquisition_symbols/(cluster_size*num_cluster_sdma_symbols_per_BS))
+            for i in block.elements; for k in served_MS_ids(i, assignment)
+                prelogs_cluster_sdma[k] = cluster_sdma_prelog
 
-            # Cannot perform network SDMA if the CSI acquisition is infeasible
-            if cluster_sdma_prelog == 0.
-                prelogs_network_sdma[k] = 0.
-            else
-                prelogs_network_sdma[k] = alpha_network_sdma
-            end
-        end; end
+                # If the CSI acquisition is unbearably high, we cannot
+                # do network SDMA for this cluster. (As mentioned above,
+                # the corresponding BSs still radiate interference.)
+                if cluster_sdma_prelog == 0.
+                    prelogs_network_sdma[k] = 0.
+                else
+                    prelogs_network_sdma[k] = alpha_network_sdma
+                end
+            end; end
+        end
     end
 
     return prelogs_cluster_sdma, prelogs_network_sdma

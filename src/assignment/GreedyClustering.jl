@@ -8,10 +8,7 @@
 # BS (GreedyClustering_Single), or by trying to merge the respective
 # clusters, if possible (GreedyClustering_Multiple). The bound on the
 # cluster sizes will be given by IA feasibility, and not by the overhead
-# pre-log factor. If IA_infeasible_negative_inf_throughput is set to false,
-# it will mean that other methods might find solutions where some BSs
-# are put in clusters that are turned off due to IA infeasibility. These
-# methods will not be able to do that.
+# pre-log factor.
 
 GreedyClustering_Single(channel, network) =
     GreedyClustering(channel, network, merge_multiple=false)
@@ -58,10 +55,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             new_partition_matrix[i_cluster,j_cluster] = 1
             new_partition_matrix[j_cluster,i_cluster] = 1
 
-            # Check IA feasibility for this new cluster. (Note that this
-            # means that GreedyClustering cannot handle situations where
-            # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
-            # IA_infeasible_negative_inf_throughput is set to false.)
+            # Check IA feasibility for this new cluster
             num_sum_throughput_calculations += 1
             if is_IA_feasible(network, Partition(new_partition_matrix, skip_check=true))
                 partition_matrix = new_partition_matrix

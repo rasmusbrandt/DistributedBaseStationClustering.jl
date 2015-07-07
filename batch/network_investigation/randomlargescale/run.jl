@@ -39,9 +39,7 @@ initial_simulation_params = [
     "aux_network_params" => [
         "num_coherence_symbols" => 2700,
     ],
-    "aux_assignment_params" => [
-        "IA_infeasible_negative_inf_throughput" => false,
-    ],
+    "aux_assignment_params" => [ ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,

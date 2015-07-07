@@ -8,9 +8,7 @@ simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => 150.,
-    "aux_assignment_params" => [
-        "IA_infeasible_negative_inf_throughput" => false,
-    ],
+    "aux_assignment_params" => [ ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,

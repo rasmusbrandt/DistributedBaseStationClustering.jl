@@ -41,8 +41,6 @@ simulation_params = [
         "alpha_network_sdma" => 0.8,
     ],
     "aux_assignment_params" => [
-        "IA_infeasible_negative_inf_throughput" => false,
-
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
     ],

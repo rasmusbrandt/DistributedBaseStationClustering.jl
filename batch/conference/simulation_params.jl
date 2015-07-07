@@ -13,8 +13,6 @@ simulation_params = [
     "aux_assignment_params" => [
         "max_MSs_per_BS" => 1,
 
-        "IA_infeasible_negative_inf_throughput" => false,
-
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
         "CoalitionFormationClustering_Individual:use_history" => true,
