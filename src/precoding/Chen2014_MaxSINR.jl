@@ -58,7 +58,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"]
                 Lumberjack.debug("Chen2014_MaxSINR converged.",
-                    [ :no_iters => iters,
+                    [ :num_iters => iters,
                       :final_objective => objective[end],
                       :conv_crit => conv_crit,
                       :stop_crit => aux_params["stop_crit"],
@@ -76,7 +76,7 @@ function Chen2014_MaxSINR(channel, network; robustness::Bool=true)
     end
     if iters == aux_params["max_iters"]
         Lumberjack.debug("Chen2014_MaxSINR did NOT converge.",
-            [ :no_iters => iters,
+            [ :num_iters => iters,
               :final_objective => objective[end],
               :conv_crit => conv_crit,
               :stop_crit => aux_params["stop_crit"],

@@ -75,7 +75,7 @@ function longterm_prelogs(network, partition)
 
     Lcoh = get_aux_network_param(network, "num_coherence_symbols")
     alpha_network_sdma = get_aux_network_param(network, "alpha_network_sdma")
-    if !(0 < alpha_network_sdma < 1)
+    if !(0 <= alpha_network_sdma <= 1)
         Lumberjack.error("Incorrect alpha_network_sdma. Must be between 0 and 1.")
     end
     alpha_cluster_sdma = 1 - alpha_network_sdma
