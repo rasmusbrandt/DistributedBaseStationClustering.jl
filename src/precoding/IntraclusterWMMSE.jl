@@ -237,11 +237,11 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
                 GZGh_network_sdma = prelogs_network_sdma[l]*G_network_sdma*state.Z_network_sdma[l]*G_network_sdma'
                 Gamma_network_sdma_partial_naive  += Hermitian(GZGh_network_sdma)
                 Gamma_network_sdma_partial_robust += Hermitian(GZGh_network_sdma)
+            else
+                # Intracluster CSI-T
+                GZGhrob_network_sdma = complex(prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]*channel.large_scale_fading_factor[l,i]*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l]))*eye(channel.Ms[i])
+                Gamma_network_sdma_partial_robust     += Hermitian(GZGhrob_network_sdma)
             end
-
-            # Intracluster CSI-T
-            GZGhrob_network_sdma = complex(prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]*channel.large_scale_fading_factor[l,i]*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l]))*eye(channel.Ms[i])
-            Gamma_network_sdma_partial_robust     += Hermitian(GZGhrob_network_sdma)
         end; end
 
         ### CLUSTER SDMA ###
