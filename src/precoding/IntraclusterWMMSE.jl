@@ -164,8 +164,8 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
 
             F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
             FFh_network_sdma = F_network_sdma*F_network_sdma'
-            Phi_network_sdma_full += Hermitian(FFh_network_sdma)
-            Phi_network_sdma_partial_naive += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_full           += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_partial_naive  += Hermitian(FFh_network_sdma)
             Phi_network_sdma_partial_robust += Hermitian(FFh_network_sdma)
         end; end
 
@@ -175,7 +175,7 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
             FFh_network_sdma = F_network_sdma*F_network_sdma'
             Phi_network_sdma_full += Hermitian(FFh_network_sdma)
 
-            FFhrob_network_sdma = channel.large_scale_fading_factor[k,j]^2*trace(state.V_network_sdma[l]'*state.V_network_sdma[l])*eye(channel.Ns[k])
+            FFhrob_network_sdma = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*trace(state.V_network_sdma[l]'*state.V_network_sdma[l])*eye(channel.Ns[k])
             Phi_network_sdma_partial_robust += Hermitian(complex(FFhrob_network_sdma))
         end; end
 
@@ -198,8 +198,8 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
 
         # Receivers
         U_network_sdma_full   = Phi_network_sdma_full\F_network_sdma
-        U_network_sdma_robust = Phi_network_sdma_partial_robust\F_network_sdma
         U_network_sdma_naive  = Phi_network_sdma_partial_naive\F_network_sdma
+        U_network_sdma_robust = Phi_network_sdma_partial_robust\F_network_sdma
 
         # MSEs and optimal weight
         state.E_network_sdma_full[k]    = Diagonal(min(1, abs(diag(eye(ds[k]) - U_network_sdma_full'*F_network_sdma))))
@@ -229,26 +229,26 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinatees
                 # Intercluster CSI-T
-                G_cluster_sdma = sqrt(prelogs_cluster_sdma[l])*channel.H[l,i]'*state.U_cluster_sdma[l]*sqrtm(state.Z_cluster_sdma[l])
-                GGh_cluster_sdma = G_cluster_sdma*G_cluster_sdma'
-                Gamma_cluster_sdma_full += Hermitian(GGh_cluster_sdma)
+                G_cluster_sdma = channel.H[l,i]'*state.U_cluster_sdma[l]
+                GZGh_cluster_sdma = prelogs_cluster_sdma[l]*G_cluster_sdma*state.Z_cluster_sdma[l]*G_cluster_sdma'
+                Gamma_cluster_sdma_full           += Hermitian(GZGh_cluster_sdma)
 
-                G_network_sdma = sqrt(prelogs_network_sdma[l])*channel.H[l,i]'*state.U_network_sdma[l]*sqrtm(state.Z_network_sdma[l])
-                GGh_network_sdma = G_network_sdma*G_network_sdma'
-                Gamma_network_sdma_partial_naive += Hermitian(GGh_network_sdma)
-                Gamma_network_sdma_partial_robust += Hermitian(GGh_network_sdma)
+                G_network_sdma = channel.H[l,i]'*state.U_network_sdma[l]
+                GZGh_network_sdma = prelogs_network_sdma[l]*G_network_sdma*state.Z_network_sdma[l]*G_network_sdma'
+                Gamma_network_sdma_partial_naive  += Hermitian(GZGh_network_sdma)
+                Gamma_network_sdma_partial_robust += Hermitian(GZGh_network_sdma)
             end
 
             # Intracluster CSI-T
-            GGhrob_network_sdma = prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l])*eye(channel.Ms[i])
-            Gamma_network_sdma_partial_robust += Hermitian(complex(GGhrob_network_sdma))
+            GZGhrob_network_sdma = complex(prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]*channel.large_scale_fading_factor[l,i]*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l]))*eye(channel.Ms[i])
+            Gamma_network_sdma_partial_robust     += Hermitian(GZGhrob_network_sdma)
         end; end
 
         ### CLUSTER SDMA ###
 
         # Find optimal Lagrange multiplier
         mu_cluster_sdma, Gamma_eigen_cluster_sdma =
-            optimal_mu(i, Gamma_cluster_sdma_full, state.U_cluster_sdma, state.Z_cluster_sdma, prelogs_cluster_sdma, channel, Ps, assignment, aux_params)
+            optimal_mu(i, Gamma_cluster_sdma_full,               state.U_cluster_sdma, state.Z_cluster_sdma, prelogs_cluster_sdma, channel, Ps, assignment, aux_params)
 
         # Precoders (reuse EVD)
         for k in served_MS_ids(i, assignment)
@@ -264,7 +264,7 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
                 optimal_mu(i, Gamma_network_sdma_partial_robust, state.U_network_sdma, state.Z_network_sdma, prelogs_network_sdma, channel, Ps, assignment, aux_params)
         else
             mu_network_sdma, Gamma_eigen_network_sdma =
-                optimal_mu(i, Gamma_network_sdma_partial_naive, state.U_network_sdma, state.Z_network_sdma, prelogs_network_sdma, channel, Ps, assignment, aux_params)
+                optimal_mu(i, Gamma_network_sdma_partial_naive,  state.U_network_sdma, state.Z_network_sdma, prelogs_network_sdma, channel, Ps, assignment, aux_params)
         end
 
         # Precoders (reuse EVD)
