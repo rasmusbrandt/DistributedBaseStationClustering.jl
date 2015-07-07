@@ -159,18 +159,24 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         # Intercluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             F_cluster_sdma = channel.H[k,j]*state.V_cluster_sdma[l]
-            Base.LinAlg.BLAS.herk!(Phi_cluster_sdma_full.uplo,           'N', complex(1.), F_cluster_sdma, complex(1.), Phi_cluster_sdma_full.S)
+            FFh_cluster_sdma = F_cluster_sdma*F_cluster_sdma'
+            Phi_cluster_sdma_full += Hermitian(FFh_cluster_sdma)
 
             F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
-            Base.LinAlg.BLAS.herk!(Phi_network_sdma_full.uplo,           'N', complex(1.), F_network_sdma, complex(1.), Phi_network_sdma_full.S)
-            Base.LinAlg.BLAS.herk!(Phi_network_sdma_partial_naive.uplo,  'N', complex(1.), F_network_sdma, complex(1.), Phi_network_sdma_partial_naive.S)
-            Base.LinAlg.BLAS.herk!(Phi_network_sdma_partial_robust.uplo, 'N', complex(1.), F_network_sdma, complex(1.), Phi_network_sdma_partial_robust.S)
+            FFh_network_sdma = F_network_sdma*F_network_sdma'
+            Phi_network_sdma_full += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_partial_naive += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_partial_robust += Hermitian(FFh_network_sdma)
         end; end
 
         # Intracluster CSI-R
         for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
-            Base.LinAlg.BLAS.herk!(Phi_network_sdma_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V_network_sdma[l], complex(1.), Phi_network_sdma_full.S)
-            Phi_network_sdma_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*trace(state.V_network_sdma[l]'*state.V_network_sdma[l])*eye(channel.Ns[k])))
+            F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
+            FFh_network_sdma = F_network_sdma*F_network_sdma'
+            Phi_network_sdma_full += Hermitian(FFh_network_sdma)
+
+            FFhrob_network_sdma = channel.large_scale_fading_factor[k,j]^2*trace(state.V_network_sdma[l]'*state.V_network_sdma[l])*eye(channel.Ns[k])
+            Phi_network_sdma_partial_robust += Hermitian(complex(FFhrob_network_sdma))
         end; end
 
         ### CLUSTER SDMA ###
@@ -224,15 +230,18 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
             if l in coordinatees
                 # Intercluster CSI-T
                 G_cluster_sdma = sqrt(prelogs_cluster_sdma[l])*channel.H[l,i]'*state.U_cluster_sdma[l]*sqrtm(state.Z_cluster_sdma[l])
-                Base.LinAlg.BLAS.herk!(Gamma_cluster_sdma_full.uplo,           'N', complex(1.), G_cluster_sdma, complex(1.), Gamma_cluster_sdma_full.S)
+                GGh_cluster_sdma = G_cluster_sdma*G_cluster_sdma'
+                Gamma_cluster_sdma_full += Hermitian(GGh_cluster_sdma)
 
                 G_network_sdma = sqrt(prelogs_network_sdma[l])*channel.H[l,i]'*state.U_network_sdma[l]*sqrtm(state.Z_network_sdma[l])
-                Base.LinAlg.BLAS.herk!(Gamma_network_sdma_partial_naive.uplo,  'N', complex(1.), G_network_sdma, complex(1.), Gamma_network_sdma_partial_naive.S)
-                Base.LinAlg.BLAS.herk!(Gamma_network_sdma_partial_robust.uplo, 'N', complex(1.), G_network_sdma, complex(1.), Gamma_network_sdma_partial_robust.S)
+                GGh_network_sdma = G_network_sdma*G_network_sdma'
+                Gamma_network_sdma_partial_naive += Hermitian(GGh_network_sdma)
+                Gamma_network_sdma_partial_robust += Hermitian(GGh_network_sdma)
             end
 
             # Intracluster CSI-T
-            Gamma_network_sdma_partial_robust += Hermitian(complex(prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l])*eye(channel.Ms[i])))
+            GGhrob_network_sdma = prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]^2*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l])*eye(channel.Ms[i])
+            Gamma_network_sdma_partial_robust += Hermitian(complex(GGhrob_network_sdma))
         end; end
 
         ### CLUSTER SDMA ###
@@ -245,10 +254,6 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         for k in served_MS_ids(i, assignment)
             state.V_cluster_sdma[k] =
                 Gamma_eigen_cluster_sdma.vectors*Diagonal(1./(abs(Gamma_eigen_cluster_sdma.values) .+ mu_cluster_sdma))*Gamma_eigen_cluster_sdma.vectors'*channel.H[k,i]'*state.U_cluster_sdma[k]*state.Z_cluster_sdma[k]*prelogs_cluster_sdma[k]
-            if vecnorm(state.V_cluster_sdma[k])^2 > Ps[i]
-                println(20*log10(vecnorm(state.V_cluster_sdma[k])), ":", 10*log10(Ps[i]))
-                error("fack1")
-            end
         end
 
         ### NETWORK SDMA ###
@@ -266,25 +271,22 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         for k in served_MS_ids(i, assignment)
             state.V_network_sdma[k] =
                 Gamma_eigen_network_sdma.vectors*Diagonal(1./(abs(Gamma_eigen_network_sdma.values) .+ mu_network_sdma))*Gamma_eigen_network_sdma.vectors'*channel.H[k,i]'*state.U_network_sdma[k]*state.Z_network_sdma[k]*prelogs_network_sdma[k]
-            if vecnorm(state.V_network_sdma[k])^2 > Ps[i]
-                println(20*log10(vecnorm(state.V_network_sdma[k])), ":", 10*log10(Ps[i]))
-                error("fack2")
-            end
         end
     end
 end
 
 # Calculates mu based on bisection.
 function optimal_mu(i, Gamma, U, Z, prelogs, channel::SinglecarrierChannel, Ps, assignment, aux_params)
-    # Build bisector function
+    # Build stuff needed for bisector function
     bis_M = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
     for k in served_MS_ids(i, assignment)
-        #bis_M += Hermitian(prelogs[k]^2*channel.H[k,i]'*(U[k]*(Z[k]*Z[k]')*U[k]')*channel.H[k,i])
-        Base.LinAlg.BLAS.herk!(bis_M.uplo, 'N', complex(1.), channel.H[k,i]'*U[k]*Z[k]*prelogs[k], complex(1.), bis_M.S)
+        F = prelogs[k]*channel.H[k,i]'*U[k]*Z[k]
+        FFh = F*F'
+        bis_M += Hermitian(FFh)
     end
     Gamma_eigen = eigfact(Gamma); Gamma_eigen_values = abs(Gamma_eigen.values)
     bis_JMJ_diag = abs(diag(Gamma_eigen.vectors'*bis_M*Gamma_eigen.vectors))
-    f(mu) = sum(bis_JMJ_diag./((Gamma_eigen_values .+ mu).*(Gamma_eigen_values .+ mu)))
+    bis_length = channel.Ms[i]
 
     # mu lower bound
     if maximum(Gamma_eigen_values)/minimum(Gamma_eigen_values) < aux_params["IntraclusterWMMSE:bisection_Gamma_cond"]
@@ -294,26 +296,26 @@ function optimal_mu(i, Gamma, U, Z, prelogs, channel::SinglecarrierChannel, Ps, 
         mu_lower = aux_params["IntraclusterWMMSE:bisection_singular_Gamma_mu_lower_bound"]
     end
 
-    if f(mu_lower) <= Ps[i]
+    if bisector_IntraclusterWMMSE(mu_lower, bis_length, bis_JMJ_diag, Gamma_eigen_values) <= Ps[i]
         # No bisection needed
         return mu_lower, Gamma_eigen
     else
         # mu upper bound
         mu_upper = sqrt(channel.Ms[i]/Ps[i]*maximum(bis_JMJ_diag)) - minimum(Gamma_eigen_values)
-        if f(mu_upper) > Ps[i]
+        if bisector_IntraclusterWMMSE(mu_upper, bis_length, bis_JMJ_diag, Gamma_eigen_values) > Ps[i]
             Lumberjack.error("Power bisection: infeasible mu upper bound.")
         end
 
         num_iters = 0
         while num_iters < aux_params["IntraclusterWMMSE:bisection_max_iters"]
-            conv_crit = (Ps[i] - f(mu_upper))/Ps[i]
+            conv_crit = (Ps[i] - bisector_IntraclusterWMMSE(mu_upper, bis_length, bis_JMJ_diag, Gamma_eigen_values))/Ps[i]
 
             if conv_crit < aux_params["IntraclusterWMMSE:bisection_tolerance"]
                 break
             else
                 mu = (1/2)*(mu_lower + mu_upper)
 
-                if f(mu) < Ps[i]
+                if bisector_IntraclusterWMMSE(mu, bis_length, bis_JMJ_diag, Gamma_eigen_values) < Ps[i]
                     # New point feasible, replace upper point
                     mu_upper = mu
                 else
@@ -332,6 +334,16 @@ function optimal_mu(i, Gamma, U, Z, prelogs, channel::SinglecarrierChannel, Ps, 
         # The upper point is always feasible, therefore we use it
         return mu_upper, Gamma_eigen
     end
+end
+
+# Non-anonymous bisector function, for speedup.
+function bisector_IntraclusterWMMSE(mu, bis_length, bis_JMJ_diag, Gamma_eigen_values)
+    output = 0.
+    for n = 1:bis_length
+        den_sqrt = Gamma_eigen_values[n] + mu
+        output += bis_JMJ_diag[n]/(den_sqrt*den_sqrt)
+    end
+    return output
 end
 
 function calculate_utilities(state::IntraclusterWMMSEState, prelogs_cluster_sdma, prelogs_network_sdma)
