@@ -30,7 +30,7 @@ simulation_params = [
     "assignment_methods" => [ BranchAndBoundClustering, ],
     "aux_network_params" => [
         "num_coherence_symbols" => 2500,
-        "alpha_network_sdma" => 0.8,
+        "beta_network_sdma" => 0.,
     ],
     "aux_assignment_params" => [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,

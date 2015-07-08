@@ -62,17 +62,17 @@ function longterm_prelogs(network, partition)
     assignment = get_assignment(network)
 
     num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")
-    alpha_network_sdma = get_aux_network_param(network, "alpha_network_sdma")
-    if !(0 <= alpha_network_sdma <= 1)
-        Lumberjack.error("Incorrect alpha_network_sdma. Must be between 0 and 1.")
+    beta_network_sdma = get_aux_network_param(network, "beta_network_sdma")
+    if !(0 <= beta_network_sdma <= 1)
+        Lumberjack.error("Incorrect beta_network_sdma. Must be between 0 and 1.")
     end
-    alpha_cluster_sdma = 1 - alpha_network_sdma
+    beta_cluster_sdma = 1 - beta_network_sdma
 
     # Number of symbols owned per BS in the cluster SDMA regime (fair split).
     # We don't floor this to an integer, because we only use this value in the
     # prelog calculation.
-    num_cluster_sdma_symbols = alpha_cluster_sdma*num_coherence_symbols
-    num_cluster_sdma_symbols_per_BS = num_cluster_sdma_symbols/I
+    num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
+    num_symbols_per_BS_cluster_sdma = num_symbols_cluster_sdma/I
 
     prelogs_cluster_sdma = zeros(Float64, K); prelogs_network_sdma = zeros(Float64, K)
     for block in partition.blocks
@@ -86,7 +86,7 @@ function longterm_prelogs(network, partition)
             # Calculate cluster SDMA prelog based on CSI acquisition feedback overhead.
             cluster_size = length(block.elements)
             num_CSI_acquisition_symbols = CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
-            cluster_sdma_prelog = alpha_cluster_sdma*(cluster_size/I)*max(0., 1 - num_CSI_acquisition_symbols/(cluster_size*num_cluster_sdma_symbols_per_BS))
+            cluster_sdma_prelog = beta_cluster_sdma*(cluster_size/I)*max(0., 1 - num_CSI_acquisition_symbols/(cluster_size*num_symbols_per_BS_cluster_sdma))
             for i in block.elements; for k in served_MS_ids(i, assignment)
                 prelogs_cluster_sdma[k] = cluster_sdma_prelog
 
@@ -96,7 +96,7 @@ function longterm_prelogs(network, partition)
                 if cluster_sdma_prelog == 0.
                     prelogs_network_sdma[k] = 0.
                 else
-                    prelogs_network_sdma[k] = alpha_network_sdma
+                    prelogs_network_sdma[k] = beta_network_sdma
                 end
             end; end
         end

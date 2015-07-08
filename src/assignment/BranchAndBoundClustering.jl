@@ -23,7 +23,8 @@ function BranchAndBoundClustering(channel, network)
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)
-    IA_infeasible_negative_inf_throughput = aux_params["IA_infeasible_negative_inf_throughput"]
+    num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")
+    beta_network_sdma = get_aux_network_param(network, "beta_network_sdma")
     @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
@@ -48,7 +49,7 @@ function BranchAndBoundClustering(channel, network)
 
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]
-    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
     num_iters = 0; num_sum_throughput_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
@@ -71,7 +72,7 @@ function BranchAndBoundClustering(channel, network)
         end
 
         for child in branch(parent)
-            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
             num_sum_throughput_calculations += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
@@ -149,15 +150,19 @@ Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < 
 is_leaf(node, I) = (size(node.a, 1) == I)
 
 # Initialize the live structure by creating the root node.
-function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
     root = BranchAndBoundNode([0], Inf)
-    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
     # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
 # Bound works by optimistically removing interference for unclustered BSs.
-function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment, IA_infeasible_negative_inf_throughput, E1_bound_in_rate_bound)
+function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
+    beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+
+    beta_cluster_sdma = 1 - beta_network_sdma
+
     # The BSs are grouped based on their position in the graph. If they are put
     # in a cluster, they are 'clustered', otherwise they are 'unclustered'.
     all_BSs = IntSet(1:I)
@@ -176,20 +181,13 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
     end
     pseudo_partition = Partition(pseudo_partition_a, skip_check=true)
 
-    # The pre-log factor is upper bounded by the current pseudo_partition,
-    # since each BS contributes the least towards CSI acquisition when it is
-    # in a singleton cluster. This is the case for the 'unclustered'
-    # BSs considered here. For the BSs that are 'clustered', we
-    # know exactly their current CSI acquisition contribution.
-    _, prelogs_network_sdma = longterm_prelogs(network, pseudo_partition)
-
-    # The number of IA slots available will be important in the bound.
+    # The number of IA slots available will be important in the bounds.
     # This number is given by the closed form in Liu2013. We also store
     # the BSs that are in the 'IA full' clusters, i.e. clusters that cannot
     # accept any more BSs. This is also used in the bound.
+    max_cluster_size = ifloor((M + N - d)/(Kc*d))
     N_available_IA_slots = Dict{Block,Int64}()
     BSs_in_full_clusters = IntSet()
-    max_cluster_size = int((M + N - d)/(Kc*d))
     for block in pseudo_partition.blocks
         N_available_ = max_cluster_size - length(block.elements)
         N_available_IA_slots[block] = N_available_
@@ -197,46 +195,85 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
             union!(BSs_in_full_clusters, block.elements)
         end
     end
+    BSs_in_nonfull_clusters = setdiff(all_BSs, BSs_in_full_clusters)
+    N_BSs_in_nonfull_clusters = length(BSs_in_nonfull_clusters)
 
-    # Bound the throughputs
+    # Find cluster SDMA prelog optimal cluster size (to be used in prelog bounds)
+    num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
+    cs_opt = min((num_symbols_cluster_sdma - I*(M + Kc*(N + d)))/(2*I*Kc*M), max_cluster_size)
+    cs1 = iceil(cs_opt); cs2 = ifloor(cs_opt) # cs_opt might be fractional so check surrounding integers. The overhead function is unimodal, it's OK.
+    a1 = symmetric_prelog_cluster_sdma(cs1, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
+    a2 = symmetric_prelog_cluster_sdma(cs2, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
+    optimal_cluster_size_cluster_sdma = (a1 > a2) ? cs1 : cs2
+
+    # Prelog, rate, and throughput bounds
     node_is_leaf = is_leaf(node, I)
+    prelog_bounds_cluster_sdma = zeros(Float64, I*Kc)
+    prelog_bounds_network_sdma = zeros(Float64, I*Kc)
     throughput_bounds = zeros(Float64, I*Kc, d)
     for block in pseudo_partition.blocks
         N_available_IA_slots_ = N_available_IA_slots[block]
 
-        # If this cluster is overloaded, the throughputs suffer significantly.
-        if N_available_IA_slots_ < 0
-            # This cluster is overloaded since it violates the IA feasibility.
-            if IA_infeasible_negative_inf_throughput
-                for i in block.elements; for k in served_MS_ids(i, assignment)
-                    throughput_bounds[k,:] = -Inf
-                end; end
-            else
-                for i in block.elements; for k in served_MS_ids(i, assignment)
-                    throughput_bounds[k,:] = 0
-                end; end
-            end
-        else
-            # This cluster is not overloaded.
-            for i in block.elements; for k in served_MS_ids(i, assignment)
-                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
+        # Clusters that are IA overloaded get zero throughput, both for cluster SDMA and for network SDMA.
+        if N_available_IA_slots_ >= 0
+            cluster_size = length(block.elements)
 
-                # Leaves get true throughput, other nodes get bound.
+            # For the prelog bound, we want the number of BSs in this cluster
+            # to be close to the optimal number.
+            if cluster_size < optimal_cluster_size_cluster_sdma
+                # There is still space, so add more BSs to this cluster. We never want more than optimal_cluster_size_cluster_sdma
+                # BSs in our clusters, because that is when the prelog starts going down again.
+                clustered_BS_cluster_size_bound = min(cluster_size + min(N_available_IA_slots_, N_unclustered), optimal_cluster_size_cluster_sdma)
+                nonclustered_BS_cluster_size_bound = min(cluster_size + min(N_available_IA_slots_, N_BSs_in_nonfull_clusters), optimal_cluster_size_cluster_sdma)
+            else
+                # We (potentially) already have too many BSs in this cluster,
+                # thus our prelog can only go down by adding more. Bound the
+                # prelog by our current value.
+                clustered_BS_cluster_size_bound = cluster_size
+                nonclustered_BS_cluster_size_bound = cluster_size
+            end
+            clustered_BS_prelog_bound_cluster_sdma = symmetric_prelog_cluster_sdma(clustered_BS_cluster_size_bound, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
+            nonclustered_BS_prelog_bound_cluster_sdma = symmetric_prelog_cluster_sdma(nonclustered_BS_cluster_size_bound, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
+
+            # True prelog when all BSs are clustered.
+            leaf_prelog_cluster_sdma = symmetric_prelog_cluster_sdma(cluster_size, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
+
+            # Stuff needed for rate bounds
+            outside_all_BSs = setdiff(all_BSs, block.elements)
+            outside_clustered_BSs = setdiff(clustered_BSs, block.elements)
+            outside_BSs_in_nonfull_clusters = setdiff(BSs_in_nonfull_clusters, block.elements)
+
+            # Get appropriate bounds for all MSs in this cluster.
+            for i in block.elements; for k in served_MS_ids(i, assignment)
+                # True network SDMA prelog since IA is feasible.
+                prelog_bounds_network_sdma[k] = beta_network_sdma
+
+                # Desired channel.
+                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
+                rho_cluster_sdma = desired_power/sigma2s[k]
+
+                # Leaves get true values, other nodes get bound.
                 if node_is_leaf
+                    # True prelog.
+                    prelog_bounds_cluster_sdma[k] = leaf_prelog_cluster_sdma
+
                     # All BSs outside my cluster contribute irreducible interference.
                     irreducible_interference_power = 0.
-                    for j in setdiff(all_BSs, block.elements)
+                    for j in outside_all_BSs
                         irreducible_interference_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                     end
-                    rho = desired_power/(sigma2s[k] + irreducible_interference_power)
+                    rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power)
                 else
-                    # The SNR bound depends on if this BS is clustered or not.
+                    # The bounds depends on if this BS is clustered or not.
                     if i <= N_clustered
                         # This BS is clustered.
 
+                        # Bound cluster SDMA prelog by adding suitably many BSs to this cluster
+                        prelog_bounds_cluster_sdma[k] = clustered_BS_prelog_bound_cluster_sdma
+
                         # Clustered BSs outside my cluster contribute irreducible interference.
                         irreducible_interference_power = 0.
-                        for j in setdiff(clustered_BSs, block.elements)
+                        for j in outside_clustered_BSs
                             irreducible_interference_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
 
@@ -247,10 +284,13 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
                         for j in nonclustered_BSs
                             push!(reducible_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j])
                         end
-                        sort!(reducible_interference_levels, rev=true)
-                        rho = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels, rev=true) # Could speed this up by using a heap.
+                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
                     else
                         # This BS is not clustered.
+
+                        # Bound cluster SDMA prelog by adding suitably many BSs to this cluster
+                        prelog_bounds_cluster_sdma[k] = nonclustered_BS_prelog_bound_cluster_sdma
 
                         # I cannot joint any BS that belong to a full cluster, so
                         # those BSs contribute irreducible interference.
@@ -262,20 +302,25 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d, assignment,
                         # We now pick the N_available_IA_slots_ strongest interferers (which do not belong to full clusters),
                         # and assume that this interference is reducible.
                         reducible_interference_levels = Float64[]
-                        for j in setdiff(setdiff(all_BSs, BSs_in_full_clusters), block.elements)
+                        for j in outside_BSs_in_nonfull_clusters
                             push!(reducible_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j])
                         end
-                        sort!(reducible_interference_levels, rev=true)
-                        rho = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels, rev=true) # Could speed this up by using a heap.
+                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
                     end
                 end
 
                 # Finally, we can also bound the calculation of
-                # exp(1/rho)*E1(1/rho) if that is desired.
+                # exp(1/rho)*E1(1/rho) if that is desired. (Note that the
+                # prelogs are bounded above.)
                 if E1_bound_in_rate_bound && !node_is_leaf
-                    throughput_bounds[k,:] = prelogs_network_sdma[k]*longterm_rate(rho, bound=:upper)
+                    throughput_bounds[k,:] =
+                        prelog_bounds_cluster_sdma[k]*longterm_rate(rho_cluster_sdma, bound=:upper) +
+                        prelog_bounds_network_sdma[k]*longterm_rate(rho_network_sdma, bound=:upper)
                 else
-                    throughput_bounds[k,:] = prelogs_network_sdma[k]*longterm_rate(rho, bound=:none)
+                    throughput_bounds[k,:] =
+                        prelog_bounds_cluster_sdma[k]*longterm_rate(rho_cluster_sdma) +
+                        prelog_bounds_network_sdma[k]*longterm_rate(rho_network_sdma)
                 end
             end; end
         end
@@ -306,3 +351,7 @@ function branch(parent)
 
     return children
 end
+
+# Special case of the cluster SDMA prelog used a lot in the bound.
+symmetric_prelog_cluster_sdma(cluster_size, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d) =
+    beta_cluster_sdma*max(0, cluster_size/I - (cluster_size*(M + Kc*(N + d)) + cluster_size^2*Kc*M)/num_symbols_cluster_sdma)
