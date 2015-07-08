@@ -59,6 +59,7 @@ simulation_params = [
         "CoalitionFormationClustering_Group:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
+        "CoalitionFormationClustering_Individual:search_budget" => 10,
         "CoalitionFormationClustering_Individual:use_history" => true,
         "CoalitionFormationClustering_Individual:starting_point" => :grand,
     ],
