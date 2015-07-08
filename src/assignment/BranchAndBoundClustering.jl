@@ -245,9 +245,6 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
 
             # Get appropriate bounds for all MSs in this cluster.
             for i in block.elements; for k in served_MS_ids(i, assignment)
-                # True network SDMA prelog since IA is feasible.
-                prelog_bounds_network_sdma[k] = beta_network_sdma
-
                 # Desired channel.
                 desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
                 rho_cluster_sdma = desired_power/sigma2s[k]
@@ -308,6 +305,14 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         sort!(reducible_interference_levels, rev=true) # Could speed this up by using a heap.
                         rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
                     end
+                end
+
+                # Network SDMA is either zero (CSI acquisition infeasible)
+                # or fixed to the beta constant.
+                if prelog_bounds_cluster_sdma[k] == 0.
+                    prelog_bounds_network_sdma[k] = 0.
+                else
+                    prelog_bounds_network_sdma[k] = beta_network_sdma
                 end
 
                 # Finally, we can also bound the calculation of
