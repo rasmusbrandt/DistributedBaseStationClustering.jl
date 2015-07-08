@@ -151,32 +151,32 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         coordinators = coordinated_BS_ids(k, assignment)
 
         # Covariances
-        Phi_cluster_sdma_full           = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k]))) # intercluster instantaneous CSI-R
-        Phi_network_sdma_full           = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k]))) # intercluster and intracluster instantaneous CSI-R
-        Phi_network_sdma_partial_naive  = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k]))) # intercluster instantaneous CSI-R; intracluster CSI-R ignored
-        Phi_network_sdma_partial_robust = Hermitian(complex(sigma2s[k]*eye(channel.Ns[k]))) # intercluster instantaneous CSI-R; intracluster statistical CSI-R
+        Phi_cluster_sdma_full           = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster instantaneous CSI-R
+        Phi_network_sdma_full           = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster and intracluster instantaneous CSI-R
+        Phi_network_sdma_partial_naive  = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster instantaneous CSI-R; intracluster CSI-R ignored
+        Phi_network_sdma_partial_robust = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster instantaneous CSI-R; intracluster statistical CSI-R
 
         # Intercluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             F_cluster_sdma = channel.H[k,j]*state.V_cluster_sdma[l]
             FFh_cluster_sdma = F_cluster_sdma*F_cluster_sdma'
-            Phi_cluster_sdma_full += Hermitian(FFh_cluster_sdma)
+            Phi_cluster_sdma_full           += FFh_cluster_sdma
 
             F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
             FFh_network_sdma = F_network_sdma*F_network_sdma'
-            Phi_network_sdma_full           += Hermitian(FFh_network_sdma)
-            Phi_network_sdma_partial_naive  += Hermitian(FFh_network_sdma)
-            Phi_network_sdma_partial_robust += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_full           += FFh_network_sdma
+            Phi_network_sdma_partial_naive  += FFh_network_sdma
+            Phi_network_sdma_partial_robust += FFh_network_sdma
         end; end
 
         # Intracluster CSI-R
         for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
             F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
             FFh_network_sdma = F_network_sdma*F_network_sdma'
-            Phi_network_sdma_full += Hermitian(FFh_network_sdma)
+            Phi_network_sdma_full += FFh_network_sdma
 
             FFhrob_network_sdma = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*trace(state.V_network_sdma[l]'*state.V_network_sdma[l])*eye(channel.Ns[k])
-            Phi_network_sdma_partial_robust += Hermitian(complex(FFhrob_network_sdma))
+            Phi_network_sdma_partial_robust += FFhrob_network_sdma
         end; end
 
         ### CLUSTER SDMA ###
@@ -185,7 +185,7 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         F_cluster_sdma = channel.H[k,i]*state.V_cluster_sdma[k]
 
         # Optimal (MMSE) receiver
-        state.U_cluster_sdma[k] = Phi_cluster_sdma_full\F_cluster_sdma
+        state.U_cluster_sdma[k] = inv(eigfact(Hermitian(Phi_cluster_sdma_full)))*F_cluster_sdma
 
         # MMSE and optimal weight
         state.E_cluster_sdma_full[k] = Diagonal(min(1, abs(diag((eye(ds[k]) - state.U_cluster_sdma[k]'*F_cluster_sdma)))))
@@ -197,9 +197,9 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         F_network_sdma = channel.H[k,i]*state.V_network_sdma[k]
 
         # Receivers
-        U_network_sdma_full   = Phi_network_sdma_full\F_network_sdma
-        U_network_sdma_naive  = Phi_network_sdma_partial_naive\F_network_sdma
-        U_network_sdma_robust = Phi_network_sdma_partial_robust\F_network_sdma
+        U_network_sdma_full   = inv(eigfact(Hermitian(Phi_network_sdma_full)))*F_network_sdma
+        U_network_sdma_naive  = inv(eigfact(Hermitian(Phi_network_sdma_partial_naive)))*F_network_sdma
+        U_network_sdma_robust = inv(eigfact(Hermitian(Phi_network_sdma_partial_robust)))*F_network_sdma
 
         # MSEs and optimal weight
         state.E_network_sdma_full[k]    = Diagonal(min(1, abs(diag(eye(ds[k]) - U_network_sdma_full'*F_network_sdma))))
@@ -222,25 +222,25 @@ function update_BSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         coordinatees = coordinated_MS_ids(i, assignment)
 
         # Covariances
-        Gamma_cluster_sdma_full           = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
-        Gamma_network_sdma_partial_naive  = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
-        Gamma_network_sdma_partial_robust = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
+        Gamma_cluster_sdma_full           = complex(zeros(channel.Ms[i], channel.Ms[i]))
+        Gamma_network_sdma_partial_naive  = complex(zeros(channel.Ms[i], channel.Ms[i]))
+        Gamma_network_sdma_partial_robust = complex(zeros(channel.Ms[i], channel.Ms[i]))
 
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinatees
                 # Intercluster CSI-T
                 G_cluster_sdma = channel.H[l,i]'*state.U_cluster_sdma[l]
                 GZGh_cluster_sdma = prelogs_cluster_sdma[l]*G_cluster_sdma*state.Z_cluster_sdma[l]*G_cluster_sdma'
-                Gamma_cluster_sdma_full           += Hermitian(GZGh_cluster_sdma)
+                Gamma_cluster_sdma_full           += GZGh_cluster_sdma
 
                 G_network_sdma = channel.H[l,i]'*state.U_network_sdma[l]
                 GZGh_network_sdma = prelogs_network_sdma[l]*G_network_sdma*state.Z_network_sdma[l]*G_network_sdma'
-                Gamma_network_sdma_partial_naive  += Hermitian(GZGh_network_sdma)
-                Gamma_network_sdma_partial_robust += Hermitian(GZGh_network_sdma)
+                Gamma_network_sdma_partial_naive  += GZGh_network_sdma
+                Gamma_network_sdma_partial_robust += GZGh_network_sdma
             else
                 # Intracluster CSI-T
-                GZGhrob_network_sdma = complex(prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]*channel.large_scale_fading_factor[l,i]*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l]))*eye(channel.Ms[i])
-                Gamma_network_sdma_partial_robust     += Hermitian(GZGhrob_network_sdma)
+                GZGhrob_network_sdma = prelogs_network_sdma[l]*channel.large_scale_fading_factor[l,i]*channel.large_scale_fading_factor[l,i]*trace(state.U_network_sdma[l]'*state.U_network_sdma[l]*state.Z_network_sdma[l])*eye(channel.Ms[i])
+                Gamma_network_sdma_partial_robust += GZGhrob_network_sdma
             end
         end; end
 
@@ -278,13 +278,13 @@ end
 # Calculates mu based on bisection.
 function optimal_mu(i, Gamma, U, Z, prelogs, channel::SinglecarrierChannel, Ps, assignment, aux_params)
     # Build stuff needed for bisector function
-    bis_M = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
+    bis_M = complex(zeros(channel.Ms[i], channel.Ms[i]))
     for k in served_MS_ids(i, assignment)
         F = prelogs[k]*channel.H[k,i]'*U[k]*Z[k]
         FFh = F*F'
-        bis_M += Hermitian(FFh)
+        bis_M += FFh
     end
-    Gamma_eigen = eigfact(Gamma); Gamma_eigen_values = abs(Gamma_eigen.values)
+    Gamma_eigen = eigfact(Hermitian(Gamma)); Gamma_eigen_values = abs(Gamma_eigen.values)
     bis_JMJ_diag = abs(diag(Gamma_eigen.vectors'*bis_M*Gamma_eigen.vectors))
     bis_length = channel.Ms[i]
 
