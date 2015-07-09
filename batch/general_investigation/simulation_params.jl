@@ -8,7 +8,10 @@ simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => 150.,
-    "aux_assignment_params" => [ ],
+    "aux_network_params" => [
+        "beta_network_sdma" => 0.8,
+    ],
+    "aux_assignment_params" => Dict{ASCIIString, Any}(),
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,

@@ -37,6 +37,7 @@ initial_simulation_params = [
     "precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
         "num_coherence_symbols" => 2700,
+        "beta_network_sdma" => 0.8,
     ],
     "aux_assignment_params" => [
         "max_no_MSs_per_BS" => 1,

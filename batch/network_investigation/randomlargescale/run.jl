@@ -38,8 +38,9 @@ initial_simulation_params = [
     "precoding_methods" => [ RobustIntraclusterWMMSE, ],
     "aux_network_params" => [
         "num_coherence_symbols" => 2700,
+        "beta_network_sdma" => 0.8,
     ],
-    "aux_assignment_params" => [ ],
+    # "aux_assignment_params" => [ ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
