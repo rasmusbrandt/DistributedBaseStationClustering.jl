@@ -36,7 +36,7 @@ plot_params_instantaneous_sumrate = [
     ],
 
     "axes" => [
-        :xlabel => "beta [dB]",
+        :xlabel => "beta",
         :ylabel => "Sum rate [bits/s/Hz]",
     ],
 
@@ -110,7 +110,7 @@ plot_params_longterm_sumrate = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "beta",
         :ylabel => "Sum rate [bits/s/Hz]",
     ],
 
@@ -184,7 +184,7 @@ plot_params_longterm_num_sum_throughput_calculations = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "beta",
         :ylabel => "Number of utility calculations",
         :yscale => "log",
     ],
@@ -247,7 +247,7 @@ plot_params_longterm_num_clusters = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "beta",
         :ylabel => "Number of clusters",
     ],
 
@@ -316,7 +316,7 @@ plot_params_longterm_avg_cluster_size = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "beta",
         :ylabel => "Average cluster size",
     ],
 
@@ -385,7 +385,7 @@ plot_params_longterm_num_searches = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "beta",
         :ylabel => "Total number of searches",
     ],
 
