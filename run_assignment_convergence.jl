@@ -26,7 +26,7 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 1,
     "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => nothing,
+    "MS_serving_BS_distance" => 150.,
     "assignment_methods" => [ BranchAndBoundClustering, ],
     "aux_network_params" => [
         "no_coherence_symbols" => 2500,

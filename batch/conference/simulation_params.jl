@@ -24,7 +24,7 @@ simulation_params = [
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
-        "stop_crit" => 1e-3,
+        "stop_crit" => 1e-2,
         "max_iters" => 1000,
     ],
 ]

@@ -36,7 +36,7 @@ plot_params_instantaneous_sumrate = [
     ],
 
     "axes" => [
-        :xlabel => "Transmit power [dBm]",
+        :xlabel => "SNR [dB]",
         :ylabel => "Sum rate [bits/s/Hz]",
     ],
 

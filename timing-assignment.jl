@@ -21,7 +21,7 @@ simulation_params = [
     "d" => 1,
     "Ntest" => 100,
     "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => nothing,
+    "MS_serving_BS_distance" => 150.,
     "assignment_methods" => [
         ExhaustiveSearchClustering,
         BranchAndBoundClustering,
