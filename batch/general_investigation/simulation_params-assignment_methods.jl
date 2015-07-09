@@ -2,7 +2,7 @@ simulation_params["assignment_methods"] = [
     # ExhaustiveSearchClustering,
     # BranchAndBoundClustering,
 
-    CoalitionFormationClustering_Group,
+    # CoalitionFormationClustering_Group,
     CoalitionFormationClustering_Individual,
 
     GreedyClustering_Single,
