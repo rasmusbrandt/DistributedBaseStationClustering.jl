@@ -320,12 +320,12 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                 # prelogs are bounded above.)
                 if E1_bound_in_rate_bound && !node_is_leaf
                     throughput_bounds[k,:] =
-                        prelog_bounds_cluster_sdma[k]*longterm_rate(rho_cluster_sdma, bound=:upper) +
-                        prelog_bounds_network_sdma[k]*longterm_rate(rho_network_sdma, bound=:upper)
+                        prelog_bounds_cluster_sdma[k]*exp_times_E1(rho_cluster_sdma, bound=:upper) +
+                        prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma, bound=:upper)
                 else
                     throughput_bounds[k,:] =
-                        prelog_bounds_cluster_sdma[k]*longterm_rate(rho_cluster_sdma) +
-                        prelog_bounds_network_sdma[k]*longterm_rate(rho_network_sdma)
+                        prelog_bounds_cluster_sdma[k]*exp_times_E1(rho_cluster_sdma) +
+                        prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma)
                 end
             end; end
         end

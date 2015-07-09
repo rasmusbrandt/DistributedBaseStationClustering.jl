@@ -30,23 +30,29 @@ function longterm_rates(channel, network, partition)
 
     rates_cluster_sdma = zeros(Float64, K, max_d); rates_network_sdma = zeros(Float64, K, max_d)
     for block in partition.blocks
-        intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
-        for i in block.elements
-            served = served_MS_ids(i, assignment); Nserved = length(served)
-            for k in served
-                desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
+        # If the cluster is not IA feasible, then neither cluster SDMA nor
+        # network SDMA will be feasible, and the rates are zero.
+        # Note that we _do not_ turn off the BSs that are in IA infeasible
+        # clusters; they are thus radiating interference, but no usefuls signal.
+        if is_IA_feasible(network, block)
+            intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
+            for i in block.elements
+                served = served_MS_ids(i, assignment); Nserved = length(served)
+                for k in served
+                    desired_power = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Nserved*ds[k])) # don't user ^2 for performance reasons
 
-                # Rates when SDMA is perfomed orthogonally over clusters
-                rho = desired_power/sigma2s[k]
-                rates_cluster_sdma[k,1:ds[k]] = longterm_rate(rho)
+                    # Rates when SDMA is perfomed orthogonally over clusters
+                    rho = desired_power/sigma2s[k]
+                    rates_cluster_sdma[k,1:ds[k]] = exp_times_E1(rho)
 
-                # Rates when SDMA is performed over entire network
-                int_noise_power = sigma2s[k]
-                for j in intercluster_interferers
-                    int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
+                    # Rates when SDMA is performed over entire network
+                    int_noise_power = sigma2s[k]
+                    for j in intercluster_interferers
+                        int_noise_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j] # don't user ^2 for performance reasons
+                    end
+                    rho = desired_power/int_noise_power
+                    rates_network_sdma[k,1:ds[k]] = exp_times_E1(rho)
                 end
-                rho = desired_power/int_noise_power
-                rates_network_sdma[k,1:ds[k]] = longterm_rate(rho)
             end
         end
     end
@@ -68,45 +74,34 @@ function longterm_prelogs(network, partition)
     end
     beta_cluster_sdma = 1 - beta_network_sdma
 
-    # Number of symbols owned per BS in the cluster SDMA regime (fair split).
-    # We don't floor this to an integer, because we only use this value in the
-    # prelog calculation.
+    # Number of symbols for the cluster SDMA phase. We don't floor this
+    # to an integer, because we only use this value in the prelog calculation.
     num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
-    num_symbols_per_BS_cluster_sdma = num_symbols_cluster_sdma/I
 
     prelogs_cluster_sdma = zeros(Float64, K); prelogs_network_sdma = zeros(Float64, K)
     for block in partition.blocks
-        # If the cluster is not IA feasible, then neither cluster SDMA nor
-        # network SDMA will be feasible, and the throughputs are zero. We
-        # model this by setting the prelogs as zero, but keeping the rates
-        # (calculated in longterm_rates) to their "utopian" versions.
-        # Note that we _do not_ turn off the BSs that are in IA infeasible
-        # clusters; they are thus radiating interference, but no usefuls signal.
-        if is_IA_feasible(network, block)
-            # Calculate cluster SDMA prelog based on CSI acquisition feedback overhead.
-            cluster_size = length(block.elements)
-            num_CSI_acquisition_symbols = CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
-            cluster_sdma_prelog = beta_cluster_sdma*(cluster_size/I)*max(0., 1 - num_CSI_acquisition_symbols/(cluster_size*num_symbols_per_BS_cluster_sdma))
-            for i in block.elements; for k in served_MS_ids(i, assignment)
-                prelogs_cluster_sdma[k] = cluster_sdma_prelog
+        # Calculate cluster SDMA prelog based on CSI acquisition feedback overhead.
+        cluster_size = length(block.elements)
+        num_CSI_acquisition_symbols = CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)
+        cluster_sdma_prelog = beta_cluster_sdma*max(0., cluster_size/I - num_CSI_acquisition_symbols/num_symbols_cluster_sdma)
+        for i in block.elements; for k in served_MS_ids(i, assignment)
+            prelogs_cluster_sdma[k] = cluster_sdma_prelog
 
-                # If the CSI acquisition is unbearably high, we cannot
-                # do network SDMA for this cluster. (As mentioned above,
-                # the corresponding BSs still radiate interference.)
-                if cluster_sdma_prelog == 0.
-                    prelogs_network_sdma[k] = 0.
-                else
-                    prelogs_network_sdma[k] = beta_network_sdma
-                end
-            end; end
-        end
+            # If the CSI acquisition is unbearably high, we cannot
+            # do network SDMA for this cluster.
+            if cluster_sdma_prelog == 0.
+                prelogs_network_sdma[k] = 0.
+            else
+                prelogs_network_sdma[k] = beta_network_sdma
+            end
+        end; end
     end
 
     return prelogs_cluster_sdma, prelogs_network_sdma
 end
 
 # Calculates longterm rate (or bound thereof) as function of rho
-function longterm_rate(rho; bound::Symbol=:none)
+function exp_times_E1(rho; bound::Symbol=:none)
     if bound == :upper
         return log2(1 + rho)
     elseif bound == :lower
