@@ -16,7 +16,6 @@ initial_simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
-    # "MS_serving_BS_distance" => nothing,
     "MS_serving_BS_distance" => 150.,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
@@ -43,10 +42,9 @@ initial_simulation_params = [
     # "aux_assignment_params" => [ ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
-        "stop_crit" => 1e-3,
+        "stop_crit" => 1e-2,
         "max_iters" => 1000,
     ],
-    # "independent_variable" => (set_transmit_powers_dBm!, -50:10:30),
     "independent_variable" => (set_average_SNRs_dB!, -10:10:50),
 ]
 

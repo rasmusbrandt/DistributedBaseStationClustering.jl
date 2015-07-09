@@ -27,7 +27,7 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => nothing,
+    "MS_serving_BS_distance" => 150.,
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
@@ -69,7 +69,7 @@ simulation_params = [
         "max_iters" => 20,
     ],
     "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-10, 10]),
+        (set_average_SNRs_dB!, [0, 20]),
     ]
 ]
 network =
