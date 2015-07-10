@@ -10,7 +10,7 @@ num_coherence_symbols = 1/(2*fd)
 
 beta_network_sdma = 0.8
 
-SNR_dB = 30
+SNR_dB = 20
 
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
