@@ -8,7 +8,7 @@ v = v_kmh*(1e3/3600) # m/s
 fd = v/(λ*Wc)
 num_coherence_symbols = 1/(2*fd)
 
-beta_network_sdma = 0.9
+beta_network_sdma = 0.8
 
 SNR_dB = 30
 
