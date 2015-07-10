@@ -65,6 +65,9 @@ function CoalitionFormationClustering_Individual(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
     temp_cell_assignment = get_assignment(network)
 
+    # Local RNG
+    local_rng = MersenneTwister(int(time()))
+
     # Initial coalition structure
     if starting_point == :grand
         initial_partition = Partition(zeros(I))
@@ -90,6 +93,8 @@ function CoalitionFormationClustering_Individual(channel, network)
             ordered_BS_list = sortperm(state.BS_throughputs, rev=false)
         elseif search_order == :lexicographic
             ordered_BS_list = 1:I
+        elseif search_order == :random
+            ordered_BS_list = randperm(I, local_rng)
         end
 
         deviation_performed = falses(I)
@@ -401,4 +406,15 @@ function longterm_BS_throughputs(channel, network, partition, cell_assignment, I
         BS_throughputs[j] += throughputs[l]
     end; end
     return BS_throughputs
+end
+
+function randperm(n::Integer, rng)
+    a = Array(typeof(n), n)
+    a[1] = 1
+    for i = 2:n
+        j = iceil(i*rand(rng))
+        a[i] = a[j]
+        a[j] = i
+    end
+    return a
 end
