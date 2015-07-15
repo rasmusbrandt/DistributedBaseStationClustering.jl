@@ -47,6 +47,19 @@ function BranchAndBoundClustering(channel, network)
         # Lumberjack.debug("Potential incumbent throughputs calculated.", { :heuristic => heuristic, :incumbent_sum_throughput => incumbent_sum_throughput })
     end
 
+    # Optimal solution from previous branch and bound round
+    if has_aux_network_param(network, "BranchAndBoundClustering:cache:optimal_a")
+        previous_a = get_aux_network_param(network, "BranchAndBoundClustering:cache:optimal_a")
+        previous_partition = Partition(previous_a)
+        previous_throughputs, = longterm_throughputs(channel, network, previous_partition) # with current power allocation
+        previous_sum_throughput = sum(previous_throughputs)
+        if previous_sum_throughput > incumbent_sum_throughput
+            incumbent_throughputs = previous_throughputs
+            incumbent_a = previous_a
+            incumbent_sum_throughput = previous_sum_throughput
+        end
+    end
+
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
@@ -116,6 +129,9 @@ function BranchAndBoundClustering(channel, network)
           :max_abs_optimality_gap => max_abs_optimality_gap,
           :a => incumbent_a }
     )
+
+    # Store a for next branch and bound run
+    set_aux_network_param!(network, incumbent_a, "BranchAndBoundClustering:cache:optimal_a")
 
     # Store prelogs for precoding
     set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
