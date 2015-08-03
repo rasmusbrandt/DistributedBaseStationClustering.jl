@@ -58,7 +58,6 @@ plot_params = [
             ("weighted_logdet_rates_partial", [ :color => "c", :linestyle => "--", :label => "NaiveIntraclusterWMMSE (partial CSI)" ]),
         ],
 
-
         "RobustIntraclusterLeakageMinimization" => [
             ("weighted_logdet_rates_full", [ :color => "DarkGray", :linestyle => "-", :label => "RobustIntraclusterLeakageMinimization (full CSI)" ]),
             ("weighted_logdet_rates_partial", [ :color => "DarkGray", :linestyle => "--", :label => "RobustIntraclusterLeakageMinimization (partial CSI)" ]),
@@ -69,7 +68,6 @@ plot_params = [
             ("weighted_logdet_rates_partial", [ :color => "gray", :linestyle => "--", :label => "NaiveIntraclusterLeakageMinimization (partial CSI)" ]),
         ],
 
-
         "RobustChen2014_MaxSINR" => [
             ("weighted_logdet_rates_full", [ :color => "g", :linestyle => "-", :label => "RobustChen2014_MaxSINR (full CSI)" ]),
             ("weighted_logdet_rates_partial", [ :color => "g", :linestyle => "--", :label => "RobustChen2014_MaxSINR (partial CSI)" ]),
@@ -79,7 +77,6 @@ plot_params = [
             ("weighted_logdet_rates_full", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (full CSI)" ]),
             ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (partial CSI)" ]),
         ],
-
 
         "Shi2011_WMMSE" => [
             ("weighted_logdet_rates", [ :color => "b", :linestyle => "-", :label => "WMMSE (full CSI)" ]),

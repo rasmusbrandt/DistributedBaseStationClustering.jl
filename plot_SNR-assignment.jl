@@ -63,7 +63,6 @@ plot_params_instantaneous_sumrate = [
             ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
-
         "GrandCoalitionClustering" => [
             ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
@@ -84,7 +83,6 @@ plot_params_instantaneous_sumrate = [
         "Peters2012_Heuristic" => [
             ("weighted_logdet_rates_full", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
-
 
         "GreedyClustering_Multiple" => [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),

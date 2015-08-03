@@ -57,6 +57,7 @@ simulation_params = [
 
         "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
+
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
         "CoalitionFormationClustering_Individual:search_budget" => 10,

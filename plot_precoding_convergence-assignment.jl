@@ -56,7 +56,6 @@ plot_params = [
             ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
-
         "CoalitionFormationClustering_Group" => [
             ("weighted_logdet_rates_full", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
@@ -64,7 +63,6 @@ plot_params = [
         "CoalitionFormationClustering_Individual" => [
             ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
-
 
         "GreedyClustering_Single" => [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
@@ -74,11 +72,9 @@ plot_params = [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
-
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("weighted_logdet_rates_full", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
-
 
         "GrandCoalitionClustering" => [
             ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
