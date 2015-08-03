@@ -20,9 +20,12 @@
 #   with the largest throughput is allowed to deviate first, and :fair means
 #   that the BS with the smallest throughput is allowed to deviate first.
 #
+# In all algorithms, we have BS_throughputs, which are the MS throughputs
+# for the served MSs summed up. (This *could* be generalized to other functions.)
+#
 # The group-based stability algorithm (CoalitionFormationClustering_Group) works
 # directly on coalitions, rather than on BSs as the individual-based stability
-# algorithm did. In this case, coalitions are allowed to merge, leading up to
+# algorithm does. In this case, coalitions are allowed to merge, leading up to
 # a coalition structure which is group stable.
 # The parameter that this algorithm takes are:
 #
@@ -107,6 +110,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
         { :sum_throughput => sum(throughputs),
+          :num_searches => state.num_searches,
           :a => a }
     )
 
@@ -138,20 +142,20 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         return false
     end
 
-    # Divide blocks such that old_block is the block that BS i used to
+    # Divide blocks such that my_old_block is the block that BS i used to
     # belong to, and other_blocks is an array of all other blocks.
-    old_block = Block() # to store variable from inside loop
+    my_old_block = Block() # to store variable from inside loop
     other_blocks = Block[]
     for block in state.partition.blocks
         if i in block.elements
-            old_block = Block(setdiff(block.elements, IntSet(i))) # BS i does not belong to the old_block anymore
+            my_old_block = Block(setdiff(block.elements, IntSet(i))) # BS i does not belong to the my_old_block anymore
         else
             push!(other_blocks, block)
         end
     end
 
     # Create all possible deviations for BS i
-    BS_not_singleton_coalition_before = length(old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
+    BS_not_singleton_coalition_before = length(my_old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
     num_new_partitions = length(other_blocks) + int(BS_not_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
@@ -163,7 +167,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
 
         # Add the old block unless it used to be a singleton
         if BS_not_singleton_coalition_before
-            push!(new_partition.blocks, old_block)
+            push!(new_partition.blocks, my_old_block)
         end
 
         # Add BS i to coalition n
@@ -175,14 +179,14 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         state.num_sum_throughput_calculations += 1
     end
     if BS_not_singleton_coalition_before
-        # BS i was in a non-singleton coalition before deviation. Add the the
+        # BS i was in a non-singleton coalition before deviation. Add the
         # possibility that it belongs to a non-singleton coalition after deviation.
         new_partition = Partition()
         other_blocks_cp = deepcopy(other_blocks)
         union!(new_partition.blocks, other_blocks_cp)
 
         # Add the old block
-        push!(new_partition.blocks, old_block)
+        push!(new_partition.blocks, my_old_block)
 
         # Add BS i to new singleton coalition
         push!(new_partition.blocks, Block(IntSet(i)))
@@ -211,25 +215,25 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         state.num_searches[i] += 1
 
         # Find block that BS i belongs to in this partition
-        my_block = Block()
+        my_new_block = Block()
         for block in new_partitions[sort_idx].blocks
             if i in block.elements
-                my_block = block
+                my_new_block = block
                 break
             end
         end
 
         # Check if the existing members of this coalition allow BS i to join
         # (this check includes BS i, unnecessarily)
-        BSs_in_new_block = collect(my_block.elements)
-        BSs_in_old_block = collect(old_block.elements)
-        if individual_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_new_block, BSs_in_old_block, state.history[i], stability_type, use_history)
+        BSs_in_my_new_block = collect(my_new_block.elements)
+        BSs_in_my_old_block = collect(my_old_block.elements)
+        if individual_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, state.history[i], stability_type, use_history)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
             state.BS_throughputs = deviated_BS_throughputs[:,sort_idx]
 
             # Add coalition to history
-            push!(state.history[i], IntSet(BSs_in_new_block))
+            push!(state.history[i], IntSet(BSs_in_my_new_block))
 
             return true
         end
