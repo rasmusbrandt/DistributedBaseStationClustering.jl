@@ -34,6 +34,7 @@ simulation_params = [
 
         # CoalitionFormationClustering_Group,
         CoalitionFormationClustering_Individual,
+        CoalitionFormationClustering_Swap,
 
         GreedyClustering_Single,
         GreedyClustering_Multiple,
@@ -63,6 +64,12 @@ simulation_params = [
         "CoalitionFormationClustering_Individual:search_budget" => 10,
         "CoalitionFormationClustering_Individual:use_history" => true,
         "CoalitionFormationClustering_Individual:starting_point" => :grand,
+
+        "CoalitionFormationClustering_Swap:search_order" => :lexicographic,
+        "CoalitionFormationClustering_Swap:stability_type" => :individual,
+        "CoalitionFormationClustering_Swap:search_budget" => 10,
+        "CoalitionFormationClustering_Swap:use_history" => true,
+        "CoalitionFormationClustering_Swap:starting_point" => :grand,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",

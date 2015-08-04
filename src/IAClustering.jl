@@ -21,6 +21,7 @@ export
     Chen2014_kmeans,
     CoalitionFormationClustering_Group,
     CoalitionFormationClustering_Individual,
+    CoalitionFormationClustering_Swap,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
     GreedyClustering_Single,
