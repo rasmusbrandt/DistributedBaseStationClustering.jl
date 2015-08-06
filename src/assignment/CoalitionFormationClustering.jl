@@ -158,7 +158,11 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Deviations where BS i swaps with somebody in a full coalition
         if BS_not_singleton_coalition_before || length(swapee_block) > 1
             # Two singletons should never swap
-            outside_blocks = setdiff(outside_blocks, Set(swapee_block))
+            outside_blocks = Block[]
+            for other_block2 in other_blocks
+                if other_block2 == swapee_block; continue; end
+                push!(outside_blocks, other_block2)
+            end
             for j in swapee_block.elements
                 new_partition = Partition()
                 union!(new_partition.blocks, deepcopy(outside_blocks))
