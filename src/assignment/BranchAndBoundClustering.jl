@@ -18,7 +18,7 @@ function BranchAndBoundClustering(channel, network)
     # Network parameters in symmetric network
     I = get_no_BSs(network); K = get_no_MSs(network)
     Kc = int(K/I)
-    M = get_no_MS_antennas(network)[1]; N = get_no_BS_antennas(network)[1]
+    M = get_no_BS_antennas(network)[1]; N = get_no_MS_antennas(network)[1]
     d = get_no_streams(network)[1]
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
@@ -122,8 +122,14 @@ function BranchAndBoundClustering(channel, network)
     final_partition = Partition(incumbent_a)
     throughputs, _, _, prelogs = longterm_throughputs(channel, network, final_partition)
 
+    # Verify that our local throughput calculation makes sens
+    sum_throughput = sum(throughputs)
+    if abs(sum_throughput - incumbent_sum_throughput) > 1e-10
+        Lumberjack.error("Something is wrong in the bound.")
+    end
+
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_throughput => incumbent_sum_throughput,
+        { :sum_throughput => sum_throughput,
           :num_sum_throughput_calculations => num_sum_throughput_calculations,
           :abs_conv_crit => abs_conv_crit,
           :max_abs_optimality_gap => max_abs_optimality_gap,
@@ -375,4 +381,4 @@ end
 
 # Special case of the cluster SDMA prelog used a lot in the bound.
 symmetric_prelog_cluster_sdma(cluster_size, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d) =
-    beta_cluster_sdma*max(0, cluster_size/I - (cluster_size*(M + Kc*(N + d)) + cluster_size^2*Kc*M)/num_symbols_cluster_sdma)
+    beta_cluster_sdma*max(0., cluster_size/I - (cluster_size*(M + Kc*(N + d)) + cluster_size^2*Kc*M)/num_symbols_cluster_sdma)
