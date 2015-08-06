@@ -64,6 +64,10 @@ plot_params = [
             ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
+        "CoalitionFormationClustering_Swap" => [
+            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+        ],
+
         "GreedyClustering_Single" => [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
