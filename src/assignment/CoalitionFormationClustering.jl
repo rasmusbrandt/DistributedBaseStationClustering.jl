@@ -232,7 +232,7 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Add BS i to new singleton coalition
         push!(new_partition.blocks, Block(IntSet(i)))
         new_partitions[end] = new_partition
-        deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I) + 1e-10 # to ensure that this is selected instead of kicking somebody out from a singleton
 
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
@@ -314,9 +314,9 @@ function swap_stability(new_BS_throughputs, old_BS_throughputs,
 
     # Check if the BSs in the new coalition improve, as well as swapper (if one exists)
     individual = (nash && all(new_BS_throughputs[new_coalition_idxs] .>= old_BS_throughputs[new_coalition_idxs]))
-    if swapper != 0
-        individual = individual && (new_BS_throughputs[swapper] >= old_BS_throughputs[swapper])
-    end
+    # if swapper != 0
+    #     individual = individual && (new_BS_throughputs[swapper] >= old_BS_throughputs[swapper])
+    # end
     if stability_type == :individual
         return individual
     end
