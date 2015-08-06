@@ -26,9 +26,9 @@ simulation_params = [
         ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
-        CoalitionFormationClustering_Group,
-        CoalitionFormationClustering_Individual,
         CoalitionFormationClustering_Swap,
+        CoalitionFormationClustering_Individual,
+        CoalitionFormationClustering_Group,
 
         GreedyClustering_Single,
         GreedyClustering_Multiple,
@@ -48,20 +48,20 @@ simulation_params = [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
-        "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
-        "CoalitionFormationClustering_Group:search_order" => :greedy,
+        "CoalitionFormationClustering_Swap:search_order" => :random,
+        "CoalitionFormationClustering_Swap:stability_type" => :individual,
+        "CoalitionFormationClustering_Swap:search_budget" => 100,
+        "CoalitionFormationClustering_Swap:use_history" => false,
+        "CoalitionFormationClustering_Swap:starting_point" => :grand,
 
-        "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
+        "CoalitionFormationClustering_Individual:search_order" => :random,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
-        "CoalitionFormationClustering_Individual:search_budget" => 10,
-        "CoalitionFormationClustering_Individual:use_history" => true,
+        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:use_history" => false,
         "CoalitionFormationClustering_Individual:starting_point" => :grand,
 
-        "CoalitionFormationClustering_Swap:search_order" => :lexicographic,
-        "CoalitionFormationClustering_Swap:stability_type" => :individual,
-        "CoalitionFormationClustering_Swap:search_budget" => 10,
-        "CoalitionFormationClustering_Swap:use_history" => true,
-        "CoalitionFormationClustering_Swap:starting_point" => :grand,
+        "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
+        "CoalitionFormationClustering_Group:search_order" => :greedy,
     ],
 ]
 network =

@@ -63,7 +63,7 @@ plot_params_instantaneous_sumrate = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+            ("weighted_logdet_rates_full", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
 
         "GrandCoalitionClustering" => [
@@ -137,7 +137,7 @@ plot_params_longterm_sumrate = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("throughputs", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+            ("throughputs", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
 
         "GreedyClustering_Single" => [
@@ -212,7 +212,7 @@ plot_params_longterm_num_sum_throughput_calculations = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("num_sum_throughput_calculations", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+            ("num_sum_throughput_calculations", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
 
         "GreedyClustering_Single" => [
@@ -275,7 +275,7 @@ plot_params_longterm_num_clusters = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("num_clusters", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+            ("num_clusters", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
 
         "GreedyClustering_Single" => [
@@ -345,7 +345,7 @@ plot_params_longterm_avg_cluster_size = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("avg_cluster_size", [ :color => "LimeGreen", :linestyle => "-.", :label => "CoalitionFormationClustering_Swap" ]),
+            ("avg_cluster_size", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
 
         "GreedyClustering_Single" => [
@@ -403,7 +403,7 @@ plot_params_longterm_num_searches = [
         ],
 
         "CoalitionFormationClustering_Swap" => [
-            ("num_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
+            ("num_searches", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Swap" ]),
         ],
     ]
 ]

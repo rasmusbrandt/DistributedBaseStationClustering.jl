@@ -51,7 +51,7 @@ include("assignment/ExhaustiveSearchClustering.jl")
 include("assignment/GrandCoalitionClustering.jl")
 include("assignment/GreedyClustering.jl")
 include("assignment/NoClustering.jl")
-include("assignment/Peters2012_Heuristic.jl")
+include("assignment/Peters2012.jl")
 include("assignment/RandomClustering.jl")
 
 include("precoding/precoding.jl")
