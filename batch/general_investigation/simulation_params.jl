@@ -14,6 +14,8 @@ SNR_dB = 20
 
 simulation_params = [
     "Ndrops" => 10, "Nsim" => 5,
+    "I" => 8, "Kc" => 1,
+    "M" => 2, "N" => 2, "d" => 1,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => 150.,
     "aux_network_params" => Dict{ASCIIString, Any}(),
