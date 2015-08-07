@@ -6,7 +6,6 @@ using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-assignment_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../simulation_params-large_network.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../plot_params-assignment_methods.jl"))
 
@@ -21,7 +20,7 @@ simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individ
 ##########################################################################
 # Nash
 srand(SRAND_SEED)
-simulation_params["simulation_name"] = "stability_concepts-large_network-nash_$(start_time)"
+simulation_params["simulation_name"] = "stability_concepts-nash_$(start_time)"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
 network =
     setup_random_large_scale_network(simulation_params["I"],
@@ -45,7 +44,7 @@ plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 ##########################################################################
 # Individual
 srand(SRAND_SEED)
-simulation_params["simulation_name"] = "stability_concepts-large_network-individual_$(start_time)"
+simulation_params["simulation_name"] = "stability_concepts-individual_$(start_time)"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
 network =
     setup_random_large_scale_network(simulation_params["I"],
@@ -69,7 +68,7 @@ plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 ##########################################################################
 # Contractual
 srand(SRAND_SEED)
-simulation_params["simulation_name"] = "stability_concepts-large_network-contractual_$(start_time)"
+simulation_params["simulation_name"] = "stability_concepts-contractual_$(start_time)"
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
 network =
     setup_random_large_scale_network(simulation_params["I"],

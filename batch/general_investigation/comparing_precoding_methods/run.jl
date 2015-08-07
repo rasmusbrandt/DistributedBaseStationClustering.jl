@@ -6,14 +6,13 @@ using HDF5, JLD
 
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-precoding_methods.jl"))
-include(joinpath(dirname(@__FILE__), "../simulation_params-large_network.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../plot_params-precoding_methods.jl"))
 
 ##########################################################################
 # Simulation
 srand(927272); start_time = strftime("%Y%m%dT%H%M%S", time())
-simulation_params["simulation_name"] = "precoding_methods-large_network_$(start_time)"
+simulation_params["simulation_name"] = "precoding_methods_$(start_time)"
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
