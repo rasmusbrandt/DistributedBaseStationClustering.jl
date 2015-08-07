@@ -256,7 +256,7 @@ end
 # Check stability of a particular deviating BS for the swap
 # coalition formation algorithm.
 function swap_stability(new_BS_throughputs, old_BS_throughputs,
-    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, swappee_idx, history,
+    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, swapee_idx, history,
     stability_type, use_history)
 
     # Check that this coalition does not exist in the history
@@ -276,14 +276,19 @@ function swap_stability(new_BS_throughputs, old_BS_throughputs,
         return individual
     end
 
-    # Check if the swappee improves
-    swappee = (individual && new_BS_throughputs[swappee_idx] >= old_BS_throughputs[swappee_idx])
-    if stability_type == :swappee
-        return swappee
+    # Check if the swapee improves
+    if swapee_idx == 0
+        # No swap happened
+        swapee = individual
+    else
+        swapee = (individual && new_BS_throughputs[swapee_idx] >= old_BS_throughputs[swapee_idx])
+    end
+    if stability_type == :swapee
+        return swapee
     end
 
     # Check if the BSs in the old coalition improve
-    contractual = (swappee && all(new_BS_throughputs[old_coalition_idxs] .>= old_BS_throughputs[old_coalition_idxs]))
+    contractual = (swapee && all(new_BS_throughputs[old_coalition_idxs] .>= old_BS_throughputs[old_coalition_idxs]))
     if stability_type == :contractual
         return contractual
     end
