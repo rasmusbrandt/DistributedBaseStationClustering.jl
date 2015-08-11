@@ -196,7 +196,8 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Add BS i to new singleton coalition
         push!(new_partition.blocks, Block(IntSet(i)))
         new_partitions[end] = new_partition
-        deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I) + 1e-10 # to ensure that this is selected instead of kicking somebody out from a singleton
+        deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_throughputs[i,end] += 1e-10 # This ensures that BS i chooses to go alone in a new singleton, rather than to force-swap with somebody already in a singleton.
 
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
@@ -214,6 +215,11 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
     for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
         # Stop searching if we otherwise would exceed our search budget.
         if state.num_searches[i] >= search_budget
+            return false
+        end
+
+        # Stop searching if we do not gain anymore.
+        if deviated_BS_throughputs[i,sort_idx] < state.BS_throughputs[i]
             return false
         end
 
