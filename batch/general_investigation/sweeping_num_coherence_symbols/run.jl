@@ -24,7 +24,7 @@ raw_precoding_results, raw_assignment_results =
 
 ##########################################################################
 # Plot
-for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations, plot_params_longterm_num_searches)
     p["axes"][:xlabel] = "MS speed [km/h]"
     p["xvals"] = vs_kmh
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
