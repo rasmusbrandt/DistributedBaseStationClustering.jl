@@ -1,28 +1,40 @@
 # Default values
-fc = 2e9 # GHz
-Wc = 300e3 # kHz
-c = 300e6 # m/s
-λ = c/fc # m
-v_kmh = 30 # km/h
-v = v_kmh*(1e3/3600) # m/s
-fd = v/(λ*Wc)
-num_coherence_symbols = 1/(2*fd)
+const fc = 2e9 # GHz
+const Wc = 300e3 # kHz
+const c = 300e6 # m/s
+const λ = c/fc # m
+const v_kmh = 30 # km/h
+const v = v_kmh*(1e3/3600) # m/s
+const fd = v/(λ*Wc)
+const num_coherence_symbols = 1/(2*fd)
+const beta_network_sdma = 0.5
 
-beta_network_sdma = 0.8
+const design_ISD = 500
+const BS_density = sqrt(3)/2*design_ISD^2 # BSs per m^2, for hexagonal cells
+const I = 12; const Kc = 2
+const M = 8; const N = 2; const d = 1
+const geography_width = sqrt(I*BS_density)
+const MS_serving_BS_distance = geography_width/10.
 
-SNR_dB = 20
+const SNR_dB = 20
+
+const Ndrops = 10
+const Nsim = 5
+
+const stop_crit = 1e-2
+const max_iters = 1000
 
 simulation_params = [
-    "Ndrops" => 10, "Nsim" => 5,
-    "I" => 8, "Kc" => 1,
-    "M" => 2, "N" => 2, "d" => 1,
-    "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => 150.,
+    "Ndrops" => Ndrops, "Nsim" => Nsim,
+    "I" => I, "Kc" => Kc,
+    "M" => M, "N" => N, "d" => d,
+    "geography_size" => (geography_width, geography_width),
+    "MS_serving_BS_distance" => MS_serving_BS_distance,
     "aux_network_params" => Dict{ASCIIString, Any}(),
     "aux_assignment_params" => Dict{ASCIIString, Any}(),
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
-        "stop_crit" => 1e-2,
-        "max_iters" => 1000,
+        "stop_crit" => stop_crit,
+        "max_iters" => max_iters,
     ],
 ]

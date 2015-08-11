@@ -22,7 +22,7 @@ function CoalitionFormationClustering_Swap(channel, network)
     search_order = aux_params["CoalitionFormationClustering_Swap:search_order"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Swap:stability_type" :individual
     stability_type = aux_params["CoalitionFormationClustering_Swap:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" false
+    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" true
     use_history = aux_params["CoalitionFormationClustering_Swap:use_history"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Swap:starting_point" :grand
     starting_point = aux_params["CoalitionFormationClustering_Swap:starting_point"]
@@ -314,7 +314,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" false
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
     use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :grand
     starting_point = aux_params["CoalitionFormationClustering_Individual:starting_point"]
