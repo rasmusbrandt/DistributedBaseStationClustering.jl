@@ -59,13 +59,13 @@ simulation_params = [
         "CoalitionFormationClustering_Swap:search_order" => :random,
         "CoalitionFormationClustering_Swap:stability_type" => :individual,
         "CoalitionFormationClustering_Swap:search_budget" => 100,
-        "CoalitionFormationClustering_Swap:use_history" => false,
+        "CoalitionFormationClustering_Swap:use_history" => true,
         "CoalitionFormationClustering_Swap:starting_point" => :singletons,
 
         "CoalitionFormationClustering_Individual:search_order" => :random,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
         "CoalitionFormationClustering_Individual:search_budget" => 100,
-        "CoalitionFormationClustering_Individual:use_history" => false,
+        "CoalitionFormationClustering_Individual:use_history" => true,
         "CoalitionFormationClustering_Individual:starting_point" => :singletons,
 
         "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
