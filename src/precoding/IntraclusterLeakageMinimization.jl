@@ -63,7 +63,7 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
         # Check convergence
         if iters >= 2
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
-            if conv_crit < aux_params["stop_crit"]
+            if conv_crit < aux_params["stop_crit"] || objective[end] == 0
                 Lumberjack.debug("IntraclusterLeakageMinimization converged.",
                     [ :num_iters => iters,
                       :final_objective => objective[end],
