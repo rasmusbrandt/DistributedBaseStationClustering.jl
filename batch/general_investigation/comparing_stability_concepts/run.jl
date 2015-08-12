@@ -14,12 +14,12 @@ include(joinpath(dirname(@__FILE__), "../plot_params-assignment_methods.jl"))
 SRAND_SEED = 927272; start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_budget"] = 100
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:search_order"] = :random
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:use_history"] = true
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:starting_point"] = :grand
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:use_history"] = false
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:starting_point"] = :singletons
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:search_budget"] = 100
 simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:search_order"] = :random
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:use_history"] = true
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:starting_point"] = :grand
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:use_history"] = false
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:starting_point"] = :singletons
 
 ##########################################################################
 # Nash

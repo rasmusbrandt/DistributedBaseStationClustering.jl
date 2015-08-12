@@ -20,11 +20,11 @@ function CoalitionFormationClustering_Swap(channel, network)
     search_budget = aux_params["CoalitionFormationClustering_Swap:search_budget"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Swap:search_order" :random
     search_order = aux_params["CoalitionFormationClustering_Swap:search_order"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:stability_type" :individual
+    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:stability_type" :swapee
     stability_type = aux_params["CoalitionFormationClustering_Swap:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" true
+    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" false
     use_history = aux_params["CoalitionFormationClustering_Swap:use_history"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:starting_point" :grand
+    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:starting_point" :singletons
     starting_point = aux_params["CoalitionFormationClustering_Swap:starting_point"]
 
     # Perform cell selection
@@ -112,7 +112,6 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
     # belong to, and other_blocks is an array of all other blocks.
     my_old_block = Block() # to store variable from inside loop
     other_blocks = Block[]
-    Nother = 0
     for block in state.partition.blocks
         if i in block.elements
             my_old_block = Block(setdiff(block.elements, IntSet(i)))
@@ -121,32 +120,36 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         end
     end
 
-    # Was this BS not in a singleton coalition before?
-    BS_not_singleton_coalition_before = length(my_old_block) > 0 ? true : false
+    # Was this BS in a singleton coalition before?
+    BS_in_singleton_coalition_before = length(my_old_block) == 0 ? true : false
 
     # Create all possible deviations for BS i
-    for other_block in other_blocks
-        if BS_not_singleton_coalition_before || length(other_block) > 1
-            Nother += length(other_block.elements)
+    Nother = 0
+    for swapee_block in other_blocks
+        if length(swapee_block) == 1 && BS_in_singleton_coalition_before
+            continue
+        else
+            Nother += length(swapee_block.elements)
         end
     end
-    num_new_partitions = length(other_blocks) + Nother + int(BS_not_singleton_coalition_before)
+    num_new_partitions = length(other_blocks) + Nother + int(!BS_in_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
     swapees = zeros(Int64, num_new_partitions)
     local n
+
+    # Deviations where BS i joins an existing coalition
     for n = 1:length(other_blocks)
-        # Deviations where BS i joins an existing coalition
         new_partition = Partition()
-        other_blocks_cp = deepcopy(other_blocks) # need to deepcopy, so the created coalitions will not all be the same...
+        other_blocks_cp = deepcopy(other_blocks) # see below
         union!(new_partition.blocks, other_blocks_cp)
 
         # Add the old block unless it used to be a singleton
-        if BS_not_singleton_coalition_before
+        if !BS_in_singleton_coalition_before
             push!(new_partition.blocks, my_old_block)
         end
 
-        # Add BS i to coalition n
+        # Add BS i to coalition n (this is why deepcopy is needed)
         push!(other_blocks_cp[n].elements, i)
         new_partitions[n] = new_partition
         deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
@@ -154,41 +157,44 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
     end
+
+    # Deviations where BS i swaps with somebody in a full coalition
     for swapee_block in other_blocks
-        # Deviations where BS i swaps with somebody in a full coalition
-        if BS_not_singleton_coalition_before || length(swapee_block) > 1
-            # Two singletons should never swap
-            outside_blocks = Block[]
-            for other_block2 in other_blocks
-                if other_block2 == swapee_block; continue; end
-                push!(outside_blocks, other_block2)
-            end
-            for j in swapee_block.elements
-                new_partition = Partition()
-                union!(new_partition.blocks, deepcopy(outside_blocks))
+        # Two singletons should never swap
+        if length(swapee_block) == 1 && BS_in_singleton_coalition_before
+            continue
+        end
 
-                # Add BS i to and remove BS j from new block
-                push!(new_partition.blocks, Block(union(setdiff(swapee_block.elements, IntSet(j)), IntSet(i))))
+        outside_blocks = Block[]
+        for other_block2 in other_blocks
+            if other_block2 == swapee_block; continue; end
+            push!(outside_blocks, other_block2)
+        end
+        for j in swapee_block.elements
+            new_partition = Partition()
+            union!(new_partition.blocks, outside_blocks)
 
-                # Add BS j to old block
-                push!(new_partition.blocks, Block(union(my_old_block.elements, IntSet(j))))
+            # Add BS i to and remove BS j from new block
+            push!(new_partition.blocks, Block(union(setdiff(swapee_block.elements, IntSet(j)), IntSet(i))))
 
-                n += 1
-                new_partitions[n] = new_partition
-                deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
-                swapees[n] = j
+            # Add BS j to old block
+            push!(new_partition.blocks, Block(union(my_old_block.elements, IntSet(j))))
 
-                # Complexity metrics
-                state.num_sum_throughput_calculations += 1
-            end
+            n += 1
+            new_partitions[n] = new_partition
+            deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
+            swapees[n] = j
+
+            # Complexity metrics
+            state.num_sum_throughput_calculations += 1
         end
     end
-    if BS_not_singleton_coalition_before
-        # BS i was not in a non-singleton coalition before deviation. Add the
-        # possibility that it belongs to a non-singleton coalition after deviation.
+
+    # If BS i was not in a non-singleton coalition before deviation, add the
+    # possibility that it belongs to a non-singleton coalition after deviation.
+    if !BS_in_singleton_coalition_before
         new_partition = Partition()
-        other_blocks_cp = deepcopy(other_blocks)
-        union!(new_partition.blocks, other_blocks_cp)
+        union!(new_partition.blocks, other_blocks)
 
         # Add the old block
         push!(new_partition.blocks, my_old_block)
@@ -197,7 +203,6 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         push!(new_partition.blocks, Block(IntSet(i)))
         new_partitions[end] = new_partition
         deviated_BS_throughputs[:,end] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
-        deviated_BS_throughputs[i,end] += 1e-10 # This ensures that BS i chooses to go alone in a new singleton, rather than to force-swap with somebody already in a singleton.
 
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
@@ -265,12 +270,12 @@ function swap_stability(new_BS_throughputs, old_BS_throughputs,
     deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, swapee_idx, history,
     stability_type, use_history)
 
-    # Check that this coalition does not exist in the history
-    if use_history && IntSet(new_coalition_idxs) in history
+    # Check that this coalition does not exist in the history, unless it is singleton
+    if use_history && length(new_coalition_idxs) > 1 && IntSet(new_coalition_idxs) in history
         return false
     end
 
-    # Check that BS i improves
+    # Check that BS i strictly improves
     nash = (new_BS_throughputs[deviating_BS_idx] > old_BS_throughputs[deviating_BS_idx])
     if stability_type == :nash
         return nash
@@ -320,9 +325,9 @@ function CoalitionFormationClustering_Individual(channel, network)
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" false
     use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :grand
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :singletons
     starting_point = aux_params["CoalitionFormationClustering_Individual:starting_point"]
 
     # Perform cell selection
@@ -416,22 +421,23 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     end
 
     # Create all possible deviations for BS i
-    BS_not_singleton_coalition_before = length(my_old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
-    num_new_partitions = length(other_blocks) + int(BS_not_singleton_coalition_before)
+    BS_in_singleton_coalition_before = length(my_old_block) == 0 ? true : false # was this BS not in a singleton coalition before?
+    num_new_partitions = length(other_blocks) + int(!BS_in_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
+
+    # Deviations where BS i joins an existing coalition
     for n = 1:length(other_blocks)
-        # Deviations where BS i joins an existing coalition
         new_partition = Partition()
-        other_blocks_cp = deepcopy(other_blocks) # need to deepcopy, so the created coalitions will not all be the same...
+        other_blocks_cp = deepcopy(other_blocks) # see below
         union!(new_partition.blocks, other_blocks_cp)
 
         # Add the old block unless it used to be a singleton
-        if BS_not_singleton_coalition_before
+        if !BS_in_singleton_coalition_before
             push!(new_partition.blocks, my_old_block)
         end
 
-        # Add BS i to coalition n
+        # Add BS i to coalition n (this is why deepcopy is needed)
         push!(other_blocks_cp[n].elements, i)
         new_partitions[n] = new_partition
         deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
@@ -439,12 +445,12 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
     end
-    if BS_not_singleton_coalition_before
-        # BS i was in a non-singleton coalition before deviation. Add the
-        # possibility that it belongs to a non-singleton coalition after deviation.
+
+    # If BS i was in a non-singleton coalition before deviation, add the
+    # possibility that it belongs to a non-singleton coalition after deviation.
+    if !BS_in_singleton_coalition_before
         new_partition = Partition()
-        other_blocks_cp = deepcopy(other_blocks)
-        union!(new_partition.blocks, other_blocks_cp)
+        union!(new_partition.blocks, other_blocks)
 
         # Add the old block
         push!(new_partition.blocks, my_old_block)
@@ -463,6 +469,11 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
         # Stop searching if we otherwise would exceed our search budget.
         if state.num_searches[i] >= search_budget
+            return false
+        end
+
+        # Stop searching if we do not gain anymore.
+        if deviated_BS_throughputs[i,sort_idx] < state.BS_throughputs[i]
             return false
         end
 
@@ -502,12 +513,12 @@ function individual_stability(new_BS_throughputs, old_BS_throughputs,
     deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, history,
     stability_type, use_history)
 
-    # Check that this coalition does not exist in the history
-    if use_history && IntSet(new_coalition_idxs) in history
+    # Check that this coalition does not exist in the history, unless it is singleton
+    if use_history && length(new_coalition_idxs) > 1 && IntSet(new_coalition_idxs) in history
         return false
     end
 
-    # Check that BS i improves
+    # Check that BS i strictly improves
     nash = (new_BS_throughputs[deviating_BS_idx] > old_BS_throughputs[deviating_BS_idx])
     if stability_type == :nash
         return nash

@@ -31,7 +31,22 @@ simulation_params = [
     "geography_size" => (geography_width, geography_width),
     "MS_serving_BS_distance" => MS_serving_BS_distance,
     "aux_network_params" => Dict{ASCIIString, Any}(),
-    "aux_assignment_params" => Dict{ASCIIString, Any}(),
+    "aux_assignment_params" => [
+        "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
+        "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
+
+        "CoalitionFormationClustering_Swap:search_order" => :random,
+        "CoalitionFormationClustering_Swap:stability_type" => :individual,
+        "CoalitionFormationClustering_Swap:search_budget" => 100,
+        "CoalitionFormationClustering_Swap:use_history" => false,
+        "CoalitionFormationClustering_Swap:starting_point" => :singletons,
+
+        "CoalitionFormationClustering_Individual:search_order" => :random,
+        "CoalitionFormationClustering_Individual:stability_type" => :individual,
+        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:use_history" => false,
+        "CoalitionFormationClustering_Individual:starting_point" => :singletons,
+    ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
         "stop_crit" => stop_crit,
