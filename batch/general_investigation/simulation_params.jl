@@ -18,7 +18,7 @@ const MS_serving_BS_distance = geography_width/10.
 
 const SNR_dB = 20
 
-const Ndrops = 10
+const Ndrops = 100
 const Nsim = 5
 
 const stop_crit = 1e-2
@@ -36,7 +36,7 @@ simulation_params = [
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
         "CoalitionFormationClustering_Swap:search_order" => :random,
-        "CoalitionFormationClustering_Swap:stability_type" => :individual,
+        "CoalitionFormationClustering_Swap:stability_type" => :swapee,
         "CoalitionFormationClustering_Swap:search_budget" => 100,
         "CoalitionFormationClustering_Swap:use_history" => true,
         "CoalitionFormationClustering_Swap:starting_point" => :singletons,
