@@ -22,7 +22,7 @@ function CoalitionFormationClustering_Swap(channel, network)
     search_order = aux_params["CoalitionFormationClustering_Swap:search_order"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Swap:stability_type" :swapee
     stability_type = aux_params["CoalitionFormationClustering_Swap:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" false
+    @defaultize_param! aux_params "CoalitionFormationClustering_Swap:use_history" true
     use_history = aux_params["CoalitionFormationClustering_Swap:use_history"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Swap:starting_point" :singletons
     starting_point = aux_params["CoalitionFormationClustering_Swap:starting_point"]
@@ -119,6 +119,7 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
             push!(other_blocks, block)
         end
     end
+    BSs_in_my_old_block = collect(my_old_block.elements)
 
     # Was this BS in a singleton coalition before?
     BS_in_singleton_coalition_before = length(my_old_block) == 0 ? true : false
@@ -218,8 +219,23 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
     for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
+        # Find block that BS i belongs to in this partition
+        my_new_block = Block()
+        for block in new_partitions[sort_idx].blocks
+            if i in block.elements
+                my_new_block = block
+                break
+            end
+        end
+        BSs_in_my_new_block = collect(my_new_block.elements)
+
         # Stop searching if we otherwise would exceed our search budget.
         if state.num_searches[i] >= search_budget
+            return false
+        end
+
+        # Check that this coalition does not exist in the history, unless it is singleton
+        if use_history && length(BSs_in_my_new_block) > 1 && IntSet(BSs_in_my_new_block) in state.history[i]
             return false
         end
 
@@ -231,25 +247,13 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Let's try to deviate
         state.num_searches[i] += 1
 
-        # Find block that BS i belongs to in this partition
-        my_new_block = Block()
-        for block in new_partitions[sort_idx].blocks
-            if i in block.elements
-                my_new_block = block
-                break
-            end
-        end
-
         # println("Wanting to join $my_new_block, resulting in partition $(new_partitions[sort_idx])")
         # if swapees[sort_idx] > 0
         #     println("===> (This means that $(swapees[sort_idx]) is being swapped out.)")
         # end
 
-        # Check if the existing members of this coalition allow BS i to join
-        # (this check includes BS i, unnecessarily)
-        BSs_in_my_new_block = collect(my_new_block.elements)
-        BSs_in_my_old_block = collect(my_old_block.elements)
-        if swap_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, swapees[sort_idx], state.history[i], stability_type, use_history)
+        # Check stability criterion
+        if swap_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, swapees[sort_idx], stability_type)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
             state.BS_throughputs = deviated_BS_throughputs[:,sort_idx]
@@ -267,13 +271,7 @@ end
 # Check stability of a particular deviating BS for the swap
 # coalition formation algorithm.
 function swap_stability(new_BS_throughputs, old_BS_throughputs,
-    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, swapee_idx, history,
-    stability_type, use_history)
-
-    # Check that this coalition does not exist in the history, unless it is singleton
-    if use_history && length(new_coalition_idxs) > 1 && IntSet(new_coalition_idxs) in history
-        return false
-    end
+    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, swapee_BS_idx, stability_type)
 
     # Check that BS i strictly improves
     nash = (new_BS_throughputs[deviating_BS_idx] > old_BS_throughputs[deviating_BS_idx])
@@ -288,11 +286,11 @@ function swap_stability(new_BS_throughputs, old_BS_throughputs,
     end
 
     # Check if the swapee improves
-    if swapee_idx == 0
+    if swapee_BS_idx == 0
         # No swap happened
         swapee = individual
     else
-        swapee = (individual && new_BS_throughputs[swapee_idx] >= old_BS_throughputs[swapee_idx])
+        swapee = (individual && new_BS_throughputs[swapee_BS_idx] >= old_BS_throughputs[swapee_BS_idx])
     end
     if stability_type == :swapee
         return swapee
@@ -325,7 +323,7 @@ function CoalitionFormationClustering_Individual(channel, network)
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
-    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" false
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
     use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :singletons
     starting_point = aux_params["CoalitionFormationClustering_Individual:starting_point"]
@@ -419,6 +417,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
             push!(other_blocks, block)
         end
     end
+    BSs_in_my_old_block = collect(my_old_block.elements)
 
     # Create all possible deviations for BS i
     BS_in_singleton_coalition_before = length(my_old_block) == 0 ? true : false # was this BS not in a singleton coalition before?
@@ -467,8 +466,23 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
     for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
+        # Find block that BS i belongs to in this partition
+        my_new_block = Block()
+        for block in new_partitions[sort_idx].blocks
+            if i in block.elements
+                my_new_block = block
+                break
+            end
+        end
+        BSs_in_my_new_block = collect(my_new_block.elements)
+
         # Stop searching if we otherwise would exceed our search budget.
         if state.num_searches[i] >= search_budget
+            return false
+        end
+
+        # Check that this coalition does not exist in the history, unless it is singleton
+        if use_history && length(BSs_in_my_new_block) > 1 && IntSet(BSs_in_my_new_block) in state.history[i]
             return false
         end
 
@@ -480,20 +494,8 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         # Let's try to deviate
         state.num_searches[i] += 1
 
-        # Find block that BS i belongs to in this partition
-        my_new_block = Block()
-        for block in new_partitions[sort_idx].blocks
-            if i in block.elements
-                my_new_block = block
-                break
-            end
-        end
-
-        # Check if the existing members of this coalition allow BS i to join
-        # (this check includes BS i, unnecessarily)
-        BSs_in_my_new_block = collect(my_new_block.elements)
-        BSs_in_my_old_block = collect(my_old_block.elements)
-        if individual_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, state.history[i], stability_type, use_history)
+        # Check stability criterion
+        if individual_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, stability_type)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
             state.BS_throughputs = deviated_BS_throughputs[:,sort_idx]
@@ -510,13 +512,7 @@ end
 # Check stability of a particular deviating BS for the individual
 # coalition formation algorithm.
 function individual_stability(new_BS_throughputs, old_BS_throughputs,
-    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, history,
-    stability_type, use_history)
-
-    # Check that this coalition does not exist in the history, unless it is singleton
-    if use_history && length(new_coalition_idxs) > 1 && IntSet(new_coalition_idxs) in history
-        return false
-    end
+    deviating_BS_idx, new_coalition_idxs, old_coalition_idxs, stability_type)
 
     # Check that BS i strictly improves
     nash = (new_BS_throughputs[deviating_BS_idx] > old_BS_throughputs[deviating_BS_idx])
