@@ -41,5 +41,6 @@ def deploy(ref='master'):
             run('mkdir -p {}'.format(env.code_dir))
             run('git clone {0} {1}'.format(env.git_url, env.code_dir))
     with cd(env.code_dir):
-        run('git pull')
+        run('git fetch')
         run('git checkout {}'.format(ref))
+        run('git pull')
