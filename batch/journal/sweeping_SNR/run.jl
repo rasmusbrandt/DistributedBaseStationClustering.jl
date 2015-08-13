@@ -8,6 +8,7 @@ include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../plot_params-assignment_methods.jl"))
+include(joinpath(dirname(@__FILE__), "../plot_params-final.jl"))
 
 ##########################################################################
 # Simulation
@@ -26,20 +27,16 @@ raw_precoding_results, raw_assignment_results =
 # Quick-and-dirty plots
 for p in (plot_params_longterm_sumrate, plot_params_longterm_avg_cluster_size, plot_params_longterm_num_sum_throughput_calculations, plot_params_longterm_num_searches)
     p["axes"][:xlabel] = "SNR [dB]"
-    p["plot_name"] *= "-TEMP"
     tmp_processed_assignment_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(tmp_processed_assignment_results, simulation_params, p)
 end
-
 plot_params_instantaneous_sumrate["axes"][:xlabel] = "SNR [dB]"
-plot_params_instantaneous_sumrate["plot_name"] *= "-TEMP"
-processed_precoding_results = postprocess(raw_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
-plot(processed_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
+tmp_processed_precoding_results = postprocess(raw_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
+plot(tmp_processed_precoding_results, simulation_params, plot_params_instantaneous_sumrate)
 
 ##########################################################################
 # Save for publication plots
-processed_assignment_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 save("$(simulation_params["simulation_name"]).jld",
      "simulation_params", clean_simulation_params_for_jld(simulation_params),
-     "processed_assignment_results", processed_assignment_results,
-     "processed_precoding_results", processed_precoding_results)
+     "processed_assignment_results", postprocess(raw_assignment_results, simulation_params, postprocess_params_assignment),
+     "processed_precoding_results", postprocess(raw_precoding_results, simulation_params, postprocess_params_precoding))

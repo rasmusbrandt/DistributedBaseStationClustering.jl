@@ -8,6 +8,7 @@ include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-precoding_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-SNR.jl"))
 include(joinpath(dirname(@__FILE__), "../plot_params-precoding_methods.jl"))
+include(joinpath(dirname(@__FILE__), "../plot_params-final.jl"))
 
 ##########################################################################
 # Simulation
@@ -25,12 +26,11 @@ raw_precoding_results, raw_assignment_results =
 ##########################################################################
 # Plots
 plot_params["axes"][:xlabel] = "SNR [dB]"
-plot_params["plot_name"] *= "-TEMP"
-processed_precoding_results = postprocess(raw_precoding_results, simulation_params, plot_params)
-plot(processed_precoding_results, simulation_params, plot_params)
+tmp_processed_precoding_results = postprocess(raw_precoding_results, simulation_params, plot_params)
+plot(tmp_processed_precoding_results, simulation_params, plot_params)
 
 ##########################################################################
 # Save for publication plots
 save("$(simulation_params["simulation_name"]).jld",
      "simulation_params", clean_simulation_params_for_jld(simulation_params),
-     "processed_precoding_results", processed_precoding_results)
+     "processed_precoding_results", postprocess(raw_precoding_results, simulation_params, postprocess_params_precoding))
