@@ -175,11 +175,16 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
             new_partition = Partition()
             union!(new_partition.blocks, outside_blocks)
 
+            # Add the old block unless it used to be a singleton
+            if !BS_in_singleton_coalition_before
+                push!(new_partition.blocks, my_old_block)
+            end
+
             # Add BS i to and remove BS j from new block
             push!(new_partition.blocks, Block(union(setdiff(swapee_block.elements, IntSet(j)), IntSet(i))))
 
-            # Add BS j to old block
-            push!(new_partition.blocks, Block(union(my_old_block.elements, IntSet(j))))
+            # Add BS j to new singleton
+            push!(new_partition.blocks, Block(IntSet(j)))
 
             n += 1
             new_partitions[n] = new_partition
