@@ -245,7 +245,7 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         end
 
         # Stop searching if we do not gain anymore.
-        if deviated_BS_throughputs[i,sort_idx] < state.BS_throughputs[i]
+        if deviated_BS_throughputs[i,sort_idx] <= state.BS_throughputs[i]
             return false
         end
 
@@ -492,7 +492,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
         end
 
         # Stop searching if we do not gain anymore.
-        if deviated_BS_throughputs[i,sort_idx] < state.BS_throughputs[i]
+        if deviated_BS_throughputs[i,sort_idx] <= state.BS_throughputs[i]
             return false
         end
 
