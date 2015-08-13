@@ -47,7 +47,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :N
     ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
         label=labels_assignment[method])
 end
 ax[:set_ylim]([-1, 60])
@@ -66,7 +66,7 @@ for method in [:CoalitionFormationClustering_Swap]
     ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
         label=labels_assignment[method])
 end
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
@@ -84,7 +84,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :N
     ax[:plot](xvals, yvals_precoding(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
         label=labels_assignment[method])
 end
 ax[:set_ylim]([-2, 100])
