@@ -101,8 +101,6 @@ end
 function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
     search_budget, stability_type, use_history, channel, network, cell_assignment)
 
-    # println("BS $i is looking to deviate.")
-
     # First check that we have not exceeded our search budget
     if state.num_searches[i] >= search_budget
         return false
@@ -214,13 +212,6 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         state.num_sum_throughput_calculations += 1
     end
 
-    # println("$num_new_partitions number of possible new partitions:")
-    # for partition in new_partitions
-    #     println(partition)
-    # end
-    # println("With associated utilities")
-    # println(deviated_BS_throughputs)
-
     # Check deviations, trying to join the coalitions in the order that
     # benefits BS i the most.
     for sort_idx in sortperm(squeeze(deviated_BS_throughputs[i,:], 1), rev=true)
@@ -252,11 +243,6 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
         # Let's try to deviate
         state.num_searches[i] += 1
 
-        # println("Wanting to join $my_new_block, resulting in partition $(new_partitions[sort_idx])")
-        # if swapees[sort_idx] > 0
-        #     println("===> (This means that $(swapees[sort_idx]) is being swapped out.)")
-        # end
-
         # Check stability criterion
         if swap_stability(deviated_BS_throughputs[:,sort_idx], state.BS_throughputs, i, BSs_in_my_new_block, BSs_in_my_old_block, swapees[sort_idx], stability_type)
             # Let BS i join this coalition
@@ -266,7 +252,6 @@ function deviate!(state::CoalitionFormationClustering_SwapState, i, I, K,
             # Add coalition to history
             push!(state.history[i], IntSet(BSs_in_my_new_block))
 
-            # println("Join accepted")
             return true
         end
     end
