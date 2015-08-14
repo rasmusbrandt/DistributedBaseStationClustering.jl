@@ -3,4 +3,4 @@
 *.eps
 *.mem
 *.pyc
-support/.ipynb_checkpoints/
+*.ipynb_checkpoints/
