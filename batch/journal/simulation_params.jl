@@ -18,7 +18,7 @@ const MS_serving_BS_distance = 150. # geography_width/10. = 161.1854897735313
 
 const SNR_dB = 20
 
-const Ndrops = 100
+const Ndrops = 10
 const Nsim = 10
 
 const stop_crit = 1e-2
