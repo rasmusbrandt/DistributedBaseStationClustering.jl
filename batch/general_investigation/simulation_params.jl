@@ -35,13 +35,13 @@ simulation_params = [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
-        "CoalitionFormationClustering_Swap:search_order" => :random,
+        "CoalitionFormationClustering_Swap:search_order" => :lexicographic,
         "CoalitionFormationClustering_Swap:stability_type" => :individual,
         "CoalitionFormationClustering_Swap:search_budget" => 100,
         "CoalitionFormationClustering_Swap:use_history" => true,
         "CoalitionFormationClustering_Swap:starting_point" => :singletons,
 
-        "CoalitionFormationClustering_Individual:search_order" => :random,
+        "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
         "CoalitionFormationClustering_Individual:search_budget" => 100,
         "CoalitionFormationClustering_Individual:use_history" => true,
