@@ -118,7 +118,7 @@ function Chen2014_kmeans(channel, network)
     partition = Partition(partition_matrix)
     throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
-    Lumberjack.info("Chen2014_kMeans finished.",
+    Lumberjack.info("Chen2014_kmeans finished.",
         { :sum_throughput => sum(throughputs),
           :a => a }
     )

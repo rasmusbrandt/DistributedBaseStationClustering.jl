@@ -9,7 +9,7 @@ do
 done
 
 echo "Merging..."
-./merge.jl *.jld
+./merge.jl num_coherence_symbols-seed*.jld
 
 echo "Plotting..."
 ./plot.jl

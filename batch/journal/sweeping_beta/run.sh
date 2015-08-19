@@ -9,7 +9,7 @@ do
 done
 
 echo "Merging..."
-./merge.jl *.jld
+./merge.jl beta-seed*.jld
 
 echo "Plotting..."
 ./plot.jl
