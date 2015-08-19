@@ -44,11 +44,24 @@ fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :NoClustering, :GrandCoalitionClustering]
-    ax[:plot](xvals, yvals_assignment(string(method), plot_val),
-        color=colours_assignment[method],
-        linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-        label=labels_assignment[method])
+    if method == :CoalitionFormationClustering_Swap
+        ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,2],
+            color=colours_assignment[method],
+            linestyle="-",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = \\infty\$)"))
+        ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle="--",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+    else
+        ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle=linestyles_assignment[method],
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=labels_assignment[method])
+    end
 end
 ax[:set_ylim]([-1, 60])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
@@ -63,11 +76,24 @@ fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 for method in [:CoalitionFormationClustering_Swap]
-    ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val),
-        color=colours_assignment[method],
-        linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-        label=labels_assignment[method])
+    if method == :CoalitionFormationClustering_Swap
+        ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,2],
+            color=colours_assignment[method],
+            linestyle="-",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = \\infty\$)"))
+        ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle="--",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+    else
+        ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle=linestyles_assignment[method],
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=labels_assignment[method])
+    end
 end
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel](L"Average number of searches $\eta_i$")
@@ -81,11 +107,24 @@ fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :NoClustering, :GrandCoalitionClustering]
-    ax[:plot](xvals, yvals_precoding(string(method), plot_val),
-        color=colours_assignment[method],
-        linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-        label=labels_assignment[method])
+    if method == :CoalitionFormationClustering_Swap
+        ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,2],
+            color=colours_assignment[method],
+            linestyle="-",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = \\infty\$)"))
+        ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle="--",
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+    else
+        ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
+            color=colours_assignment[method],
+            linestyle=linestyles_assignment[method],
+            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+            label=labels_assignment[method])
+    end
 end
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
