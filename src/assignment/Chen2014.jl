@@ -10,10 +10,6 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
-    # Consistency check
-    if I != K
-        Lumberjack.error("Chen2014_LinearObj_ExhaustiveSearch can only handle I = K scenarios.")
-    end
     if I >= 12
         Lumberjack.warn("Chen2014_LinearObj_ExhaustiveSearch will be slow since I = $I.")
     end
@@ -79,17 +75,17 @@ function Chen2014_kmeans(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
-    # Consistency check
-    if I != K
-        Lumberjack.error("Chen2014_kMeans can only handle I = K scenarios.")
-    end
-
-    # Get M and N
+    # Get symmetric network parameters
     require_equal_no_BS_antennas(network)
     require_equal_no_MS_antennas(network)
+    require_equal_no_streams(network)
+    temp_cell_assignment = get_assignment(network)
+    require_equal_no_MSs_per_cell(temp_cell_assignment)
     M = get_no_BS_antennas(network)[1]
     N = get_no_MS_antennas(network)[1]
-    Lmax = M + N - 1
+    Kc = int(K/I)
+    d = get_no_streams(network)[1]
+    Lmax = (M + N - d)/(Kc*d)
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -132,7 +128,6 @@ function Chen2014_kmeans(channel, network)
     set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
-    temp_cell_assignment = get_assignment(network)
     network.assignment = Assignment(network.assignment.cell_assignment, cluster_assignment_matrix(network, partition))
 
     # Return results
@@ -152,19 +147,19 @@ function Chen2014_W_matrix(channel, network)
 
     W = zeros(Float64, I, I)
     for i = 1:I; for j = 1:I
-        if i == j
-            continue
+        i == j && continue
+
+        for k in served_MS_ids(i, assignment)
+            desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]*channel.large_scale_fading_factor[k,j]^2*Ps[j]
+            int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[k,j]^2*Ps[j] + channel.large_scale_fading_factor[k,i]^2*Ps[i]
+            W[i,j] += log2(1 + desired_power/int_noise_power)
         end
 
-        k = collect(served_MS_ids(i, assignment))[1]
-        desired_power = channel.large_scale_fading_factor[k,i]^2*Ps[i]*channel.large_scale_fading_factor[k,j]^2*Ps[j]
-        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[k,j]^2*Ps[j] + channel.large_scale_fading_factor[k,i]^2*Ps[i]
-        W[i,j] = log2(1 + desired_power/int_noise_power)
-
-        l = collect(served_MS_ids(j, assignment))[1]
-        desired_power = channel.large_scale_fading_factor[l,j]^2*Ps[j]*channel.large_scale_fading_factor[l,i]^2*Ps[i]
-        int_noise_power = sigma2s[k] + channel.large_scale_fading_factor[l,i]^2*Ps[i] + channel.large_scale_fading_factor[l,j]^2*Ps[j]
-        W[i,j] += log2(1 + desired_power/int_noise_power)
+        for l in served_MS_ids(j, assignment)
+            desired_power = channel.large_scale_fading_factor[l,j]^2*Ps[j]*channel.large_scale_fading_factor[l,i]^2*Ps[i]
+            int_noise_power = sigma2s[l] + channel.large_scale_fading_factor[l,i]^2*Ps[i] + channel.large_scale_fading_factor[l,j]^2*Ps[j]
+            W[i,j] += log2(1 + desired_power/int_noise_power)
+        end
     end; end
 
     return W
