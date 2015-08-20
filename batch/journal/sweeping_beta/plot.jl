@@ -55,3 +55,28 @@ ax[:set_xlabel](L"Frame structure parameter $\beta$")
 ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
 show_legend!(ax, "lower center")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
+
+##########################################################################
+# longterm-sumrate_split
+plot_name = "longterm-sumrate_split"
+fig = PyPlot.figure()
+ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
+
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant]
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma"),
+        color=colours_assignment[method],
+        linestyle="-",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+        label=labels_assignment[method])
+end
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant]
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_cluster_sdma"),
+        color=colours_assignment[method],
+        linestyle="--",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15)
+end
+ax[:set_ylim]([-1, 40])
+ax[:set_xlabel](L"Frame structure parameter $\beta$")
+ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
+show_legend!(ax, "lower center")
+fig[:savefig]("$(sim_name)_$(plot_name).eps")

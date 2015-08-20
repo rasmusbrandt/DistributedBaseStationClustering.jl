@@ -41,32 +41,44 @@ postprocess_params_assignment = [
     "methods" => [
         "BranchAndBoundClustering" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
 
         "CoalitionFormationClustering_AttachOrSupplant" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
             ("num_searches",),
         ],
 
         "Chen2014_kmeans" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
 
         "GrandCoalitionClustering" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
 
         "RandomClustering" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
 
         "NoClustering" => [
             ("throughputs",),
+            ("throughputs_cluster_sdma",),
+            ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
     ]
