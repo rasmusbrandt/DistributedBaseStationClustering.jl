@@ -156,7 +156,7 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         Phi_network_sdma_partial_naive  = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster instantaneous CSI-R; intracluster CSI-R ignored
         Phi_network_sdma_partial_robust = complex(sigma2s[k]*eye(channel.Ns[k])) # intercluster instantaneous CSI-R; intracluster statistical CSI-R
 
-        # Intercluster CSI-R
+        # Intracluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             F_cluster_sdma = channel.H[k,j]*state.V_cluster_sdma[l]
             FFh_cluster_sdma = F_cluster_sdma*F_cluster_sdma'
@@ -169,7 +169,7 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
             Phi_network_sdma_partial_robust += FFh_network_sdma
         end; end
 
-        # Intracluster CSI-R
+        # Intercluster CSI-R
         for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
             F_network_sdma = channel.H[k,j]*state.V_network_sdma[l]
             FFh_network_sdma = F_network_sdma*F_network_sdma'

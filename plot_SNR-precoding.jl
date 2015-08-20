@@ -48,23 +48,35 @@ plot_params = [
 
     "methods" => [
         "RobustIntraclusterWMMSE" => [
-            ("weighted_logdet_rates_full", [ :color => "m", :linestyle => "-", :label => "RobustIntraclusterWMMSE (full CSI)" ]),
-            ("weighted_logdet_rates_partial", [ :color => "m", :linestyle => "--", :label => "RobustIntraclusterWMMSE (partial CSI)" ]),
+            ("weighted_logdet_rates_full", [ :color => "m", :linestyle => "-", :label => "RobustIntraclusterWMMSE (full CSI, sum)" ]),
+            ("weighted_logdet_rates_partial", [ :color => "m", :linestyle => "-", :label => "RobustIntraclusterWMMSE (partial CSI, sum)" ]),
+            ("weighted_logdet_rates_cluster_sdma_full", [ :color => "m", :linestyle => ":", :label => "RobustIntraclusterWMMSE (full CSI, cluster)" ]),
+            ("weighted_logdet_rates_network_sdma_full", [ :color => "m", :linestyle => "--", :label => "RobustIntraclusterWMMSE (full CSI, network)" ]),
+            ("weighted_logdet_rates_network_sdma_partial", [ :color => "m", :linestyle => "--", :label => "RobustIntraclusterWMMSE (partial CSI, network)" ]),
         ],
 
         "NaiveIntraclusterWMMSE" => [
-            ("weighted_logdet_rates_full", [ :color => "c", :linestyle => "-", :label => "NaiveIntraclusterWMMSE (full CSI)" ]),
-            ("weighted_logdet_rates_partial", [ :color => "c", :linestyle => "--", :label => "NaiveIntraclusterWMMSE (partial CSI)" ]),
+            ("weighted_logdet_rates_full", [ :color => "c", :linestyle => "-", :label => "NaiveIntraclusterWMMSE (full CSI, sum)" ]),
+            ("weighted_logdet_rates_partial", [ :color => "c", :linestyle => "-", :label => "NaiveIntraclusterWMMSE (partial CSI, sum)" ]),
+            ("weighted_logdet_rates_cluster_sdma_full", [ :color => "c", :linestyle => ":", :label => "NaiveIntraclusterWMMSE (full CSI, cluster)" ]),
+            ("weighted_logdet_rates_network_sdma_full", [ :color => "c", :linestyle => "--", :label => "NaiveIntraclusterWMMSE (full CSI, network)" ]),
+            ("weighted_logdet_rates_network_sdma_partial", [ :color => "c", :linestyle => "--", :label => "NaiveIntraclusterWMMSE (partial CSI, network)" ]),
         ],
 
         "RobustChen2014_MaxSINR" => [
-            ("weighted_logdet_rates_full", [ :color => "g", :linestyle => "-", :label => "RobustChen2014_MaxSINR (full CSI)" ]),
-            ("weighted_logdet_rates_partial", [ :color => "g", :linestyle => "--", :label => "RobustChen2014_MaxSINR (partial CSI)" ]),
+            ("weighted_logdet_rates_full", [ :color => "g", :linestyle => "-", :label => "RobustChen2014_MaxSINR (full CSI, sum)" ]),
+            ("weighted_logdet_rates_partial", [ :color => "g", :linestyle => "-", :label => "RobustChen2014_MaxSINR (partial CSI, sum)" ]),
+            ("weighted_logdet_rates_cluster_sdma_full", [ :color => "g", :linestyle => ":", :label => "RobustChen2014_MaxSINR (full CSI, cluster)" ]),
+            ("weighted_logdet_rates_network_sdma_full", [ :color => "g", :linestyle => "--", :label => "RobustChen2014_MaxSINR (full CSI, network)" ]),
+            ("weighted_logdet_rates_network_sdma_partial", [ :color => "g", :linestyle => "--", :label => "RobustChen2014_MaxSINR (partial CSI, network)" ]),
         ],
 
         "NaiveChen2014_MaxSINR" => [
-            ("weighted_logdet_rates_full", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (full CSI)" ]),
-            ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (partial CSI)" ]),
+            ("weighted_logdet_rates_full", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (full CSI, sum)" ]),
+            ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (partial CSI, sum)" ]),
+            ("weighted_logdet_rates_cluster_sdma_full", [ :color => "y", :linestyle => ":", :label => "NaiveChen2014_MaxSINR (full CSI, cluster)" ]),
+            ("weighted_logdet_rates_network_sdma_full", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (full CSI, network)" ]),
+            ("weighted_logdet_rates_network_sdma_partial", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (partial CSI, network)" ]),
         ],
     ]
 ]
