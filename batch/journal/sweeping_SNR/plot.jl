@@ -54,7 +54,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :N
             color=colours_assignment[method],
             linestyle="--",
             marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 5\$)"))
     else
         ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
             color=colours_assignment[method],
@@ -86,7 +86,7 @@ for method in [:CoalitionFormationClustering_Swap]
             color=colours_assignment[method],
             linestyle="--",
             marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 5\$)"))
     else
         ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,1],
             color=colours_assignment[method],
@@ -117,7 +117,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :C
             color=colours_assignment[method],
             linestyle="--",
             marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-            label=latexstring("$(labels_assignment[method]) (\$b_i = 10\$)"))
+            label=latexstring("$(labels_assignment[method]) (\$b_i = 5\$)"))
     else
         ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
             color=colours_assignment[method],
