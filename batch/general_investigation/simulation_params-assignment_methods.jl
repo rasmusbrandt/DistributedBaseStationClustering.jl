@@ -10,7 +10,7 @@ simulation_params["assignment_methods"] = [
 
     # Chen2014_LinearObj_ExhaustiveSearch,
     Chen2014_kmeans,
-    # Peters2012_Heuristic,
+    Peters2012_Heuristic,
 
     GrandCoalitionClustering,
     RandomClustering,

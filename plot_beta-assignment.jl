@@ -42,7 +42,7 @@ plot_params_instantaneous_sumrate = [
 
     "legend" => [
         :loc => "best",
-        :fontsize => 10,
+        :fontsize => 6,
     ],
 
     "methods" => [
@@ -112,7 +112,7 @@ plot_params_longterm_sumrate = [
 
     "legend" => [
         :loc => "best",
-        :fontsize => 10,
+        :fontsize => 6,
     ],
 
     "methods" => [

@@ -8,7 +8,12 @@ function Peters2012_Heuristic(channel, network)
     I = get_no_BSs(network); K = get_no_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
+
     aux_params = get_aux_assignment_params(network)
+    beta_network_sdma = get_aux_network_param(network, "beta_network_sdma")
+    beta_cluster_sdma = 1 - beta_network_sdma
+    num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")
+    num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
 
     # Ensure that the network is symmetric (needed for DoF calculation)
     require_equal_no_BS_antennas(network); M = get_no_BS_antennas(network)[1]
@@ -18,12 +23,13 @@ function Peters2012_Heuristic(channel, network)
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
     temp_cell_assignment = get_assignment(network)
+    require_equal_no_MSs_per_cell(temp_cell_assignment)
+    Kc = int(K/I)
 
     # Find DoF optimal number of partitions P
     DoFo = zeros(Float64, I) # d-tilde in paper
     for L = 1:I # cluster size
-        tmp_block = Block(IntSet(1:L)) # pseudo-block for overhead pre-log factor calc.
-        DoFo[L] = orthogonal_prelog_factor(network, tmp_block)*floor((N + M)*L/(L+1))
+        DoFo[L] = symmetric_prelog_cluster_sdma_incl_IA_feasibility(L, num_symbols_cluster_sdma, I, M, Kc, N, d)
     end
     _, idx = findmax(DoFo)
     P = iceil(I/(1:I)[idx]) # number of partitions
@@ -37,13 +43,15 @@ function Peters2012_Heuristic(channel, network)
         num_iters += 1
 
         # Build clustering metric
-        rate_approx = zeros(Float64, I, P) # already clustered BSs will have zero metric
+        rate_approx = fill(-Inf, (I, P)) # already clustered BSs will have -Inf metric ...
         for i in unclustered_BSs
+            rate_approx[i,:] = 0. # ... which is reset here for unclustered BSs
+
             served = served_MS_ids(i, temp_cell_assignment)
             Nserved = length(served)
             for p in 1:P
-                # pseudo-block for overhead pre-log factor calc.
-                tmp_block = Block(union(clusters[p], IntSet(i)))
+                L = length(clusters[p]) + 1
+                prelog = symmetric_prelog_cluster_sdma_incl_IA_feasibility(L, num_symbols_cluster_sdma, I, M, Kc, N, d)
 
                 # Peters only supports the IC. We make the obvious extension
                 # to the IBC here however.
@@ -52,7 +60,7 @@ function Peters2012_Heuristic(channel, network)
                     # This is contrary to Peters metric, which is the Frobenius norm of the
                     # instantaneous channel. This modified metric makes sense in our
                     # clustering framework however.
-                    rate_approx[i,p] += orthogonal_prelog_factor(network, tmp_block)*d*log2(1 + (channel.large_scale_fading_factor[k,i]^2)*(Ps[i]/Nserved)/sigma2s[k])
+                    rate_approx[i,p] += prelog*d*log2(1 + (channel.large_scale_fading_factor[k,i]^2)*(Ps[i]/Nserved)/sigma2s[k])
                 end
             end
         end
@@ -84,8 +92,8 @@ function Peters2012_Heuristic(channel, network)
     )
 
     # Store prelogs for precoding
-    set_aux_network_param!(network, best_prelogs[1], "prelogs_cluster_sdma")
-    set_aux_network_param!(network, best_prelogs[2], "prelogs_network_sdma")
+    set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")
+    set_aux_network_param!(network, prelogs[2], "prelogs_network_sdma")
 
     # Store cluster assignment together with existing cell assignment
     network.assignment = Assignment(temp_cell_assignment.cell_assignment, cluster_assignment_matrix(network, partition))
@@ -100,4 +108,12 @@ function Peters2012_Heuristic(channel, network)
     results["avg_cluster_size"] = avg_cluster_size(a)
     results["num_iters"] = num_iters
     return results
+end
+
+function symmetric_prelog_cluster_sdma_incl_IA_feasibility(L, num_symbols_cluster_sdma, I, M, Kc, N, d)
+    if L*Kc*d > M + N - d
+        return 0.
+    else
+        return symmetric_prelog_cluster_sdma(L, 1, num_symbols_cluster_sdma, I, M, Kc, N, d)
+    end
 end

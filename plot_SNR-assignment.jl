@@ -140,7 +140,6 @@ plot_params_longterm_sumrate = [
             ("throughputs", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
-
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("throughputs", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
@@ -152,7 +151,6 @@ plot_params_longterm_sumrate = [
         "Peters2012_Heuristic" => [
             ("throughputs", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
-
 
         "GrandCoalitionClustering" => [
             ("throughputs", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
@@ -213,11 +211,9 @@ plot_params_longterm_num_sum_throughput_calculations = [
             ("num_sum_throughput_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
-
         "GrandCoalitionClustering" => [
             ("num_sum_throughput_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
-
 
         "RandomClustering" => [
             ("num_sum_throughput_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
