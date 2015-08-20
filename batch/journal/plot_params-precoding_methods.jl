@@ -37,15 +37,5 @@ plot_params = [
             ("weighted_logdet_rates_full", [ :color => "y", :linestyle => "-", :label => "NaiveChen2014_MaxSINR (full CSI)" ]),
             ("weighted_logdet_rates_partial", [ :color => "y", :linestyle => "--", :label => "NaiveChen2014_MaxSINR (partial CSI)" ]),
         ],
-
-        "Shi2011_WMMSE" => [
-            ("weighted_logdet_rates", [ :color => "b", :linestyle => "-", :label => "WMMSE (full CSI)" ]),
-        ],
-
-        "Eigenprecoding" => [
-            ("intercell_tdma_weighted_logdet_rates", [ :color => "k", :linestyle => "-", :label => "TDMA" ]),
-            ("intracell_tdma_weighted_logdet_rates", [ :color => "k", :linestyle => "--",  :label => "Intracell TDMA" ]),
-            ("uncoord_weighted_logdet_rates", [ :color => "k", :linestyle => ":", :label => "Uncoord. transm." ]),
-        ],
     ]
 ]
