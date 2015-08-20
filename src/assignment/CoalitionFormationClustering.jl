@@ -71,7 +71,7 @@ function CoalitionFormationClustering_Common(channel, network; swap_allowed::Boo
                 stability_type, use_history, channel, network, temp_cell_assignment)
         end
     end
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, state.partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering($(swap_allowed)) finished.",
         { :sum_throughput => sum(throughputs),
@@ -89,6 +89,8 @@ function CoalitionFormationClustering_Common(channel, network; swap_allowed::Boo
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

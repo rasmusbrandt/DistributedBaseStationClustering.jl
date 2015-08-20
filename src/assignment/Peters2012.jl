@@ -75,7 +75,7 @@ function Peters2012_Heuristic(channel, network)
     end
 
     # Get result
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
     objective = sum(throughputs)
     Lumberjack.info("Peters2010_Heuristic finished.",
@@ -93,6 +93,8 @@ function Peters2012_Heuristic(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

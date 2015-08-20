@@ -45,7 +45,7 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
             end
         end
     end
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, best_partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
         { :sum_throughput => sum(throughputs),
@@ -63,6 +63,8 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)
@@ -116,7 +118,7 @@ function Chen2014_kmeans(channel, network)
 
     # Get final throughputs
     partition = Partition(partition_matrix)
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
     Lumberjack.info("Chen2014_kmeans finished.",
         { :sum_throughput => sum(throughputs),
@@ -133,6 +135,8 @@ function Chen2014_kmeans(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

@@ -120,7 +120,7 @@ function BranchAndBoundClustering(channel, network)
 
     # Calculate final prelogs
     final_partition = Partition(incumbent_a)
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, final_partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, final_partition)
 
     # Verify that our local throughput calculation makes sens
     sum_throughput = sum(throughputs)
@@ -150,6 +150,8 @@ function BranchAndBoundClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = incumbent_a
     results["num_clusters"] = 1 + maximum(incumbent_a)
     results["avg_cluster_size"] = avg_cluster_size(incumbent_a)

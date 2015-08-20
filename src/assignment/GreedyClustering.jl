@@ -90,7 +90,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
         end
     end
     partition = Partition(partition_matrix)
-    throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition_matrix)
     objective = sum(throughputs)
     Lumberjack.info("GreedyClustering finished.",
@@ -108,6 +108,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

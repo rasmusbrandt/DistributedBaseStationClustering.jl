@@ -117,47 +117,58 @@ plot_params_longterm_sumrate = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("throughputs", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("throughputs_cluster_sdma", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("throughputs_network_sdma", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("throughputs", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("throughputs_cluster_sdma", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("throughputs_network_sdma", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
         "CoalitionFormationClustering_AttachOrSupplant" => [
-            ("throughputs", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant" ]),
+            ("throughputs_cluster_sdma", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant" ]),
+            ("throughputs_network_sdma", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant" ]),
         ],
 
         "GreedyClustering_Single" => [
-            ("throughputs", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("throughputs_cluster_sdma", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("throughputs_cluster_sdma", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("throughputs", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("throughputs_cluster_sdma", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("throughputs_network_sdma", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("throughputs", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("throughputs_cluster_sdma", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("throughputs_network_sdma", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
 
         "Chen2014_kmeans" => [
-            ("throughputs", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+            ("throughputs_cluster_sdma", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+            ("throughputs_network_sdma", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
         ],
 
         "Peters2012_Heuristic" => [
-            ("throughputs", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("throughputs_cluster_sdma", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("throughputs_network_sdma", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
 
         "GrandCoalitionClustering" => [
-            ("throughputs", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("throughputs_cluster_sdma", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("throughputs_network_sdma", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "RandomClustering" => [
-            ("throughputs", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("throughputs_cluster_sdma", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("throughputs_network_sdma", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("throughputs", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("throughputs_cluster_sdma", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("throughputs_network_sdma", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]

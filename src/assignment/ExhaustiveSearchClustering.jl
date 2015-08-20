@@ -19,18 +19,19 @@ function ExhaustiveSearchClustering(channel, network)
 
     # Exhaustive search over all partitions
     num_sum_throughput_calculations = 0
-    best_sum_throughput = 0.; best_throughputs = Array(Float64, K, d_max)
+    best_sum_throughput = 0.; best_throughputs = Array(Float64, K, d_max); local best_throughputs_split
     best_prelogs = (Array(Float64, K), Array(Float64, K)); best_partition = Partition([0:(I-1)])
     for partition in PartitionIterator(I)
         num_sum_throughput_calculations += 1
 
         # Calculate throughputs
-        throughputs, _, _, prelogs = longterm_throughputs(channel, network, partition)
+        throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
 
         objective = sum(throughputs)
         if objective >= best_sum_throughput
             best_sum_throughput = objective
             best_throughputs = throughputs
+            best_throughputs_split = throughputs_split
             best_prelogs = prelogs
             best_partition = partition
         end
@@ -53,6 +54,8 @@ function ExhaustiveSearchClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = best_throughputs
+    results["throughputs_cluster_sdma"] = best_throughputs_split[1]
+    results["throughputs_network_sdma"] = best_throughputs_split[2]
     results["a"] = a
     results["num_clusters"] = 1 + maximum(a)
     results["avg_cluster_size"] = avg_cluster_size(a)

@@ -19,7 +19,7 @@ function RandomClustering(channel, network)
 
     random_partition = Partition([0:(I-1)]) # start with non-cooperative, if the loop below fails to find an IA feasible solution
     random_a = Array(Int, I)
-    prelogs = (Array(Float64, K), Array(Float64, K)); throughputs = zeros(Float64, K, max_d)
+    prelogs = (Array(Float64, K), Array(Float64, K)); throughputs = zeros(Float64, K, max_d); local throughputs_split
     alphas = Array(Float64, K)
 
     # Find a set partition whose utility is not -Inf
@@ -31,7 +31,7 @@ function RandomClustering(channel, network)
         # Get random partition by finding random rgs
         random_a = random_restricted_growth_string(I, local_rng)
         random_partition = Partition(random_a)
-        throughputs, _, _, prelogs = longterm_throughputs(channel, network, Partition(random_a))
+        throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, Partition(random_a))
         num_sum_throughput_calculations += 1
 
         if sum(throughputs) > -Inf
@@ -58,6 +58,8 @@ function RandomClustering(channel, network)
     # Return results
     results = AssignmentResults()
     results["throughputs"] = throughputs
+    results["throughputs_cluster_sdma"] = throughputs_split[1]
+    results["throughputs_network_sdma"] = throughputs_split[2]
     results["alphas"] = alphas
     results["a"] = random_a
     results["num_clusters"] = 1 + maximum(random_a)
