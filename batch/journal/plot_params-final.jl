@@ -2,7 +2,7 @@ raw_idx = 1; mean_idx = 2; var_idx = 3
 
 colours_assignment = [
     :BranchAndBoundClustering => "#e7298a",
-    :CoalitionFormationClustering_Swap => "#1b9e77",
+    :CoalitionFormationClustering_AttachOrSupplant => "#1b9e77",
     :Chen2014_kmeans => "#7570b3",
     :RandomClustering => "#66a61e",
     :GrandCoalitionClustering => "#e6ab02",
@@ -11,7 +11,7 @@ colours_assignment = [
 
 linestyles_assignment = [
     :BranchAndBoundClustering => "-",
-    :CoalitionFormationClustering_Swap => "-",
+    :CoalitionFormationClustering_AttachOrSupplant => "-",
     :Chen2014_kmeans => "-",
     :RandomClustering => "-",
     :GrandCoalitionClustering => "-",
@@ -20,7 +20,7 @@ linestyles_assignment = [
 
 markers_assignment = [
     :BranchAndBoundClustering => "*",
-    :CoalitionFormationClustering_Swap => "o",
+    :CoalitionFormationClustering_AttachOrSupplant => "o",
     :Chen2014_kmeans => "+",
     :RandomClustering => "s",
     :GrandCoalitionClustering => "v",
@@ -29,7 +29,7 @@ markers_assignment = [
 
 labels_assignment = [
     :BranchAndBoundClustering => "Global optimum",
-    :CoalitionFormationClustering_Swap => "Coalition formation",
+    :CoalitionFormationClustering_AttachOrSupplant => "Coalition formation",
     :Chen2014_kmeans => "k-means clustering [x]",
     :RandomClustering => "Random coalitions",
     :GrandCoalitionClustering => "Grand coalition",
@@ -44,7 +44,7 @@ postprocess_params_assignment = [
             ("avg_cluster_size",),
         ],
 
-        "CoalitionFormationClustering_Swap" => [
+        "CoalitionFormationClustering_AttachOrSupplant" => [
             ("throughputs",),
             ("avg_cluster_size",),
             ("num_searches",),
@@ -79,7 +79,7 @@ postprocess_params_precoding = [
             ("weighted_logdet_rates_full",),
         ],
 
-        "CoalitionFormationClustering_Swap" => [
+        "CoalitionFormationClustering_AttachOrSupplant" => [
             ("weighted_logdet_rates_full",),
         ],
 

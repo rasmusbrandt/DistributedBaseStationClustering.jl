@@ -19,8 +19,8 @@ initial_simulation_params = [
         # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
-        CoalitionFormationClustering_Group,
-        CoalitionFormationClustering_Individual,
+        CoalitionFormationClustering_AttachOrSupplant,
+        CoalitionFormationClustering_Attach,
 
         GreedyClustering_Single,
         GreedyClustering_Multiple,

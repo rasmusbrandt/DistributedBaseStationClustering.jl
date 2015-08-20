@@ -17,8 +17,7 @@ SRAND_SEED = 927272; start_time = strftime("%Y%m%dT%H%M%S", time())
 # Nash
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "stability_concepts-nash_$(start_time)"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :nash
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:stability_type"] = :nash
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stability_type"] = :nash
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
@@ -42,8 +41,7 @@ plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 # Individual
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "stability_concepts-individual_$(start_time)"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:stability_type"] = :individual
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stability_type"] = :individual
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
@@ -67,8 +65,7 @@ plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 # Swapee
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "stability_concepts-swapee_$(start_time)"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :individual
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:stability_type"] = :swapee
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stability_type"] = :swapee
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
@@ -92,8 +89,7 @@ plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 # Contractual
 srand(SRAND_SEED)
 simulation_params["simulation_name"] = "stability_concepts-contractual_$(start_time)"
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Individual:stability_type"] = :contractual
-simulation_params["aux_assignment_params"]["CoalitionFormationClustering_Swap:stability_type"] = :contractual
+simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stability_type"] = :contractual
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],

@@ -43,8 +43,8 @@ plot_name = "longterm-sumrate"; plot_val = "throughputs"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :NoClustering, :GrandCoalitionClustering]
-    if method == :CoalitionFormationClustering_Swap
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :NoClustering, :GrandCoalitionClustering]
+    if method == :CoalitionFormationClustering_AttachOrSupplant
         ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,2],
             color=colours_assignment[method],
             linestyle="-",
@@ -75,8 +75,8 @@ plot_name = "longterm-num_searches"; plot_val = "num_searches"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:CoalitionFormationClustering_Swap]
-    if method == :CoalitionFormationClustering_Swap
+for method in [:CoalitionFormationClustering_AttachOrSupplant]
+    if method == :CoalitionFormationClustering_AttachOrSupplant
         ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,2],
             color=colours_assignment[method],
             linestyle="-",
@@ -106,8 +106,8 @@ plot_name = "instantaneous-sumrate"; plot_val = "weighted_logdet_rates_full"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :Chen2014_kmeans, :NoClustering, :GrandCoalitionClustering]
-    if method == :CoalitionFormationClustering_Swap
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Chen2014_kmeans, :NoClustering, :GrandCoalitionClustering]
+    if method == :CoalitionFormationClustering_AttachOrSupplant
         ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,2],
             color=colours_assignment[method],
             linestyle="-",

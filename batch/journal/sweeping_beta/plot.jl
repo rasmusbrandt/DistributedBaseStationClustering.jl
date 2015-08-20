@@ -43,7 +43,7 @@ plot_name = "longterm-sumrate"; plot_val = "throughputs"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_Swap, :NoClustering, :GrandCoalitionClustering]
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :NoClustering, :GrandCoalitionClustering]
     ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],

@@ -29,15 +29,9 @@ plot_params_instantaneous_sumrate = [
             ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
-
-        "CoalitionFormationClustering_Group" => [
-            ("weighted_logdet_rates_full", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        "CoalitionFormationClustering_Attach" => [
+            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach" ]),
         ],
-
-        "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
-        ],
-
 
         "GrandCoalitionClustering" => [
             ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
@@ -46,7 +40,6 @@ plot_params_instantaneous_sumrate = [
         "GreedyClustering_Single" => [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
-
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("weighted_logdet_rates_full", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
@@ -59,7 +52,6 @@ plot_params_instantaneous_sumrate = [
         "Peters2012_Heuristic" => [
             ("weighted_logdet_rates_full", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
-
 
         "GreedyClustering_Multiple" => [
             ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
@@ -103,15 +95,9 @@ plot_params_longterm_sumrate = [
             ("throughputs", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
-
-        "CoalitionFormationClustering_Group" => [
-            ("throughputs", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        "CoalitionFormationClustering_Attach" => [
+            ("throughputs", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach" ]),
         ],
-
-        "CoalitionFormationClustering_Individual" => [
-            ("throughputs", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
-        ],
-
 
         "GreedyClustering_Single" => [
             ("throughputs", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
@@ -120,7 +106,6 @@ plot_params_longterm_sumrate = [
         "GreedyClustering_Multiple" => [
             ("throughputs", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
-
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
             ("throughputs", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
@@ -133,7 +118,6 @@ plot_params_longterm_sumrate = [
         "Peters2012_Heuristic" => [
             ("throughputs", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
         ],
-
 
         "GrandCoalitionClustering" => [
             ("throughputs", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
@@ -177,15 +161,9 @@ plot_params_longterm_avg_cluster_size = [
             ("avg_cluster_size", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
-
-        "CoalitionFormationClustering_Group" => [
-            ("avg_cluster_size", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        "CoalitionFormationClustering_Attach" => [
+            ("avg_cluster_size", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach" ]),
         ],
-
-        "CoalitionFormationClustering_Individual" => [
-            ("avg_cluster_size", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
-        ],
-
 
         "GreedyClustering_Single" => [
             ("avg_cluster_size", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
@@ -247,15 +225,9 @@ plot_params_longterm_num_sum_throughput_calculations = [
             ("num_sum_throughput_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
-
-        "CoalitionFormationClustering_Group" => [
-            ("num_sum_throughput_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+        "CoalitionFormationClustering_Attach" => [
+            ("num_sum_throughput_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach" ]),
         ],
-
-        "CoalitionFormationClustering_Individual" => [
-            ("num_sum_throughput_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
-        ],
-
 
         "GreedyClustering_Single" => [
             ("num_sum_throughput_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),

@@ -26,9 +26,8 @@ simulation_params = [
         ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
-        CoalitionFormationClustering_Swap,
-        CoalitionFormationClustering_Individual,
-        CoalitionFormationClustering_Group,
+        CoalitionFormationClustering_AttachOrSupplant,
+        CoalitionFormationClustering_Attach,
 
         GreedyClustering_Single,
         GreedyClustering_Multiple,
@@ -48,20 +47,11 @@ simulation_params = [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
-        "CoalitionFormationClustering_Swap:search_order" => :random,
-        "CoalitionFormationClustering_Swap:stability_type" => :individual,
-        "CoalitionFormationClustering_Swap:search_budget" => 100,
-        "CoalitionFormationClustering_Swap:use_history" => true,
-        "CoalitionFormationClustering_Swap:starting_point" => :singletons,
-
-        "CoalitionFormationClustering_Individual:search_order" => :random,
-        "CoalitionFormationClustering_Individual:stability_type" => :individual,
-        "CoalitionFormationClustering_Individual:search_budget" => 100,
-        "CoalitionFormationClustering_Individual:use_history" => true,
-        "CoalitionFormationClustering_Individual:starting_point" => :singletons,
-
-        "CoalitionFormationClustering_Group:max_num_merging_coalitions" => 3,
-        "CoalitionFormationClustering_Group:search_order" => :greedy,
+        "CoalitionFormationClustering:search_order" => :random,
+        "CoalitionFormationClustering:stability_type" => :individual,
+        "CoalitionFormationClustering:search_budget" => 100,
+        "CoalitionFormationClustering:use_history" => true,
+        "CoalitionFormationClustering:starting_point" => :singletons,
     ],
 ]
 network =
