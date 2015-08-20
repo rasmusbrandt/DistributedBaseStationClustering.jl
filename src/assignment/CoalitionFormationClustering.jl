@@ -73,7 +73,7 @@ function CoalitionFormationClustering_Common(channel, network; swap_allowed::Boo
     end
     throughputs, _, _, prelogs = longterm_throughputs(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
-    Lumberjack.info("CoalitionFormationClustering_AttachOrSupplant finished.",
+    Lumberjack.info("CoalitionFormationClustering($(swap_allowed)) finished.",
         { :sum_throughput => sum(throughputs),
           :num_searches => state.num_searches,
           :a => a }
