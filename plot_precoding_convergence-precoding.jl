@@ -13,7 +13,7 @@ using IAClustering, CoordinatedPrecoding
 # Load data
 #
 # Do this before loading other code, otherwise the JLD module might crash!
-using HDF5, JLD, ArgParse
+using Compat, JLD, ArgParse
 s = ArgParseSettings()
 @add_arg_table s begin
     "file_names"

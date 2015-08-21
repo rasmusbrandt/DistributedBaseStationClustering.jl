@@ -2,7 +2,7 @@
 
 include(joinpath(dirname(@__FILE__), "../../../src/IAClustering.jl"))
 using CoordinatedPrecoding, IAClustering
-using JLD, ArgParse
+using Compat, JLD, ArgParse
 
 include(joinpath(dirname(@__FILE__), "../plot_params-final.jl"))
 

@@ -14,7 +14,7 @@ const BS_density = sqrt(3)/2*design_ISD^2 # BSs per m^2, for hexagonal cells
 const I = 12; const Kc = 2
 const M = 8; const N = 2; const d = 1
 const geography_width = sqrt(I*BS_density)
-const MS_serving_BS_distance = geography_width/10.
+const MS_serving_BS_distance = Nullable(geography_width/10.)
 
 const SNR_dB = 20
 

@@ -9,7 +9,7 @@
 
 include("src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 ##########################################################################
 # General settings
@@ -23,7 +23,7 @@ simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => 150.,
+    "MS_serving_BS_distance" => Nullable(150.),
     "assignment_methods" => [ BranchAndBoundClustering, ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,

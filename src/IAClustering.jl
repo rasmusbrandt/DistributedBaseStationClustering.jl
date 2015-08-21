@@ -8,6 +8,7 @@
 module IAClustering
 
 using CoordinatedPrecoding
+using Compat
 import Lumberjack, Clustering, Polynomials
 
 # Since my covariance matrices are small (2x2, 4x4, etc.), there is no

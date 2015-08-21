@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
 require("../../../src/IAClustering.jl")
-using IAClustering, CoordinatedPrecoding
+using IAClustering, CoordinatedPrecoding, Compat
 require("../plot_params.jl")
 
 ##########################################################################

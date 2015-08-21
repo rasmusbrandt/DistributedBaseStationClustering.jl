@@ -2,7 +2,7 @@
 
 include(joinpath(dirname(@__FILE__), "../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-assignment_methods.jl"))

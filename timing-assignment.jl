@@ -8,7 +8,7 @@
 
 include("src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 ##########################################################################
 # General settings
@@ -21,7 +21,7 @@ simulation_params = [
     "d" => 1,
     "Ntest" => 100,
     "geography_size" => (1500.,1500.),
-    "MS_serving_BS_distance" => 150.,
+    "MS_serving_BS_distance" => Nullable(150.),
     "assignment_methods" => [
         ExhaustiveSearchClustering,
         BranchAndBoundClustering,
