@@ -16,10 +16,10 @@ function BranchAndBoundClustering(channel, network)
     check_Liu2013_symmetry(network)
 
     # Network parameters in symmetric network
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     Kc = int(K/I)
-    M = get_no_BS_antennas(network)[1]; N = get_no_MS_antennas(network)[1]
-    d = get_no_streams(network)[1]
+    M = get_num_BS_antennas(network)[1]; N = get_num_MS_antennas(network)[1]
+    d = get_num_streams(network)[1]
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
 
     aux_params = get_aux_assignment_params(network)

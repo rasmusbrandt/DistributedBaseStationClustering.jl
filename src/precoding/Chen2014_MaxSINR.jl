@@ -25,10 +25,10 @@ RobustChen2014_MaxSINR(channel, network) =
 function Chen2014_MaxSINR(channel, network; network_sdma_robustness::Bool=true)
     assignment = get_assignment(network)
 
-    K = get_no_MSs(network)
+    K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    ds = get_num_streams(network); max_d = maximum(ds)
     alphas = get_user_priorities(network)
     aux_params = get_aux_precoding_params(network)
 

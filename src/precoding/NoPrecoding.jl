@@ -4,8 +4,8 @@
 # Pseudo method that does not perform anything but returning empty results.
 
 function NoPrecoding(channel, network)
-    K = get_no_MSs(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    K = get_num_MSs(network)
+    ds = get_num_streams(network); max_d = maximum(ds)
     aux_params = get_aux_precoding_params(network)
 
     utilities = Array(Float64, K, max_d, aux_params["max_iters"])

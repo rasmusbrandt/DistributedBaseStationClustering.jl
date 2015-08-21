@@ -15,7 +15,7 @@ CoalitionFormationClustering_Attach(channel, network) =
     CoalitionFormationClustering_Common(channel, network, swap_allowed=false)
 
 function CoalitionFormationClustering_Common(channel, network; swap_allowed::Bool=true)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering:search_budget" 100

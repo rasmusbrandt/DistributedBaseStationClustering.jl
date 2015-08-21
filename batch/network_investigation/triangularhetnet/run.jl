@@ -40,7 +40,7 @@ initial_simulation_params = [
         "beta_network_sdma" => 0.8,
     ],
     "aux_assignment_params" => [
-        "max_no_MSs_per_BS" => 1,
+        "max_num_MSs_per_BS" => 1,
     ],
     "aux_precoding_params" => [
         "initial_precoders" => "eigendirection",
@@ -61,7 +61,7 @@ simulation_params = deepcopy(initial_simulation_params)
 network =
     setup_triangularhetnet_network(simulation_params["Ic"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         pico_centre_distance=simulation_params["pico_centre_distance"])
 
 simulation_params["simulation_name"] = ""

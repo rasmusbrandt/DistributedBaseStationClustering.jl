@@ -32,7 +32,7 @@ simulation_params = [
     "MS_serving_BS_distance" => MS_serving_BS_distance,
     "aux_network_params" => Dict{ASCIIString, Any}(),
     "aux_assignment_params" => [
-        "max_no_MSs_per_BS" => 2,
+        "max_num_MSs_per_BS" => 2,
 
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,

@@ -21,7 +21,7 @@ simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stabili
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results, raw_assignment_results =
@@ -45,7 +45,7 @@ simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stabili
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results, raw_assignment_results =
@@ -69,7 +69,7 @@ simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stabili
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results, raw_assignment_results =
@@ -93,7 +93,7 @@ simulation_params["aux_assignment_params"]["CoalitionFormationClustering:stabili
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results, raw_assignment_results =

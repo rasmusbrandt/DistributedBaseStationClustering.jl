@@ -7,7 +7,7 @@
 # pp. 2613-2624, July 2014, doi: 10.1109/TVT.2013.2292897
 
 function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     if I >= 12
@@ -74,19 +74,19 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
 end
 
 function Chen2014_kmeans(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Get symmetric network parameters
-    require_equal_no_BS_antennas(network)
-    require_equal_no_MS_antennas(network)
-    require_equal_no_streams(network)
+    require_equal_num_BS_antennas(network)
+    require_equal_num_MS_antennas(network)
+    require_equal_num_streams(network)
     temp_cell_assignment = get_assignment(network)
-    require_equal_no_MSs_per_cell(temp_cell_assignment)
-    M = get_no_BS_antennas(network)[1]
-    N = get_no_MS_antennas(network)[1]
+    require_equal_num_MSs_per_cell(temp_cell_assignment)
+    M = get_num_BS_antennas(network)[1]
+    N = get_num_MS_antennas(network)[1]
     Kc = int(K/I)
-    d = get_no_streams(network)[1]
+    d = get_num_streams(network)[1]
     Lmax = (M + N - d)/(Kc*d)
 
     # Perform cell selection
@@ -144,7 +144,7 @@ function Chen2014_kmeans(channel, network)
 end
 
 function Chen2014_W_matrix(channel, network)
-    I = get_no_BSs(network)
+    I = get_num_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
     assignment = get_assignment(network)

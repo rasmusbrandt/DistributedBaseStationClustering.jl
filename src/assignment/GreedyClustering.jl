@@ -16,7 +16,7 @@ GreedyClustering_Multiple(channel, network) =
     GreedyClustering(channel, network, merge_multiple=true)
 
 function GreedyClustering(channel, network; merge_multiple::Bool=false)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection

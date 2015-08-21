@@ -8,7 +8,7 @@ type CoalitionFormationClustering_GroupState
 end
 
 function CoalitionFormationClustering_Group(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Group:max_num_merging_coalitions" 3

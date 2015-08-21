@@ -26,7 +26,7 @@ Base.length(p::Partition) = length(p.blocks)
 function Partition(a::Vector; skip_check::Bool=false)
     I = length(a)
     a_max = maximum(a)
-    no_blocks = 1 + a_max
+    num_blocks = 1 + a_max
 
     # Consistency checks
     if !skip_check
@@ -34,7 +34,7 @@ function Partition(a::Vector; skip_check::Bool=false)
     end
 
     # Build blocks and partition
-    blocks = [ Block() for n = 1:no_blocks ]
+    blocks = [ Block() for n = 1:num_blocks ]
     for l = 1:I
         push!(blocks[a[l] + 1], l)
     end
@@ -100,14 +100,14 @@ end
 function logical_matrix(a::Vector)
     I = length(a)
     a_max = maximum(a)
-    no_blocks = 1 + a_max
+    num_blocks = 1 + a_max
 
     # Consistency checks
     all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
 
     # Create matrix iteratively
     A = eye(Int, I, I)
-    for n = 0:(no_blocks-1)
+    for n = 0:(num_blocks-1)
         elements = find(a .== n)
         A[elements, elements] = 1
     end

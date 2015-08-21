@@ -2,7 +2,7 @@
 # Non-cooperative clustering, i.e. all coalitions are singleton.
 
 function NoClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection

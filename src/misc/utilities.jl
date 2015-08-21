@@ -22,10 +22,10 @@ end
 # Returns the spectral efficiencies when SDMA is perfomed orthogonally over
 # clusters and when SDMA is performed over the network.
 function longterm_rates(channel, network, partition)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    ds = get_num_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
 
     rates_cluster_sdma = zeros(Float64, K, max_d); rates_network_sdma = zeros(Float64, K, max_d)
@@ -62,9 +62,9 @@ end
 
 # Returns prelog factors for the two cases.
 function longterm_prelogs(network, partition)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
-    ds = get_no_streams(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
+    Ns = get_num_MS_antennas(network); Ms = get_num_BS_antennas(network)
+    ds = get_num_streams(network)
     assignment = get_assignment(network)
 
     num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")

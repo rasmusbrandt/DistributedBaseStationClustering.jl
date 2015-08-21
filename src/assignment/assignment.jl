@@ -4,7 +4,7 @@
 # the partition logical matrix in partitions.jl, which is an
 # I-by-I matrix.
 function cluster_assignment_matrix(network, partition)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     assignment = get_assignment(network)
 
     A = zeros(Int, K, I)

@@ -53,7 +53,7 @@ simulation_params = deepcopy(initial_simulation_params)
 network =
     setup_indoors_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        num_streams=simulation_params["d"])
 
 simulation_params["simulation_name"] = "small"
 
@@ -79,7 +79,7 @@ simulation_params["I"] = 2*initial_simulation_params["I"]
 network =
     setup_indoors_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        num_streams=simulation_params["d"])
 
 simulation_params["simulation_name"] = "large"
 

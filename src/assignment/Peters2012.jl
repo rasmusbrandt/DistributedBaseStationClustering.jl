@@ -5,7 +5,7 @@
 # Interference Channels", IEEE Trans. WC, vol. 11, no. 2, pp. 592-603, 2012.
 
 function Peters2012_Heuristic(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
 
@@ -16,14 +16,14 @@ function Peters2012_Heuristic(channel, network)
     num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
 
     # Ensure that the network is symmetric (needed for DoF calculation)
-    require_equal_no_BS_antennas(network); M = get_no_BS_antennas(network)[1]
-    require_equal_no_MS_antennas(network); N = get_no_MS_antennas(network)[1]
-    require_equal_no_streams(network); d = get_no_streams(network)[1]
+    require_equal_num_BS_antennas(network); M = get_num_BS_antennas(network)[1]
+    require_equal_num_MS_antennas(network); N = get_num_MS_antennas(network)[1]
+    require_equal_num_streams(network); d = get_num_streams(network)[1]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
     temp_cell_assignment = get_assignment(network)
-    require_equal_no_MSs_per_cell(temp_cell_assignment)
+    require_equal_num_MSs_per_cell(temp_cell_assignment)
     Kc = int(K/I)
 
     # Find DoF optimal number of partitions P

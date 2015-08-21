@@ -5,8 +5,8 @@
 # partition has utility == -Inf, we keep searching. This can happen when IA
 # infeasible clusters have -Inf utility.
 function RandomClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    I = get_num_BSs(network); K = get_num_MSs(network)
+    ds = get_num_streams(network); max_d = maximum(ds)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "RandomClustering:max_iters" 1_000

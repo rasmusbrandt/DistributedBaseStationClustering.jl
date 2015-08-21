@@ -38,9 +38,9 @@ function check_Liu2013_applicability(network)
         # been raised already.
         return true
     else
-        Ns = get_no_MS_antennas(network)
-        Ms = get_no_BS_antennas(network)
-        ds = get_no_streams(network)
+        Ns = get_num_MS_antennas(network)
+        Ms = get_num_BS_antennas(network)
+        ds = get_num_streams(network)
 
         # Can we even use these results?
         # This check is actually slightly more general than necessary, since
@@ -60,10 +60,10 @@ end
 function check_Liu2013_symmetry(network)
     # Only check symmetry if we have not already done so
     if !haskey(network.aux_network_params, "check_Liu2013_symmetry:symmetry")
-        I = get_no_BSs(network)
-        Ns = get_no_MS_antennas(network)
-        Ms = get_no_BS_antennas(network)
-        ds = get_no_streams(network) # we already know that all MSs are served the same number of streams
+        I = get_num_BSs(network)
+        Ns = get_num_MS_antennas(network)
+        Ms = get_num_BS_antennas(network)
+        ds = get_num_streams(network) # we already know that all MSs are served the same number of streams
         assignment = get_assignment(network)
 
         # Number of MSs served by each BS
@@ -109,9 +109,9 @@ end
 function Liu2013_IBC_heterogeneous(network, block)
     Lumberjack.warn("This function is very slow, since it checks all subsets of interfering links. Perhaps a polynomial check, similar to de Kerret for the IC, could be used?")
 
-    I = get_no_BSs(network)
-    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
-    d = get_no_streams(network)[1]
+    I = get_num_BSs(network)
+    Ns = get_num_MS_antennas(network); Ms = get_num_BS_antennas(network)
+    d = get_num_streams(network)[1]
     served = [ served_MS_ids(i, assignment) for i = 1:I ]
     served_length = [ length(served[i]) for i = 1:I ]
 

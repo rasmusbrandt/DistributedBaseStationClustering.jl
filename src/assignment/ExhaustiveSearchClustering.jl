@@ -5,8 +5,8 @@
 # enumerated, and the best (in the utilities.jl throughputs sense) is picked.
 
 function ExhaustiveSearchClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    d_max = maximum(get_no_streams(network))
+    I = get_num_BSs(network); K = get_num_MSs(network)
+    d_max = maximum(get_num_streams(network))
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
