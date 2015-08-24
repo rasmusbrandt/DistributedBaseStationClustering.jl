@@ -53,7 +53,7 @@ end
 ax[:set_ylim]([-1, 40])
 ax[:set_xlabel]("MS speed [km/h]")
 ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
-show_legend!(ax, "lower center")
+show_legend!(ax, "upper right")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
@@ -81,7 +81,7 @@ plot_name = "instantaneous-sumrate"; plot_val = "weighted_logdet_rates_full"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Chen2014_kmeans, :NoClustering, :GrandCoalitionClustering]
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :NoClustering, :GrandCoalitionClustering]
     ax[:plot](xvals, yvals_precoding(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],

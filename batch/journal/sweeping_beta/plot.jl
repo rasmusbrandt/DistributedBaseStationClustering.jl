@@ -53,7 +53,7 @@ end
 ax[:set_ylim]([-1, 40])
 ax[:set_xlabel](L"Frame structure parameter $\beta$")
 ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
-show_legend!(ax, "lower center")
+show_legend!(ax, "upper left")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
@@ -78,5 +78,5 @@ end
 ax[:set_ylim]([-1, 40])
 ax[:set_xlabel](L"Frame structure parameter $\beta$")
 ax[:set_ylabel]("Long-term sum throughput [bits/s/Hz]")
-show_legend!(ax, "lower center")
+show_legend!(ax, "upper left")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
