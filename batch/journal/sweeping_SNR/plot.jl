@@ -2,7 +2,7 @@
 
 include(joinpath(dirname(@__FILE__), "../../../src/IAClustering.jl"))
 using CoordinatedPrecoding, IAClustering
-using JLD, LaTeXStrings
+using Compat, JLD, LaTeXStrings
 
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-assignment_methods.jl"))

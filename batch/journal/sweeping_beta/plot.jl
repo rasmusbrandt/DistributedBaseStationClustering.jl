@@ -2,7 +2,7 @@
 
 include(joinpath(dirname(@__FILE__), "../../../src/IAClustering.jl"))
 using CoordinatedPrecoding, IAClustering
-using JLD, LaTeXStrings
+using Compat, JLD, LaTeXStrings
 
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-assignment_methods.jl"))
@@ -43,7 +43,7 @@ plot_name = "longterm-sumrate"; plot_val = "throughputs"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :NoClustering, :GrandCoalitionClustering]
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :GrandCoalitionClustering]
     ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
@@ -62,7 +62,7 @@ plot_name = "longterm-sumrate_split"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
 
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant]
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
     ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma"),
         color=colours_assignment[method],
         linestyle="-",
