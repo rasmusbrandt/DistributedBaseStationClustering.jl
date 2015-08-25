@@ -12,6 +12,7 @@ colours = [
     :pink => "#f781bf",
 ]
 
+# ASSIGNMENT
 colours_assignment = [
     :BranchAndBoundClustering => colours[:red],
     :CoalitionFormationClustering_AttachOrSupplant => colours[:blue],
@@ -160,6 +161,60 @@ postprocess_params_precoding = [
 
         "NoClustering" => [
             ("weighted_logdet_rates_full",),
+        ],
+    ]
+]
+
+# PRECODING
+colours_precoding = [
+    :RobustIntraclusterWMMSE => colours[:blue],
+    :NaiveIntraclusterWMMSE => colours[:green],
+    :RobustChen2014_MaxSINR => colours[:orange],
+    :NaiveChen2014_MaxSINR => colours[:brown],
+]
+
+linestyles_precoding = [
+    :RobustIntraclusterWMMSE => "-",
+    :NaiveIntraclusterWMMSE => "-",
+    :RobustChen2014_MaxSINR => "-",
+    :NaiveChen2014_MaxSINR => "-",
+]
+
+markers_precoding = [
+    :RobustIntraclusterWMMSE => "*",
+    :NaiveIntraclusterWMMSE => "o",
+    :RobustChen2014_MaxSINR => "v",
+    :NaiveChen2014_MaxSINR => "^",
+]
+
+labels_precoding = [
+    :RobustIntraclusterWMMSE => "Robust Intracluster WMMSE",
+    :NaiveIntraclusterWMMSE => "Naive Intracluster WMMSE",
+    :RobustChen2014_MaxSINR => "Robust MaxSINR [x]",
+    :NaiveChen2014_MaxSINR => "Naive MaxSINR [y]",
+]
+
+postprocess_params_precoding2 = [
+    "objective" => :sumrate,
+    "methods" => [
+        "RobustIntraclusterWMMSE" => [
+            ("weighted_logdet_rates_full",),
+            ("weighted_logdet_rates_partial",)
+        ],
+
+        "NaiveIntraclusterWMMSE" => [
+            ("weighted_logdet_rates_full",),
+            ("weighted_logdet_rates_partial",)
+        ],
+
+        "RobustChen2014_MaxSINR" => [
+            ("weighted_logdet_rates_full",),
+            ("weighted_logdet_rates_partial",)
+        ],
+
+        "NaiveChen2014_MaxSINR" => [
+            ("weighted_logdet_rates_full",),
+            ("weighted_logdet_rates_partial",)
         ],
     ]
 ]
