@@ -17,11 +17,11 @@ srand(973472333)
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 1,
-    "Ntest" => 100,
+    "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
+    "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => Nullable(150.),
+    "Ntest" => 100,
     "assignment_methods" => [
         ExhaustiveSearchClustering,
         BranchAndBoundClustering,

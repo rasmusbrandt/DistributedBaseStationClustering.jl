@@ -24,7 +24,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "precoding_convergence-assignment_$(start_time)",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => Nullable(150.),
