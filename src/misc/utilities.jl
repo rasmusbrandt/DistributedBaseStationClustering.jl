@@ -7,8 +7,8 @@
 # non-negative depending on the settings. Finally, the throughputs are the
 # spectral efficiences when both IA feasibility and the pre-log factor due to
 # overhead is accounted for.
-function longterm_throughputs(channel, network, partition)
-    rates_cluster_sdma, rates_network_sdma = longterm_rates(channel, network, partition)
+function longterm_throughputs(channel, network, partition; ignore_IA_feasibility::Bool=false)
+    rates_cluster_sdma, rates_network_sdma = longterm_rates(channel, network, partition, ignore_IA_feasibility=ignore_IA_feasibility)
     prelogs_cluster_sdma, prelogs_network_sdma = longterm_prelogs(network, partition)
 
     throughputs_cluster_sdma = Diagonal(prelogs_cluster_sdma)*rates_cluster_sdma
@@ -21,7 +21,7 @@ end
 
 # Returns the spectral efficiencies when SDMA is perfomed orthogonally over
 # clusters and when SDMA is performed over the network.
-function longterm_rates(channel, network, partition)
+function longterm_rates(channel, network, partition; ignore_IA_feasibility::Bool=false)
     I = get_num_BSs(network); K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
@@ -34,7 +34,7 @@ function longterm_rates(channel, network, partition)
         # network SDMA will be feasible, and the rates are zero.
         # Note that we _do not_ turn off the BSs that are in IA infeasible
         # clusters; they are thus radiating interference, but no usefuls signal.
-        if is_IA_feasible(network, block)
+        if is_IA_feasible(network, block) || ignore_IA_feasibility
             intercluster_interferers = setdiff(IntSet(1:I), block.elements) # setdiff is efficient if both arguments are IntSets.
             for i in block.elements
                 served = served_MS_ids(i, assignment); Nserved = length(served)

@@ -16,6 +16,7 @@ colours_assignment = [
     :BranchAndBoundClustering => colours[:red],
     :CoalitionFormationClustering_AttachOrSupplant => colours[:blue],
     :CoalitionFormationClustering_Attach => colours[:green],
+    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => colours[:blue],
     :Peters2012_Heuristic => colours[:purple],
     :Chen2014_kmeans => colours[:pink],
     :RandomClustering => colours[:yellow],
@@ -27,6 +28,7 @@ linestyles_assignment = [
     :BranchAndBoundClustering => "-",
     :CoalitionFormationClustering_AttachOrSupplant => "-",
     :CoalitionFormationClustering_Attach => "-",
+    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "--",
     :Chen2014_kmeans => "-",
     :Peters2012_Heuristic => "-",
     :RandomClustering => "-",
@@ -38,6 +40,7 @@ markers_assignment = [
     :BranchAndBoundClustering => "*",
     :CoalitionFormationClustering_AttachOrSupplant => "o",
     :CoalitionFormationClustering_Attach => "o",
+    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "o",
     :Chen2014_kmeans => "+",
     :Peters2012_Heuristic => "+",
     :RandomClustering => "s",
@@ -49,6 +52,7 @@ labels_assignment = [
     :BranchAndBoundClustering => "Global optimum",
     :CoalitionFormationClustering_AttachOrSupplant => "Coalition formation",
     :CoalitionFormationClustering_Attach => "Coalition formation (attach only)",
+    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "Coalition formation (ignore IA feas.))",
     :Chen2014_kmeans => "k-means clustering [x]",
     :Peters2012_Heuristic => "Grouping heuristic [x]",
     :RandomClustering => "Random coalitions",
@@ -131,6 +135,10 @@ postprocess_params_precoding = [
         ],
 
         "CoalitionFormationClustering_Attach" => [
+            ("weighted_logdet_rates_full",),
+        ],
+
+        "CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility" => [
             ("weighted_logdet_rates_full",),
         ],
 

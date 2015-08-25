@@ -34,6 +34,14 @@ plot_params_instantaneous_sumrate = [
             ("weighted_logdet_rates_full", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant" ]),
         ],
 
+        "CoalitionFormationClustering_Attach_IgnoreIAFeasibility" => [
+            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "--", :label => "CoalitionFormationClustering_Attach (non-IA)" ]),
+        ],
+
+        "CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility" => [
+            ("weighted_logdet_rates_full", [ :color => "DarkGreen", :linestyle => "--", :label => "CoalitionFormationClustering_AttachOrSupplant (non-IA)" ]),
+        ],
+
         "GrandCoalitionClustering" => [
             ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],

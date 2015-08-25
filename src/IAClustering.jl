@@ -22,6 +22,8 @@ export
     Chen2014_kmeans,
     CoalitionFormationClustering_Attach,
     CoalitionFormationClustering_AttachOrSupplant,
+    CoalitionFormationClustering_Attach_IgnoreIAFeasibility,
+    CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility,
     ExhaustiveSearchClustering,
     GrandCoalitionClustering,
     GreedyClustering_Single,

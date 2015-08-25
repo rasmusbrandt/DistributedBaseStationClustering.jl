@@ -10,11 +10,16 @@ type CoalitionFormationClustering_State
 end
 
 CoalitionFormationClustering_AttachOrSupplant(channel, network) =
-    CoalitionFormationClustering_Common(channel, network, swap_allowed=true)
+    CoalitionFormationClustering_Common(channel, network, true)
 CoalitionFormationClustering_Attach(channel, network) =
-    CoalitionFormationClustering_Common(channel, network, swap_allowed=false)
+    CoalitionFormationClustering_Common(channel, network, false)
 
-function CoalitionFormationClustering_Common(channel, network; swap_allowed::Bool=true)
+CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility(channel, network) =
+    CoalitionFormationClustering_Common(channel, network, true, ignore_IA_feasibility=true)
+CoalitionFormationClustering_Attach_IgnoreIAFeasibility(channel, network) =
+    CoalitionFormationClustering_Common(channel, network, false, ignore_IA_feasibility=true)
+
+function CoalitionFormationClustering_Common(channel, network, swap_allowed; ignore_IA_feasibility::Bool=false)
     I = get_num_BSs(network); K = get_num_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
@@ -42,7 +47,7 @@ function CoalitionFormationClustering_Common(channel, network; swap_allowed::Boo
     elseif starting_point == :singletons
         initial_partition = Partition(collect(0:(I-1)))
     end
-    initial_BS_throughputs = longterm_BS_throughputs(channel, network, initial_partition, temp_cell_assignment, I)
+    initial_BS_throughputs = longterm_BS_throughputs(channel, network, initial_partition, temp_cell_assignment, I, ignore_IA_feasibility=ignore_IA_feasibility)
     initial_num_searches = zeros(Int, I)
     state = CoalitionFormationClustering_State(initial_partition, initial_BS_throughputs, [ Set{IntSet}() for i = 1:I ], initial_num_searches, K)
 
@@ -68,10 +73,10 @@ function CoalitionFormationClustering_Common(channel, network; swap_allowed::Boo
         deviation_performed = falses(I)
         for i in ordered_BS_list
             deviation_performed[i] = deviate!(state, i, I, K, search_budget, swap_allowed,
-                stability_type, use_history, channel, network, temp_cell_assignment)
+                stability_type, use_history, channel, network, temp_cell_assignment, ignore_IA_feasibility=ignore_IA_feasibility)
         end
     end
-    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, state.partition)
+    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, state.partition, ignore_IA_feasibility=ignore_IA_feasibility)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering($(swap_allowed)) finished.",
         { :sum_throughput => sum(throughputs),
@@ -102,7 +107,7 @@ end
 # Lets BS i deviate in the swap stability model.
 # Returns true if it did deviate, otherwise false.
 function deviate!(state::CoalitionFormationClustering_State, i, I, K,
-    search_budget, swap_allowed, stability_type, use_history, channel, network, cell_assignment)
+    search_budget, swap_allowed, stability_type, use_history, channel, network, cell_assignment; ignore_IA_feasibility::Bool=false)
 
     # First check that we have not exceeded our search budget
     if state.num_searches[i] >= search_budget
@@ -156,7 +161,7 @@ function deviate!(state::CoalitionFormationClustering_State, i, I, K,
         # Add BS i to coalition n (this is why deepcopy is needed)
         push!(other_blocks_cp[n].elements, i)
         new_partitions[n] = new_partition
-        deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I)
+        deviated_BS_throughputs[:,n] = longterm_BS_throughputs(channel, network, new_partition, cell_assignment, I, ignore_IA_feasibility=ignore_IA_feasibility)
 
         # Complexity metrics
         state.num_sum_throughput_calculations += 1
@@ -306,9 +311,9 @@ end
 # Calculates the sum utility of the served MSs for each BS.
 # cell_assignment and I are sent as part of the function signature to speed up
 # evaluation slightly.
-function longterm_BS_throughputs(channel, network, partition, cell_assignment, I)
+function longterm_BS_throughputs(channel, network, partition, cell_assignment, I; ignore_IA_feasibility::Bool=false)
     BS_throughputs = zeros(Float64, I)
-    throughputs, = longterm_throughputs(channel, network, partition)
+    throughputs, = longterm_throughputs(channel, network, partition, ignore_IA_feasibility=ignore_IA_feasibility)
     for j = 1:I; for l in served_MS_ids(j, cell_assignment)
         BS_throughputs[j] += throughputs[l]
     end; end

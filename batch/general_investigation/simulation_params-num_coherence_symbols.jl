@@ -9,3 +9,6 @@ simulation_params["aux_independent_variables"] = [
     ((n, v) -> set_average_SNRs_dB!(n, v), [SNR_dB]),
     ((n, v) -> set_aux_network_param!(n, v, "beta_network_sdma"), [beta_network_sdma]),
 ]
+
+push!(simulation_params["assignment_methods"], CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility)
+push!(simulation_params["assignment_methods"], CoalitionFormationClustering_Attach_IgnoreIAFeasibility)
