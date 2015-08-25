@@ -17,7 +17,7 @@ function perform_one()
         "--seed", "-s"
             help = "RNG seed"
             arg_type = Int
-            default = 927272
+            required = true
     end
     args = parse_args(s)
     seed = args["seed"]
