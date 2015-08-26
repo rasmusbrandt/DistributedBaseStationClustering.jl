@@ -41,7 +41,7 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 # longterm-sumrate
 plot_name = "longterm-sumrate"; plot_val = "throughputs"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.11,0.15,0.98-0.11,0.96-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :GrandCoalitionClustering]
@@ -75,7 +75,7 @@ fig[:savefig]("$(sim_name)_$(plot_name).eps")
 # longterm-num_searches
 plot_name = "longterm-num_searches"; plot_val = "num_searches"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.09,0.15,0.98-0.09,0.96-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 method = :CoalitionFormationClustering_AttachOrSupplant
 ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,2],
@@ -97,7 +97,7 @@ fig[:savefig]("$(sim_name)_$(plot_name).eps")
 # instantaneous-sumrate
 plot_name = "instantaneous-sumrate"; plot_val = "weighted_logdet_rates_full"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.13,0.15,0.98-0.13,0.96-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :Chen2014_kmeans, :GrandCoalitionClustering]

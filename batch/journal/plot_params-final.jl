@@ -169,7 +169,7 @@ postprocess_params_precoding = [
 colours_precoding = [
     :RobustIntraclusterWMMSE => colours[:blue],
     :NaiveIntraclusterWMMSE => colours[:green],
-    :RobustChen2014_MaxSINR => colours[:orange],
+    :RobustChen2014_MaxSINR => colours[:pink],
     :NaiveChen2014_MaxSINR => colours[:brown],
 ]
 

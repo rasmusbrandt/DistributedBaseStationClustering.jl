@@ -41,7 +41,7 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 # longterm-sumrate
 plot_name = "longterm-sumrate"; plot_val = "throughputs"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.11,0.15,0.97-0.11,0.96-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.97-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :GrandCoalitionClustering]
@@ -68,7 +68,7 @@ fig[:savefig]("$(sim_name)_$(plot_name).eps")
 # longterm-sumrate_split
 plot_name = "longterm-sumrate_split"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.11,0.15,0.97-0.11,0.96-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.97-0.12,0.96-0.15))
 
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
     ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma"),

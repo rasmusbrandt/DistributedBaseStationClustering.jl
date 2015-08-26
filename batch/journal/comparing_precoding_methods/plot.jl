@@ -40,22 +40,27 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 # instantaneous-sumrate
 plot_name = "instantaneous-sumrate"; plot_val = "weighted_logdet_rates_full"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.11,0.15,0.95-0.11,0.95-0.15))
+ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
-for method in [:RobustIntraclusterWMMSE, :NaiveIntraclusterWMMSE, :RobustChen2014_MaxSINR, :NaiveChen2014_MaxSINR]
+for method in [:RobustIntraclusterWMMSE, :RobustChen2014_MaxSINR]
+    if method == :RobustIntraclusterWMMSE
+        label_base = "Robust WMMSE"
+    elseif method == :RobustChen2014_MaxSINR
+        label_base = "Robust MaxSINR"
+    end
     ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_full")[:,2],
         color=colours_precoding[method],
         linestyle="-",
         marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
-        label=labels_precoding[method])
+        label=string(label_base, " (ICI aware)"))
     ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_partial")[:,2],
         color=colours_precoding[method],
         linestyle="--",
         marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
-        label=labels_precoding[method])
+        label=string(label_base, " (ICI oblivious)"))
 end
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
-ax[:set_ylabel]("Average sum throughput [bits/s/Hz]")
-show_legend!(ax, "upper left")
+ax[:set_ylabel]("Sum throughput [bits/s/Hz]")
+show_legend!(ax, "lower right")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
