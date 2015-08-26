@@ -50,10 +50,10 @@ markers_assignment = [
 ]
 
 labels_assignment = [
-    :BranchAndBoundClustering => "Global optimum",
+    :BranchAndBoundClustering => L"Sum throughput optimal $\mathcal{S}$",
     :CoalitionFormationClustering_AttachOrSupplant => "Coalition formation",
-    :CoalitionFormationClustering_Attach => "Coalition formation (attach only)",
-    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "Coalition formation (ignore IA feas.))",
+    :CoalitionFormationClustering_Attach => "Coalition formation (attach)",
+    :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "Coalition formation (a-o-s, ignoring IA feas.)",
     :Chen2014_kmeans => "k-means clustering [x]",
     :Peters2012_Heuristic => "Grouping heuristic [x]",
     :RandomClustering => "Random coalitions",
