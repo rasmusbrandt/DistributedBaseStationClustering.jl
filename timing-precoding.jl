@@ -8,7 +8,7 @@
 
 include("src/IAClustering.jl")
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 ##########################################################################
 # General settings
@@ -35,7 +35,7 @@ simulation_params = [
         Eigenprecoding,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "num_coherence_symbols" => 1000,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -52,6 +52,6 @@ simulation_params = [
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        num_streams=simulation_params["d"])
 
 timing(network, simulation_params, loop_over=:precoding_methods)

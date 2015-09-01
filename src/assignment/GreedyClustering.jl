@@ -19,7 +19,7 @@ GreedyClustering_Multiple(channel, network) =
     GreedyClustering(channel, network, merge_multiple=true)
 
 function GreedyClustering(channel, network; merge_multiple::Bool=false)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection
@@ -44,8 +44,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = 0
+    num_utility_calculations = 0
+    num_longterm_rate_calculations = 0
     while !all(F .== -Inf)
         # Find strongest interfering link that is still active
         _, idx = findmax(F)
@@ -63,8 +63,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             # means that GreedyClustering cannot handle situations where
             # IA infeasible blocks are turned off, e.g. when the aux_assignment_param
             # IA_infeasible_negative_inf_utility is set to false.)
-            no_utility_calculations += K
-            no_longterm_rate_calculations += length(i_cluster) + length(j_cluster)
+            num_utility_calculations += K
+            num_longterm_rate_calculations += length(i_cluster) + length(j_cluster)
             if is_IA_feasible(network, Partition(new_partition_matrix))
                 partition_matrix = new_partition_matrix
             end
@@ -78,8 +78,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
             new_partition_matrix[i_cluster,j] = 1; new_partition_matrix[j,i_cluster] = 1
 
             # Check IA feasibility for this new cluster.
-            no_utility_calculations += K
-            no_longterm_rate_calculations += length(i_cluster) + 1
+            num_utility_calculations += K
+            num_longterm_rate_calculations += length(i_cluster) + 1
             if is_IA_feasible(network, Partition(new_partition_matrix))
                 # Fix BS j to this cluster
                 F[:,j] = -Inf
@@ -120,8 +120,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["num_clusters"] = 1 + maximum(a)
+    results["num_utility_calculations"] = num_utility_calculations
+    results["num_longterm_rate_calculations"] = num_longterm_rate_calculations
     return results
 end

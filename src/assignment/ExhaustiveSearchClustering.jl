@@ -5,8 +5,8 @@
 # enumerated, and the best (in the utilities.jl utilities sense) is picked.
 
 function ExhaustiveSearchClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    d_max = maximum(get_no_streams(network))
+    I = get_num_BSs(network); K = get_num_MSs(network)
+    d_max = maximum(get_num_streams(network))
     aux_params = get_aux_assignment_params(network)
 
     # Warn if this will be slow...
@@ -18,12 +18,12 @@ function ExhaustiveSearchClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Exhaustive search over all partitions
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
+    num_utility_calculations = 0
+    num_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
     best_alphas = Array(Float64, K); best_partition = Partition([0:(I-1)])
     for partition in PartitionIterator(I)
-        no_utility_calculations += K
+        num_utility_calculations += K
 
         # Calculate utilities
         utilities, alphas, _ = longterm_utilities(channel, network, partition)
@@ -56,8 +56,8 @@ function ExhaustiveSearchClustering(channel, network)
     results["utilities"] = best_utilities
     results["a"] = a
     results["alphas"] = best_alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["num_clusters"] = 1 + maximum(a)
+    results["num_utility_calculations"] = num_utility_calculations
+    results["num_longterm_rate_calculations"] = num_longterm_rate_calculations
     return results
 end

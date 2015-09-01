@@ -4,7 +4,7 @@ SRAND_SEED = 4299933
 
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
@@ -20,7 +20,7 @@ srand(SRAND_SEED)
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results, raw_assignment_results =
@@ -28,7 +28,7 @@ raw_precoding_results, raw_assignment_results =
 
 ##########################################################################
 # Generic plots
-for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters, plot_params_longterm_no_searches)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_num_utility_calculations, plot_params_longterm_num_clusters, plot_params_longterm_num_searches)
     processed_results = postprocess(raw_assignment_results, simulation_params, p)
     plot(processed_results, simulation_params, p)
 end

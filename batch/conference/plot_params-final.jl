@@ -30,33 +30,33 @@ postprocess_params_assignment = [
     "methods" => [
         "ExhaustiveSearchClustering" => [
             ("utilities",),
-            ("no_clusters",),
+            ("num_clusters",),
         ],
 
         "CoalitionFormationClustering_Individual" => [
             ("utilities",),
-            ("no_clusters",),
-            ("no_searches",),
+            ("num_clusters",),
+            ("num_searches",),
         ],
 
         "Chen2014_kmeans" => [
             ("utilities",),
-            ("no_clusters",),
+            ("num_clusters",),
         ],
 
         "GrandCoalitionClustering" => [
             ("utilities",),
-            ("no_clusters",),
+            ("num_clusters",),
         ],
 
         "RandomClustering" => [
             ("utilities",),
-            ("no_clusters",),
+            ("num_clusters",),
         ],
 
         "NoClustering" => [
             ("utilities",),
-            ("no_clusters",),
+            ("num_clusters",),
         ],
     ]
 ]

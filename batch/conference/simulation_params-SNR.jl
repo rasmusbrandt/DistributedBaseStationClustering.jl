@@ -9,4 +9,4 @@ transmit_powers_dBm_sim = transmit_powers_dBm - 10*log10(600) # simulating one 1
 
 simulation_params["independent_variable"] = (set_transmit_powers_dBm!, transmit_powers_dBm_sim)
 simulation_params["aux_independent_variables"] = [ ((n, v) -> set_aux_assignment_param!(n, v, "CoalitionFormationClustering_Individual:search_budget"), [2, 10]) ]
-simulation_params["aux_network_params"] = [ "no_coherence_symbols" => L ]
+simulation_params["aux_network_params"] = [ "num_coherence_symbols" => L ]

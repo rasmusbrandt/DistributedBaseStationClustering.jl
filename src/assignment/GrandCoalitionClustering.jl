@@ -6,7 +6,7 @@
 # is only applicable when IA is feasible.
 
 function GrandCoalitionClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection
@@ -33,8 +33,8 @@ function GrandCoalitionClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_utility_calculations"] = K
-    results["no_longterm_rate_calculations"] = K
+    results["num_clusters"] = 1 + maximum(a)
+    results["num_utility_calculations"] = K
+    results["num_longterm_rate_calculations"] = K
     return results
 end

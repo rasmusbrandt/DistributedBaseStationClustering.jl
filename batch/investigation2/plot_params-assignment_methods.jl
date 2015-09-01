@@ -274,8 +274,8 @@ plot_params_longterm_sumrate = [
         ],
     ]
 ]
-plot_params_longterm_no_utility_calculations = [
-    "plot_name" => "longterm-no_utility_calculations",
+plot_params_longterm_num_utility_calculations = [
+    "plot_name" => "longterm-num_utility_calculations",
 
     "objective" => :none,
 
@@ -296,48 +296,48 @@ plot_params_longterm_no_utility_calculations = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("no_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("num_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("no_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("num_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("no_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("num_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("no_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("num_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("no_utility_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("num_utility_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("no_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("num_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
 
         "RandomClustering" => [
-            ("no_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("num_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("no_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("num_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]
-plot_params_longterm_no_clusters = [
-    "plot_name" => "longterm-no_clusters",
+plot_params_longterm_num_clusters = [
+    "plot_name" => "longterm-num_clusters",
 
     "objective" => :none,
 
@@ -357,46 +357,46 @@ plot_params_longterm_no_clusters = [
 
     "methods" => [
         "ExhaustiveSearchClustering" => [
-            ("no_clusters", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("num_clusters", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
         ],
 
         "BranchAndBoundClustering" => [
-            ("no_clusters", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("num_clusters", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("no_clusters", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("num_clusters", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("no_clusters", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_clusters", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("num_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("no_clusters", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("num_clusters", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
         ],
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("no_clusters", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("num_clusters", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("no_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("num_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
         ],
 
         "RandomClustering" => [
-            ("no_clusters", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("num_clusters", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
         ],
 
         "NoClustering" => [
-            ("no_clusters", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("num_clusters", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
         ],
     ]
 ]

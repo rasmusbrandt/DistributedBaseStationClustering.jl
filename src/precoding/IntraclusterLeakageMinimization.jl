@@ -29,10 +29,10 @@ RobustIntraclusterLeakageMinimization(channel, network) =
 function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true)
     assignment = get_assignment(network)
 
-    K = get_no_MSs(network)
+    K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    ds = get_num_streams(network); max_d = maximum(ds)
     alphas = get_user_priorities(network)
     aux_params = get_aux_precoding_params(network)
 
@@ -67,7 +67,7 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"]
                 Lumberjack.debug("IntraclusterLeakageMinimization converged.",
-                    [ :no_iters => iters,
+                    [ :num_iters => iters,
                       :final_objective => objective[end],
                       :conv_crit => conv_crit,
                       :stop_crit => aux_params["stop_crit"],
@@ -85,7 +85,7 @@ function IntraclusterLeakageMinimization(channel, network; robustness::Bool=true
     end
     if iters == aux_params["max_iters"]
         Lumberjack.debug("IntraclusterLeakageMinimization did NOT converge.",
-            [ :no_iters => iters,
+            [ :num_iters => iters,
               :final_objective => objective[end],
               :conv_crit => conv_crit,
               :stop_crit => aux_params["stop_crit"],

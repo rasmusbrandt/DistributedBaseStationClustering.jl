@@ -16,7 +16,7 @@ initial_simulation_params = [
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (250.,250.),
-    "MS_serving_BS_distance" => nothing,
+    "MS_serving_BS_distance" => Nullable{Float64}(),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
         # BranchAndBoundClustering,
@@ -38,7 +38,7 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 2160,
+        "num_coherence_symbols" => 2160,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -62,7 +62,7 @@ simulation_params = deepcopy(initial_simulation_params)
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
@@ -82,10 +82,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -100,10 +100,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -116,7 +116,7 @@ simulation_params["I"] = 2*initial_simulation_params["I"]
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"])
 
 simulation_params["simulation_name"] = "large-with_overhead"
@@ -130,10 +130,10 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)
 
@@ -148,9 +148,9 @@ processed_results = postprocess(raw_precoding_results, simulation_params, plot_p
 plot(processed_results, simulation_params, plot_params_instantaneous_sumrate)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_sumrate)
 plot(processed_results, simulation_params, plot_params_longterm_sumrate)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_utility_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_utility_calculations)
-processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
-plot(processed_results, simulation_params, plot_params_longterm_no_longterm_rate_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_utility_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_utility_calculations)
+processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
+plot(processed_results, simulation_params, plot_params_longterm_num_longterm_rate_calculations)
 processed_results = postprocess(raw_assignment_results, simulation_params, plot_params_longterm_clusters)
 plot(processed_results, simulation_params, plot_params_longterm_clusters)

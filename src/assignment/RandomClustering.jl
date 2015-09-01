@@ -5,8 +5,8 @@
 # partition has utility == -Inf, we keep searching. This can happen when IA
 # infeasible clusters have -Inf utility.
 function RandomClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    I = get_num_BSs(network); K = get_num_MSs(network)
+    ds = get_num_streams(network); max_d = maximum(ds)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "RandomClustering:max_iters" 1_000
@@ -23,24 +23,24 @@ function RandomClustering(channel, network)
     alphas = Array(Float64, K)
 
     # Find a set partition whose utility is not -Inf
-    no_iters = 0
-    no_utility_calculations = 0
-    no_longterm_rate_calculations = 0
-    while no_iters <= aux_params["RandomClustering:max_iters"]
-        no_iters += 1
+    num_iters = 0
+    num_utility_calculations = 0
+    num_longterm_rate_calculations = 0
+    while num_iters <= aux_params["RandomClustering:max_iters"]
+        num_iters += 1
 
         # Get random partition by finding random rgs
         random_a = random_restricted_growth_string(I, local_rng)
         random_partition = Partition(random_a)
         utilities, alphas, _ = longterm_utilities(channel, network, Partition(random_a))
-        no_utility_calculations += K
-        no_longterm_rate_calculations += K
+        num_utility_calculations += K
+        num_longterm_rate_calculations += K
 
         if sum(utilities) > -Inf
             break
         end
     end
-    if no_iters == aux_params["RandomClustering:max_iters"]
+    if num_iters == aux_params["RandomClustering:max_iters"]
         Lumberjack.warn("Max iterations reached for RandomClustering. This probably means that an IA infeasible coalition structure was chosen.")
     end
 
@@ -63,10 +63,10 @@ function RandomClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = random_a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(random_a)
-    results["no_iters"] = no_iters
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["num_clusters"] = 1 + maximum(random_a)
+    results["num_iters"] = num_iters
+    results["num_utility_calculations"] = num_utility_calculations
+    results["num_longterm_rate_calculations"] = num_longterm_rate_calculations
     return results
 end
 

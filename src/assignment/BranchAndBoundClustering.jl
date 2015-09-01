@@ -11,7 +11,7 @@
 # BSs have their utopian (interference-free) spectral efficiencies as bounds.
 
 function BranchAndBoundClustering(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
 
     aux_params = get_aux_assignment_params(network)
     @defaultize_param! aux_params "BranchAndBoundClustering:bracket_E1" false
@@ -45,10 +45,10 @@ function BranchAndBoundClustering(channel, network)
     # Perform eager branch and bound
     incumbent_sum_utility_evolution = Float64[]
     live = initialize_live(utopian_utilities);
-    no_iters = 0
-    no_utility_calculations = 0; no_longterm_rate_calculations = 0
+    num_iters = 0
+    num_utility_calculations = 0; num_longterm_rate_calculations = 0
     while length(live) > 0
-        no_iters += 1
+        num_iters += 1
 
         # Select next node to be processed. We use the best first strategy,
         # i.e. we pick the live node with the highest (best) upper bound.
@@ -60,8 +60,8 @@ function BranchAndBoundClustering(channel, network)
 
         for child in branch(parent)
             bound!(child, channel, network, utopian_utilities, I, assignment, bracket_E1)
-            no_utility_calculations += K
-            no_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
+            num_utility_calculations += K
+            num_longterm_rate_calculations += sum(child.a .== child.a[end]) # number of BSs affected by the child joining cluster a[end]
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_sum_utility
@@ -111,10 +111,10 @@ function BranchAndBoundClustering(channel, network)
     results["utilities"] = utilities
     results["a"] = incumbent_a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(incumbent_a)
-    results["no_iters"] = no_iters
-    results["no_utility_calculations"] = no_utility_calculations
-    results["no_longterm_rate_calculations"] = no_longterm_rate_calculations
+    results["num_clusters"] = 1 + maximum(incumbent_a)
+    results["num_iters"] = num_iters
+    results["num_utility_calculations"] = num_utility_calculations
+    results["num_longterm_rate_calculations"] = num_longterm_rate_calculations
     return results
 end
 
@@ -170,10 +170,10 @@ end
 function branch(parent)
     m = 1 + maximum(parent.a)
 
-    no_children = m + 1
-    children = Array(BranchAndBoundNode, no_children)
+    num_children = m + 1
+    children = Array(BranchAndBoundNode, num_children)
 
-    for p = 1:no_children
+    for p = 1:num_children
         child_a = push!(copy(parent.a), p - 1)
         child = BranchAndBoundNode(child_a, parent.upper_bound)
         children[p] = child

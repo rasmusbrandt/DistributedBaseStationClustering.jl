@@ -4,17 +4,17 @@ SRAND_SEED = 938327343
 
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-large_network.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-no_coherence_symbols.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-num_coherence_symbols.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 
 ##########################################################################
 # Plot setup
-for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate, plot_params_instantaneous_LB_sumrate, plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+for p in (plot_params_instantaneous_full_sumrate, plot_params_instantaneous_partial_sumrate, plot_params_instantaneous_LB_sumrate, plot_params_longterm_sumrate, plot_params_longterm_num_utility_calculations, plot_params_longterm_num_clusters)
     p["axes"][:xlabel] = "MS speed [km/h]"
     p["xvals"] = vs_kmh
 end
@@ -29,7 +29,7 @@ simulation_params["precoding_methods"] = [ RobustIntraclusterLeakageMinimization
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results1, raw_assignment_results1 =
@@ -51,7 +51,7 @@ save("$(simulation_params["simulation_name"]).jld",
 ##########################################################################
 # Generic plots
 simulation_params["simulation_name"] = "SNR-large_network-assignment_$(start_time)"
-for p in (plot_params_longterm_sumrate, plot_params_longterm_no_utility_calculations, plot_params_longterm_no_clusters)
+for p in (plot_params_longterm_sumrate, plot_params_longterm_num_utility_calculations, plot_params_longterm_num_clusters)
     processed_results = postprocess(raw_assignment_results1, simulation_params, p)
     plot(processed_results, simulation_params, p)
 end
@@ -64,7 +64,7 @@ simulation_params["precoding_methods"] = [ RobustIntraclusterWMMSE ]
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"],
+        num_streams=simulation_params["d"],
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 raw_precoding_results2, raw_assignment_results2 =

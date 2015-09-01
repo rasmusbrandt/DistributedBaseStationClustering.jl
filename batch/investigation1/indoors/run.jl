@@ -36,7 +36,7 @@ initial_simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "no_coherence_symbols" => 1000,
+        "num_coherence_symbols" => 1000,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -59,7 +59,7 @@ simulation_params = deepcopy(initial_simulation_params)
 network =
     setup_indoors_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        num_streams=simulation_params["d"])
 
 # Include high complexity methods for these simulations only
 unshift!(simulation_params["assignment_methods"], Chen2014_LinearObj_ExhaustiveSearch)
@@ -107,7 +107,7 @@ simulation_params["I"] = 2*initial_simulation_params["I"]
 network =
     setup_indoors_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        no_streams=simulation_params["d"])
+        num_streams=simulation_params["d"])
 
 simulation_params["simulation_name"] = "large-with_overhead"
 simulation_params["aux_assignment_params"]["apply_overhead_prelog"] = true

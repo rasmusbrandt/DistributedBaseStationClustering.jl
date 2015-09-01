@@ -2,19 +2,19 @@
 
 include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
 using IAClustering, CoordinatedPrecoding
-using HDF5, JLD
+using Compat, JLD
 using LaTeXStrings
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../simulation_params-small_network1.jl"))
-include(joinpath(dirname(@__FILE__), "../../../simulation_params-no_coherence_symbols.jl"))
+include(joinpath(dirname(@__FILE__), "../../../simulation_params-num_coherence_symbols.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-assignment_methods.jl"))
 include(joinpath(dirname(@__FILE__), "../../../plot_params-final.jl"))
 
 ##########################################################################
 # Load data
-using HDF5, JLD
+using Compat, JLD
 data = load("raw-small_network1.jld")
 
 ##########################################################################

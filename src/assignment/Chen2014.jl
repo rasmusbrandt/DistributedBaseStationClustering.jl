@@ -7,7 +7,7 @@
 # pp. 2613-2624, July 2014, doi: 10.1109/TVT.2013.2292897
 
 function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Consistency check
@@ -27,9 +27,9 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     # Exhaustive search over partitions
     best_objective = 0.
     best_partition = Partition([0:(I-1)])
-    no_utility_calculations = 0
+    num_utility_calculations = 0
     for partition in PartitionIterator(I)
-        no_utility_calculations += K
+        num_utility_calculations += K
 
         # Check that IA is feasible for this cluster structure. Note that this
         # means that Chen2014_LinearObj_ExhaustiveSearch cannot handle situations where
@@ -71,14 +71,14 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["Chen2014_no_utility_calculations"] = no_utility_calculations
+    results["num_clusters"] = 1 + maximum(a)
+    results["Chen2014_num_utility_calculations"] = num_utility_calculations
     results["Chen2014_objective"] = best_objective
     return results
 end
 
 function Chen2014_kmeans(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     aux_params = get_aux_assignment_params(network)
 
     # Consistency check
@@ -87,10 +87,10 @@ function Chen2014_kmeans(channel, network)
     end
 
     # Get M and N
-    require_equal_no_BS_antennas(network)
-    require_equal_no_MS_antennas(network)
-    M = get_no_BS_antennas(network)[1]
-    N = get_no_MS_antennas(network)[1]
+    require_equal_num_BS_antennas(network)
+    require_equal_num_MS_antennas(network)
+    M = get_num_BS_antennas(network)[1]
+    N = get_num_MS_antennas(network)[1]
     Lmax = M + N - 1
 
     # Perform cell selection
@@ -143,12 +143,12 @@ function Chen2014_kmeans(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
+    results["num_clusters"] = 1 + maximum(a)
     return results
 end
 
 function Chen2014_W_matrix(channel, network)
-    I = get_no_BSs(network)
+    I = get_num_BSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
     assignment = get_assignment(network)

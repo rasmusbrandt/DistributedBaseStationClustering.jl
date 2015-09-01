@@ -5,15 +5,15 @@
 # Interference Channels", IEEE Trans. WC, vol. 11, no. 2, pp. 592-603, 2012.
 
 function Peters2012_Heuristic(channel, network)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
     aux_params = get_aux_assignment_params(network)
 
     # Ensure that the network is symmetric (needed for DoF calculation)
-    require_equal_no_BS_antennas(network); M = get_no_BS_antennas(network)[1]
-    require_equal_no_MS_antennas(network); N = get_no_MS_antennas(network)[1]
-    require_equal_no_streams(network); d = get_no_streams(network)[1]
+    require_equal_num_BS_antennas(network); M = get_num_BS_antennas(network)[1]
+    require_equal_num_MS_antennas(network); N = get_num_MS_antennas(network)[1]
+    require_equal_num_streams(network); d = get_num_streams(network)[1]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -32,9 +32,9 @@ function Peters2012_Heuristic(channel, network)
     unclustered_BSs = IntSet(1:I) # K_A in paper
     clusters = [ IntSet() for p = 1:P ] # K_P in paper
 
-    no_iters = 0
+    num_iters = 0
     while length(unclustered_BSs) > 0
-        no_iters += 1
+        num_iters += 1
 
         # Build clustering metric
         rate_approx = zeros(Float64, I, P) # already clustered BSs will have zero metric
@@ -96,7 +96,7 @@ function Peters2012_Heuristic(channel, network)
     results["utilities"] = utilities
     results["a"] = a
     results["alphas"] = alphas
-    results["no_clusters"] = 1 + maximum(a)
-    results["no_iters"] = no_iters
+    results["num_clusters"] = 1 + maximum(a)
+    results["num_iters"] = num_iters
     return results
 end

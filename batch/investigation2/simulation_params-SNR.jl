@@ -5,4 +5,4 @@ fd = v/(λ*Wc)
 L = 1./(2*fd);
 
 simulation_params["independent_variable"] = (set_transmit_powers_dBm!, -80:10:0)
-simulation_params["aux_network_params"] = [ "no_coherence_symbols" => L ]
+simulation_params["aux_network_params"] = [ "num_coherence_symbols" => L ]

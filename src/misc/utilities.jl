@@ -24,10 +24,10 @@
 # since I don't if the E1 exponential integral has been implemented
 # by anyone in Julia yet.
 function longterm_utilities(channel, network, partition; bound::Symbol=:none)
-    I = get_no_BSs(network); K = get_no_MSs(network)
+    I = get_num_BSs(network); K = get_num_MSs(network)
     Ps = get_transmit_powers(network)
     sigma2s = get_receiver_noise_powers(network)
-    ds = get_no_streams(network); max_d = maximum(ds)
+    ds = get_num_streams(network); max_d = maximum(ds)
     assignment = get_assignment(network)
     aux_params = get_aux_assignment_params(network)
     IA_infeasible_negative_inf_utility = aux_params["IA_infeasible_negative_inf_utility"]
@@ -156,10 +156,10 @@ end
 # entire coherence time, so adding BSs to coalitions monotonically increases
 # the overhead.
 function spectrum_sharing_prelog_factor(network, partition)
-    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
-    ds = get_no_streams(network)
+    Ns = get_num_MS_antennas(network); Ms = get_num_BS_antennas(network)
+    ds = get_num_streams(network)
     assignment = get_assignment(network)
-    Tc = get_aux_network_param(network, "no_coherence_symbols")
+    Tc = get_aux_network_param(network, "num_coherence_symbols")
 
     # Sum of Lps (implemented as loop, since it seems to be the fastest way)
     Lp_sum = 0
@@ -174,11 +174,11 @@ end
 # the coherence time to the coalition it joins, but also contributes extra
 # overhead due to the CSI acquisition.
 function orthogonal_prelog_factor(network, block)
-    I = get_no_BSs(network)
-    Ns = get_no_MS_antennas(network); Ms = get_no_BS_antennas(network)
-    ds = get_no_streams(network)
+    I = get_num_BSs(network)
+    Ns = get_num_MS_antennas(network); Ms = get_num_BS_antennas(network)
+    ds = get_num_streams(network)
     assignment = get_assignment(network)
-    Tc = get_aux_network_param(network, "no_coherence_symbols")
+    Tc = get_aux_network_param(network, "num_coherence_symbols")
 
     return max(0., length(block)/I - CSI_acquisition_symbol_overhead(block, Ns, Ms, ds, assignment)/Tc)
 end
