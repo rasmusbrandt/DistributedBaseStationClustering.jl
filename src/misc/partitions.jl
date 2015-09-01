@@ -177,12 +177,12 @@ end
 # may be real numbers, but when summed are integers. The coefficients are
 # thus calculated as floating point numbers.
 immutable Stirling2NumberCoefficientIterator
-    n::Int
-    k::Int
-    k_fac::Int
+    n::BigInt
+    k::BigInt
+    k_fac::BigInt
 end
 Stirling2NumberCoefficientIterator(n, k) = Stirling2NumberCoefficientIterator(n, k, factorial(k))
-Base.start(s::Stirling2NumberCoefficientIterator) = 0 # state: k
+Base.start(s::Stirling2NumberCoefficientIterator) = BigInt(0) # state: j
 Base.done(s::Stirling2NumberCoefficientIterator, j) = (j > s.k)
 Base.next(s::Stirling2NumberCoefficientIterator, j) = ((iseven(s.k - j) ? 1. : -1.)*(binomial(s.k, j)*j^s.n/s.k_fac), j + 1)
 
@@ -191,11 +191,11 @@ Base.next(s::Stirling2NumberCoefficientIterator, j) = ((iseven(s.k - j) ? 1. : -
 # coefficients are not. We therefore round the sum of the coefficients,
 # in order to end up with an integer.
 immutable Stirling2NumberIterator
-    n::Int
+    n::BigInt
 end
-Base.start(s::Stirling2NumberIterator) = 0 # state: k
+Base.start(s::Stirling2NumberIterator) = BigInt(0) # state: k
 Base.done(s::Stirling2NumberIterator, k) = (k > s.n)
-Base.next(s::Stirling2NumberIterator, k) = (iround(sum(Stirling2NumberCoefficientIterator(s.n, k))), k + 1)
+Base.next(s::Stirling2NumberIterator, k) = (BigInt(round(sum(Stirling2NumberCoefficientIterator(s.n, k)))), k + 1)
 
 # The Bell number can we calculated as the sum of all
 # Stirling numbers of the second kind.
