@@ -24,17 +24,18 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 simulation_params = [
     "simulation_name" => "assignment_convergence_$(start_time)",
     "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
-    "Ndrops" => 10,
+    "Ndrops" => 1,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => Nullable(150.),
     "assignment_methods" => [ BranchAndBoundClustering, ],
     "aux_network_params" => [
-        "num_coherence_symbols" => 2500,
-        "beta_network_sdma" => 0.,
+        "num_coherence_symbols" => 2700,
+        "beta_network_sdma" => 0.5,
     ],
     "aux_assignment_params" => [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
+        "BranchAndBoundClustering:store_fathomed_subtree_sizes" => true,
     ],
 ]
 network =

@@ -29,6 +29,8 @@ function BranchAndBoundClustering(channel, network)
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
+    @defaultize_param! aux_params "BranchAndBoundClustering:store_fathomed_subtree_sizes" false
+    store_fathomed_subtree_sizes = aux_params["BranchAndBoundClustering:store_fathomed_subtree_sizes"]
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
@@ -61,7 +63,7 @@ function BranchAndBoundClustering(channel, network)
     end
 
     # Perform eager branch and bound
-    lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]
+    lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]; fathoming_evolution = Int[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
     num_iters = 0; num_sum_throughput_calculations = 0
     abs_conv_crit = 0.; premature_ending = false
@@ -84,6 +86,7 @@ function BranchAndBoundClustering(channel, network)
             break
         end
 
+        fathomed_subtree_size = 0
         for child in branch(parent)
             bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
             num_sum_throughput_calculations += 1
@@ -109,7 +112,15 @@ function BranchAndBoundClustering(channel, network)
                 # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
                 #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                 # )
+
+                if store_fathomed_subtree_sizes
+                    fathomed_subtree_size += subtree_size(child, I)
+                end
             end
+        end
+
+        if store_fathomed_subtree_sizes
+            push!(fathoming_evolution, fathomed_subtree_size)
         end
     end
 
@@ -159,6 +170,7 @@ function BranchAndBoundClustering(channel, network)
     results["num_iters"] = num_iters
     results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
     results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
+    results["fathoming_evolution"] = reshape(fathoming_evolution, (1, 1, length(fathoming_evolution)))
     return results
 end
 
@@ -171,7 +183,19 @@ end
 Base.isless(N1::BranchAndBoundNode, N2::BranchAndBoundNode) = (N1.upper_bound < N2.upper_bound)
 
 # Helper functions
-is_leaf(node, I) = (size(node.a, 1) == I)
+m(node) = 1 + maximum(node.a)
+depth(node) = size(node.a, 1)
+is_leaf(node, I) = (depth(node) == I)
+num_children(node) = 1 + m(node)
+
+subtree_size(node, I) = subtree_size(depth(node), m(node), I)
+function subtree_size(depth, m, I)
+    if depth == I
+        return 1
+    else
+        return 1 + m*subtree_size(depth+1, m, I) + subtree_size(depth+1, m+1 ,I)
+    end
+end
 
 # Initialize the live structure by creating the root node.
 function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
@@ -365,12 +389,10 @@ end
 # the BS at this depth in different clusters. Branched nodes inherit the
 # parent bound, until their bounds are updated.
 function branch(parent)
-    m = 1 + maximum(parent.a)
+    num_children_ = num_children(parent)
+    children = Array(BranchAndBoundNode, num_children_)
 
-    num_children = m + 1
-    children = Array(BranchAndBoundNode, num_children)
-
-    for p = 1:num_children
+    for p = 1:num_children_
         child_a = push!(copy(parent.a), p - 1)
         child = BranchAndBoundNode(child_a, parent.upper_bound)
         children[p] = child

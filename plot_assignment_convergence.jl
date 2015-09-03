@@ -25,8 +25,8 @@ parsed_args = parse_args(s)
 
 ##########################################################################
 # Plot parameters
-plot_params = [
-    "plot_name" => "",
+plot_params_bounds = [
+    "plot_name" => "bounds",
 
     "objective" => :none,
 
@@ -54,10 +54,40 @@ plot_params = [
     ]
 ]
 
+plot_params_fathom = [
+    "plot_name" => "fathom",
+
+    "objective" => :none,
+
+    "figure" => [
+        :figsize => (8,5),
+        :dpi => 125,
+    ],
+
+    "axes" => [
+        :xlabel => "Iterations",
+        :ylabel => "Fathomed subtree sizes",
+    ],
+
+    "legend" => [
+        :loc => "best",
+        :fontsize => 8,
+        :ncol => 2,
+    ],
+
+    "methods" => [
+        "BranchAndBoundClustering" => [
+            ("fathoming_evolution", [ :color => "Coral", :linestyle => "--", :label => "BranchAndBoundClustering" ]),
+        ],
+    ]
+]
+
 ##########################################################################
 # Plot it
 for file_name in parsed_args["file_names"]
     data = load(file_name)
-    processed_results = postprocess_assignment_convergence(data["raw_results"], data["simulation_params"], plot_params)
-    plot_assignment_convergence(processed_results, data["simulation_params"], plot_params)
+    processed_results = postprocess_assignment_convergence(data["raw_results"], data["simulation_params"], plot_params_bounds)
+    plot_assignment_convergence(processed_results, data["simulation_params"], plot_params_bounds)
+    processed_results = postprocess_assignment_convergence(data["raw_results"], data["simulation_params"], plot_params_fathom)
+    plot_assignment_convergence(processed_results, data["simulation_params"], plot_params_fathom)
 end
