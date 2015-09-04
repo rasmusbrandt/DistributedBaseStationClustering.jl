@@ -33,6 +33,7 @@ simulation_params = [
     "aux_network_params" => Dict{ASCIIString, Any}(),
     "aux_assignment_params" => [
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
+        "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
 
         "CoalitionFormationClustering:search_order" => :lexicographic,

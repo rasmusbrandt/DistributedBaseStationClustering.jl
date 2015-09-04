@@ -27,6 +27,8 @@ function BranchAndBoundClustering(channel, network)
     beta_network_sdma = get_aux_network_param(network, "beta_network_sdma")
     @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
+    @defaultize_param! aux_params "BranchAndBoundClustering:max_rel_optimality_gap" 0.
+    max_rel_optimality_gap = aux_params["BranchAndBoundClustering:max_rel_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
     @defaultize_param! aux_params "BranchAndBoundClustering:store_fathomed_subtree_sizes" false
@@ -80,7 +82,8 @@ function BranchAndBoundClustering(channel, network)
 
         # Check convergence (parent has the highest upper bound)
         abs_conv_crit = parent.upper_bound - incumbent_sum_throughput
-        if abs_conv_crit < max_abs_optimality_gap
+        rel_conv_crit = abs_conv_crit/incumbent_sum_throughput
+        if abs_conv_crit <= max_abs_optimality_gap || rel_conv_crit <= max_rel_optimality_gap
             # Lumberjack.debug("Converged.", { :abs_conv_crit => abs_conv_crit, :max_abs_optimality_gap => max_abs_optimality_gap })
             premature_ending = true
             break
