@@ -67,7 +67,7 @@ function BranchAndBoundClustering(channel, network)
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]; fathoming_evolution = Int[]
     live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
-    num_iters = 0; num_sum_throughput_calculations = 0
+    num_iters = 0; num_bounded_nodes = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
         num_iters += 1
@@ -92,7 +92,7 @@ function BranchAndBoundClustering(channel, network)
         fathomed_subtree_size = 0
         for child in branch(parent)
             bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
-            num_sum_throughput_calculations += 1
+            num_bounded_nodes += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
             if child.upper_bound > incumbent_sum_throughput
@@ -117,7 +117,7 @@ function BranchAndBoundClustering(channel, network)
                 # )
 
                 if store_fathomed_subtree_sizes
-                    fathomed_subtree_size += subtree_size(child, I)
+                    fathomed_subtree_size += subtree_size(child, I) - 1 # minus one since we already explored child
                 end
             end
         end
@@ -149,7 +149,7 @@ function BranchAndBoundClustering(channel, network)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
         { :sum_throughput => sum_throughput,
-          :num_sum_throughput_calculations => num_sum_throughput_calculations,
+          :num_bounded_nodes => num_bounded_nodes,
           :abs_conv_crit => abs_conv_crit,
           :max_abs_optimality_gap => max_abs_optimality_gap,
           :a => incumbent_a }
@@ -174,8 +174,8 @@ function BranchAndBoundClustering(channel, network)
     results["a"] = incumbent_a
     results["num_clusters"] = 1 + maximum(incumbent_a)
     results["avg_cluster_size"] = avg_cluster_size(incumbent_a)
-    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
     results["num_iters"] = num_iters
+    results["num_bounded_nodes"] = num_bounded_nodes
     results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
     results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
     results["fathoming_evolution"] = reshape(fathoming_evolution, (1, 1, length(fathoming_evolution)))

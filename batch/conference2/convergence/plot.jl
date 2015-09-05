@@ -24,6 +24,8 @@ plot_params_fathom = [
 
     "methods" => [
         "BranchAndBoundClustering" => [
+            ("num_iters",),
+            ("num_bounded_nodes",),
             ("fathoming_evolution",),
         ],
     ]
@@ -62,10 +64,10 @@ fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.18,0.90-0.12,0.95-0.18))
 
 ax[:plot](1:len, processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound_evolution"],
-    color=colours[:blue], linestyle=":", marker="v", markeredgecolor=colours[:blue], markevery=20_000,
+    color=colours[:blue], linestyle=":", marker="v", markeredgecolor=colours[:blue], markevery=10_000,
     label="Best upper bound")
 ax[:plot](1:len, processed_data_bounds_mean["BranchAndBoundClustering"]["lower_bound_evolution"],
-    color=colours[:blue], linestyle="-", marker="^", markeredgecolor=colours[:blue], markevery=20_000,
+    color=colours[:blue], linestyle="-", marker="^", markeredgecolor=colours[:blue], markevery=10_000,
     label="Best lower bound")
 ax[:set_xlabel]("Iterations")
 ax[:set_ylabel]("Sum throughput [bits/s/Hz]")
@@ -94,7 +96,7 @@ ax2 = ax1[:twinx]()
 line2 = ax2[:plot](1:len, 100*fathomed_subtree_sizes_cum/tree_size, color=colours[:blue], linestyle="--")
 ax2[:set_ylabel]("\\% of search tree pruned")
 ax2[:set_ylim](0,100)
-ax2[:set_xlim](1,len)
+ax2[:set_xlim](1,(1 + 1e-2)*len)
 
 legend = ax1[:legend]([ line1[1], line2[1] ], [ "Absolute number", "Percentage" ], loc="lower right")
 legend_frame = legend[:get_frame]()
@@ -106,10 +108,11 @@ include("../../../src/misc/partitions.jl")
 max_cluster_size = (data["simulation_params"]["M"] + data["simulation_params"]["N"] - data["simulation_params"]["d"])/(data["simulation_params"]["Kc"]*data["simulation_params"]["d"])
 stirlings = collect(Stirling2NumberIterator(data["simulation_params"]["I"]))
 naive_search_complexity = sum(stirlings[iceil(data["simulation_params"]["I"]/max_cluster_size):end])
-num_nodes_explored = tree_size - fathomed_subtree_sizes_cum[end]
+num_bounded_nodes = processed_data_fathom_mean["BranchAndBoundClustering"]["num_bounded_nodes"][1]
 
 println("Number of iterations: ", len)
-println("Number of nodes studied: ", num_nodes_explored)
-println("Fraction of search tree studied: ", num_nodes_explored/tree_size)
+println("Number of nodes bounded: ", num_bounded_nodes)
+println("Fraction of search tree bounded: ", num_bounded_nodes/tree_size)
+println("Fraction of search tree pruned: ", 1 - num_bounded_nodes/tree_size)
 println("Complexity of naive search: ", naive_search_complexity)
-println("Complexity reduction: ", naive_search_complexity/num_nodes_explored)
+println("Complexity reduction: ", naive_search_complexity/num_bounded_nodes)
