@@ -127,6 +127,11 @@ function BranchAndBoundClustering(channel, network)
         end
     end
 
+    # Add remaining subtrees that were implicitly fathomed
+    if store_fathomed_subtree_sizes
+        push!(fathoming_evolution, sum([ subtree_size(node, I) for node in live ]))
+    end
+
     # Did we find the global optimum?
     if (abs_conv_crit < 0.) || !premature_ending
         abs_conv_crit = 0.
