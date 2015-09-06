@@ -224,7 +224,8 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     # in a cluster, they are 'clustered', otherwise they are 'unclustered'.
     all_BSs = IntSet(1:I)
     N_clustered = length(node.a); N_unclustered = I - N_clustered
-    clustered_BSs = IntSet(1:N_clustered); nonclustered_BSs = IntSet(N_clustered+1:I)
+    clustered_BSs = IntSet(1:N_clustered); unclustered_BSs = IntSet(N_clustered+1:I)
+    reducible_interference_levels1 = Array(Float64, N_unclustered)
 
     # For looping over clusters, we create a pseudo partition, where the
     # unclustered BSs belong to singleton blocks.
@@ -299,6 +300,8 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
             outside_all_BSs = setdiff(all_BSs, block.elements)
             outside_clustered_BSs = setdiff(clustered_BSs, block.elements)
             outside_BSs_in_nonfull_clusters = setdiff(BSs_in_nonfull_clusters, block.elements)
+            N_outside_BSs_in_nonfull_clusters = length(outside_BSs_in_nonfull_clusters)
+            reducible_interference_levels2 = Array(Float64, N_outside_BSs_in_nonfull_clusters)
 
             # Get appropriate bounds for all MSs in this cluster.
             for i in block.elements; for k in served_MS_ids(i, assignment)
@@ -334,12 +337,11 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         # The bound is now due to picking the N_available_IA_slots_ strongest interferers (that are not clustered)
                         # and assuming that this interference is reducible. This is a bound since we are not ensuring the
                         # disjointness of the clusters here.
-                        reducible_interference_levels = Float64[]
-                        for j in nonclustered_BSs
-                            push!(reducible_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j])
+                        for (idx, j) in enumerate(unclustered_BSs)
+                            reducible_interference_levels1[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels, rev=true) # Could speed this up by using a heap.
-                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels1, rev=true, alg=InsertionSort) # Could speed this up by using a heap.
+                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels1[N_available_IA_slots_+1:end]))
                     else
                         # This BS is not clustered.
 
@@ -355,12 +357,11 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
 
                         # We now pick the N_available_IA_slots_ strongest interferers (which do not belong to full clusters),
                         # and assume that this interference is reducible.
-                        reducible_interference_levels = Float64[]
-                        for j in outside_BSs_in_nonfull_clusters
-                            push!(reducible_interference_levels, channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j])
+                        for (idx, j) in enumerate(outside_BSs_in_nonfull_clusters)
+                            reducible_interference_levels2[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels, rev=true) # Could speed this up by using a heap.
-                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels2, rev=true, alg=InsertionSort) # Could speed this up by using a heap.
+                        rho_network_sdma = desired_power/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels2[N_available_IA_slots_+1:end]))
                     end
                 end
 
