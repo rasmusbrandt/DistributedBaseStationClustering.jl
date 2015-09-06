@@ -7,6 +7,15 @@ using Compat, JLD, LaTeXStrings
 sim_name = "I"
 data = load("$(sim_name).jld")
 
+# Naive exhaustive search
+include("../../../src/misc/partitions.jl")
+max_cluster_size = (data["simulation_params"]["M"] + data["simulation_params"]["N"] - data["simulation_params"]["d"])/(data["simulation_params"]["Kc"]*data["simulation_params"]["d"])
+exhaustive_search_complexity = zeros(Int, length(data["Is"]))
+for i in data["Is"]
+    stirlings = collect(Stirling2NumberIterator(i))
+    exhaustive_search_complexity[i] = sum(stirlings[iceil(i/max_cluster_size):end])
+end
+
 # 8-class Set1
 colours = [
     :red => "#e41a1c",
@@ -34,11 +43,17 @@ PyPlot.rc("figure", figsize=(3.50,1.5), dpi=125)
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.18,0.90-0.12,0.95-0.18))
 
-ax[:plot](data["Is"], mean(data["results"], 2),
+ax[:plot](data["Is"], exhaustive_search_complexity,
+    color=colours[:orange], linestyle="-",
+    label="Exhaustive search")
+ax[:plot](data["Is"], mean(data["results"][:,:,1], 2),
     color=colours[:blue], linestyle="-",
     label="Branch and bound")
+ax[:plot](data["Is"], mean(data["results"][:,:,2], 2),
+    color=colours[:green], linestyle="-",
+    label="Heuristic")
 ax[:set_xlabel](L"Number of BSs $I$")
-ax[:set_ylabel]("Number of nodes bounded")
+ax[:set_ylabel]("Complexity")
 ax[:set_yscale]("log")
 legend = ax[:legend](loc="upper left")
 legend_frame = legend[:get_frame]()

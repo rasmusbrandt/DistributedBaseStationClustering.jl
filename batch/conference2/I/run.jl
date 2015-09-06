@@ -6,7 +6,7 @@ using Compat, JLD
 
 # Parameters
 include("../simulation_params.jl")
-const Ndrops = 100
+const Ndrops = 10
 const Is = 1:16
 
 simulation_params = [
@@ -15,7 +15,10 @@ simulation_params = [
     "M" => M, "N" => N, "d" => d,
     "geography_size" => (geography_width, geography_width),
     "MS_serving_BS_distance" => MS_serving_BS_distance,
-    "assignment_methods" => [ BranchAndBoundClustering, ],
+    "assignment_methods" => [
+        BranchAndBoundClustering,
+        GreedyClustering_Multiple,
+    ],
     "precoding_methods" => [ NoPrecoding ],
     "aux_network_params" => [
         "num_coherence_symbols" => num_coherence_symbols,
@@ -39,7 +42,7 @@ simulation_params = [
 
 srand(725242)
 
-results = zeros(Int, length(Is), Ndrops)
+results = zeros(Int, length(Is), Ndrops, 2)
 for (idx, I) in enumerate(Is)
     network =
         setup_random_large_scale_network(I,
@@ -51,7 +54,8 @@ for (idx, I) in enumerate(Is)
     for ii_Ndrop = 1:Ndrops
         _, raw_assignment_results =
             simulate(network, simulation_params, loop_over=:assignment_methods)
-        results[idx, ii_Ndrop] = raw_assignment_results[1]["BranchAndBoundClustering"]["num_bounded_nodes"]
+        results[idx, ii_Ndrop, 1] = raw_assignment_results[1]["BranchAndBoundClustering"]["num_sum_throughput_calculations"]
+        results[idx, ii_Ndrop, 2] = raw_assignment_results[1]["GreedyClustering_Multiple"]["num_sum_throughput_calculations"]
     end
 end
 

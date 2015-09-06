@@ -176,6 +176,7 @@ function BranchAndBoundClustering(channel, network)
     results["avg_cluster_size"] = avg_cluster_size(incumbent_a)
     results["num_iters"] = num_iters
     results["num_bounded_nodes"] = num_bounded_nodes
+    results["num_sum_throughput_calculations"] = num_bounded_nodes
     results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
     results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
     results["fathoming_evolution"] = reshape(fathoming_evolution, (1, 1, length(fathoming_evolution)))
