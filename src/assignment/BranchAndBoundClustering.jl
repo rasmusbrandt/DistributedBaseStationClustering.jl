@@ -64,9 +64,22 @@ function BranchAndBoundClustering(channel, network)
         end
     end
 
+    # Cluster SDMA spectral efficiencies
+    desired_powers = Array(Float64, I*Kc)
+    rates_cluster_sdma = Array(Float64, I*Kc)
+    for i = 1:I; for k in served_MS_ids(i, assignment)
+        desired_powers[k] = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
+        rho_cluster_sdma = desired_powers[k]/sigma2s[k]
+        if E1_bound_in_rate_bound
+            rates_cluster_sdma[k] = exp_times_E1(rho_cluster_sdma, bound=:upper)
+        else
+            rates_cluster_sdma[k] = exp_times_E1(rho_cluster_sdma)
+        end
+    end; end
+
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]; fathoming_evolution = Int[]
-    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
     num_iters = 0; num_bounded_nodes = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
@@ -91,7 +104,7 @@ function BranchAndBoundClustering(channel, network)
 
         fathomed_subtree_size = 0
         for child in branch(parent)
-            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
             num_bounded_nodes += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
@@ -207,16 +220,20 @@ function subtree_size(depth, m, I)
 end
 
 # Initialize the live structure by creating the root node.
-function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d,
+    beta_network_sdma, num_coherence_symbols, assignment,
+    E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+
     root = BranchAndBoundNode([0], Inf)
-    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
     # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
 
 # Bound works by optimistically removing interference for unclustered BSs.
 function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
-    beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound)
+    beta_network_sdma, num_coherence_symbols, assignment,
+    E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
 
     beta_cluster_sdma = 1 - beta_network_sdma
 
@@ -263,20 +280,6 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     a1 = symmetric_prelog_cluster_sdma(cs1, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
     a2 = symmetric_prelog_cluster_sdma(cs2, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
     optimal_cluster_size_cluster_sdma = (a1 > a2) ? cs1 : cs2
-
-    # Cluster SDMA spectral efficiencies
-    desired_powers = Array(Float64, I*Kc)
-    rates_cluster_sdma = Array(Float64, I*Kc)
-    rates_cluster_sdma_bound = Array(Float64, I*Kc)
-    for i = 1:I; for k in served_MS_ids(i, assignment)
-        desired_powers[k] = channel.large_scale_fading_factor[k,i]*channel.large_scale_fading_factor[k,i]*(Ps[i]/(Kc*d)) # don't use ^2 for performance reasons
-        rho_cluster_sdma = desired_powers[k]/sigma2s[k]
-        if E1_bound_in_rate_bound
-            rates_cluster_sdma_bound[k] = exp_times_E1(rho_cluster_sdma, bound=:upper)
-        else
-            rates_cluster_sdma[k] = exp_times_E1(rho_cluster_sdma)
-        end
-    end; end
 
     # Prelog, rate, and throughput bounds
     node_is_leaf = is_leaf(node, I)
@@ -350,7 +353,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         for (idx, j) in enumerate(unclustered_BSs)
                             reducible_interference_levels1[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels1, rev=true) # Could speed this up by using a heap.
+                        sort!(reducible_interference_levels1, rev=true)
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels1[N_available_IA_slots_+1:end]))
                     else
                         # This BS is not clustered.
@@ -370,7 +373,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         for (idx, j) in enumerate(outside_BSs_in_nonfull_clusters)
                             reducible_interference_levels2[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels2, rev=true) # Could speed this up by using a heap.
+                        sort!(reducible_interference_levels2, rev=true)
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels2[N_available_IA_slots_+1:end]))
                     end
                 end
@@ -388,7 +391,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                 # prelogs are bounded above.)
                 if E1_bound_in_rate_bound && !node_is_leaf
                     throughput_bounds[k,:] =
-                        prelog_bounds_cluster_sdma[k]*rates_cluster_sdma_bound[k] +
+                        prelog_bounds_cluster_sdma[k]*rates_cluster_sdma[k] + # rates_cluster_sdma is already bounded in the calling function
                         prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma, bound=:upper)
                 else
                     throughput_bounds[k,:] =
