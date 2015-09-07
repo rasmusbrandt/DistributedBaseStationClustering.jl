@@ -350,7 +350,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         for (idx, j) in enumerate(unclustered_BSs)
                             reducible_interference_levels1[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels1, rev=true, alg=InsertionSort) # Could speed this up by using a heap.
+                        sort!(reducible_interference_levels1, rev=true) # Could speed this up by using a heap.
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels1[N_available_IA_slots_+1:end]))
                     else
                         # This BS is not clustered.
@@ -370,7 +370,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         for (idx, j) in enumerate(outside_BSs_in_nonfull_clusters)
                             reducible_interference_levels2[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
                         end
-                        sort!(reducible_interference_levels2, rev=true, alg=InsertionSort) # Could speed this up by using a heap.
+                        sort!(reducible_interference_levels2, rev=true) # Could speed this up by using a heap.
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels2[N_available_IA_slots_+1:end]))
                     end
                 end
