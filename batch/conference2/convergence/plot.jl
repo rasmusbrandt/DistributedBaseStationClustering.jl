@@ -53,7 +53,7 @@ PyPlot.rc("axes", linewidth=0.5, labelsize=6)
 PyPlot.rc("xtick", labelsize=6)
 PyPlot.rc("ytick", labelsize=6)
 PyPlot.rc("legend", fancybox=true, fontsize=6)
-PyPlot.rc("figure", figsize=(3.50,1.5), dpi=125)
+PyPlot.rc("figure", figsize=(3.50,1.1), dpi=125)
 
 len = length(processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound_evolution"]) # should be same for all
 
@@ -61,16 +61,16 @@ len = length(processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound
 # bounds
 plot_name = "bounds"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.18,0.90-0.12,0.95-0.18))
+ax = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
 
 ax[:plot](1:len, processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound_evolution"],
     color=colours[:blue], linestyle=":", marker="v", markeredgecolor=colours[:blue], markevery=10_000,
     label="Best upper bound")
 ax[:plot](1:len, processed_data_bounds_mean["BranchAndBoundClustering"]["lower_bound_evolution"],
     color=colours[:blue], linestyle="-", marker="^", markeredgecolor=colours[:blue], markevery=10_000,
-    label="Best lower bound")
+    label="Incumbent")
 ax[:set_xlabel]("Iterations")
-ax[:set_ylabel]("Sum throughput [bits/s/Hz]")
+ax[:set_ylabel]("S. throughput [bits/c.u]")
 ax[:set_xlim](1,len)
 legend = ax[:legend](loc="upper right")
 legend_frame = legend[:get_frame]()
@@ -81,19 +81,19 @@ fig[:savefig]("$(sim_name)_$(plot_name).eps")
 # fathom
 plot_name = "fathom"
 fig = PyPlot.figure()
-ax1 = fig[:add_axes]((0.12,0.18,0.90-0.12,0.95-0.18))
+ax1 = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
 
 include("../../../src/assignment/BranchAndBoundClustering.jl")
 tree_size = subtree_size(1, 1, data["simulation_params"]["I"])
 fathomed_subtree_sizes_cum = cumsum(processed_data_fathom_mean["BranchAndBoundClustering"]["fathoming_evolution"])
 
-line1 = ax1[:plot](1:len, fathomed_subtree_sizes_cum, color=colours[:blue], linestyle="-")
+line1 = ax1[:plot](1:len, fathomed_subtree_sizes_cum, color=colours[:blue], linestyle="-", marker="o", markeredgecolor=colours[:blue], markevery=10_000)
 ax1[:set_xlabel]("Iterations")
-ax1[:set_ylabel]("Number of nodes pruned")
+ax1[:set_ylabel]("\\# of nodes pruned")
 ax1[:set_yscale]("log")
 
 ax2 = ax1[:twinx]()
-line2 = ax2[:plot](1:len, 100*fathomed_subtree_sizes_cum/tree_size, color=colours[:blue], linestyle="--")
+line2 = ax2[:plot](1:len, 100*fathomed_subtree_sizes_cum/tree_size, color=colours[:blue], linestyle="--", marker="d", markeredgecolor=colours[:blue], markevery=10_000)
 ax2[:set_ylabel]("\\% of search tree pruned")
 ax2[:set_ylim](0,100)
 ax2[:set_xlim](1,(1 + 1e-2)*len)

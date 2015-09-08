@@ -37,20 +37,20 @@ PyPlot.rc("axes", linewidth=0.5, labelsize=6)
 PyPlot.rc("xtick", labelsize=6)
 PyPlot.rc("ytick", labelsize=6)
 PyPlot.rc("legend", fancybox=true, fontsize=6)
-PyPlot.rc("figure", figsize=(3.50,1.5), dpi=125)
+PyPlot.rc("figure", figsize=(3.50,1.1), dpi=125)
 
 # Plot it
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.18,0.90-0.12,0.95-0.18))
+ax = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
 
 ax[:plot](data["Is"], exhaustive_search_complexity,
-    color=colours[:orange], linestyle="-",
+    color=colours[:orange], linestyle="-", marker="v", markeredgecolor=colours[:orange], markevery=4,
     label="Exhaustive search")
 ax[:plot](data["Is"], mean(data["results"][:,:,1], 2),
-    color=colours[:blue], linestyle="-",
+    color=colours[:blue], linestyle="-", marker="o", markeredgecolor=colours[:blue], markevery=4,
     label="Branch and bound")
 ax[:plot](data["Is"], mean(data["results"][:,:,2], 2),
-    color=colours[:green], linestyle="-",
+    color=colours[:green], linestyle="-", marker="^", markeredgecolor=colours[:green], markevery=4,
     label="Heuristic")
 ax[:set_xlabel](L"Number of BSs $I$")
 ax[:set_ylabel]("Complexity")
