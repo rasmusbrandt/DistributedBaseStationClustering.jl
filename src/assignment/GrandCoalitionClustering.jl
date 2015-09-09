@@ -15,8 +15,7 @@ function GrandCoalitionClustering(channel, network)
     a = zeros(Int, I)
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, Partition(a))
     Lumberjack.info("GrandCoalitionClustering finished.",
-        { :sum_throughput => sum(throughputs),
-          :a => a }
+        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
     )
 
     # Store prelogs for precoding

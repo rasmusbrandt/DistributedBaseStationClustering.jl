@@ -24,7 +24,7 @@ function Peters2012_Heuristic(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
     temp_cell_assignment = get_assignment(network)
     require_equal_num_MSs_per_cell(temp_cell_assignment)
-    Kc = int(K/I)
+    Kc = convert(Int, K/I)
 
     # Find DoF optimal number of partitions P
     DoFo = zeros(Float64, I) # d-tilde in paper
@@ -32,7 +32,7 @@ function Peters2012_Heuristic(channel, network)
         DoFo[L] = symmetric_prelog_cluster_sdma_incl_IA_feasibility(L, num_symbols_cluster_sdma, I, M, Kc, N, d)
     end
     _, idx = findmax(DoFo)
-    P = iceil(I/(1:I)[idx]) # number of partitions
+    P = ceil(Int, I/(1:I)[idx]) # number of partitions
 
     # Greedily build clusters based on rate approximation
     unclustered_BSs = IntSet(1:I) # K_A in paper
@@ -87,8 +87,7 @@ function Peters2012_Heuristic(channel, network)
     a = restricted_growth_string(partition)
     objective = sum(throughputs)
     Lumberjack.info("Peters2010_Heuristic finished.",
-        { :sum_throughput => objective,
-          :a => a }
+        @Compat.Dict(:sum_throughput => objective, :a => a)
     )
 
     # Store prelogs for precoding

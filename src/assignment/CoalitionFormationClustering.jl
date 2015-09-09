@@ -39,7 +39,7 @@ function CoalitionFormationClustering_Common(channel, network, swap_allowed; ign
     temp_cell_assignment = get_assignment(network)
 
     # Local RNG
-    local_rng = MersenneTwister(int(time()))
+    local_rng = MersenneTwister(round(Int, time()))
 
     # Initial coalition structure
     if starting_point == :grand
@@ -79,9 +79,10 @@ function CoalitionFormationClustering_Common(channel, network, swap_allowed; ign
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, state.partition, ignore_IA_feasibility=ignore_IA_feasibility)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering($(swap_allowed)) finished.",
-        { :sum_throughput => sum(throughputs),
-          :num_searches => state.num_searches,
-          :a => a }
+        @Compat.Dict(
+            :sum_throughput => sum(throughputs),
+            :num_searches => state.num_searches,
+            :a => a)
     )
 
     # Store prelogs for precoding
@@ -141,10 +142,10 @@ function deviate!(state::CoalitionFormationClustering_State, i, I, K,
             end
         end
     end
-    num_new_partitions = length(other_blocks) + Nother + int(!BS_in_singleton_coalition_before)
+    num_new_partitions = length(other_blocks) + Nother + convert(Int, !BS_in_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
-    swapees = zeros(Int64, num_new_partitions)
+    swapees = zeros(Int, num_new_partitions)
     local n
 
     # Deviations where BS i joins an existing coalition
@@ -324,7 +325,7 @@ function randperm(n::Integer, rng)
     a = Array(typeof(n), n)
     a[1] = 1
     for i = 2:n
-        j = iceil(i*rand(rng))
+        j = ceil(Int, i*rand(rng))
         a[i] = a[j]
         a[j] = i
     end

@@ -20,7 +20,7 @@ function ExhaustiveSearchClustering(channel, network)
     # Exhaustive search over all partitions
     num_sum_throughput_calculations = 0
     best_sum_throughput = 0.; best_throughputs = Array(Float64, K, d_max); local best_throughputs_split
-    best_prelogs = (Array(Float64, K), Array(Float64, K)); best_partition = Partition([0:(I-1)])
+    best_prelogs = (Array(Float64, K), Array(Float64, K)); best_partition = Partition(collect(0:(I-1)))
     for partition in PartitionIterator(I)
         num_sum_throughput_calculations += 1
 
@@ -38,9 +38,10 @@ function ExhaustiveSearchClustering(channel, network)
     end
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
-        { :sum_throughput => best_sum_throughput,
-          :num_sum_throughput_calculations => num_sum_throughput_calculations,
-          :a => a }
+        @Compat.Dict(
+            :sum_throughput => best_sum_throughput,
+            :num_sum_throughput_calculations => num_sum_throughput_calculations,
+            :a => a)
     )
 
     # Store prelogs for precoding

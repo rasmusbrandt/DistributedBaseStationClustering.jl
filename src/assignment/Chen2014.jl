@@ -48,8 +48,7 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
-        { :sum_throughput => sum(throughputs),
-          :a => a }
+        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
     )
 
     # Store prelogs for precoding
@@ -85,7 +84,7 @@ function Chen2014_kmeans(channel, network)
     require_equal_num_MSs_per_cell(temp_cell_assignment)
     M = get_num_BS_antennas(network)[1]
     N = get_num_MS_antennas(network)[1]
-    Kc = int(K/I)
+    Kc = convert(Int, K/I)
     d = get_num_streams(network)[1]
     Lmax = (M + N - d)/(Kc*d)
 
@@ -99,7 +98,7 @@ function Chen2014_kmeans(channel, network)
     W = Chen2014_W_matrix(channel, network)
 
     # k-means clustering on W
-    N_A = iceil(I/Lmax)
+    N_A = ceil(Int, I/Lmax)
     if N_A == 1
         # Grand coalition feasible, so no need to perform kmeans
         partition_matrix[:] = 1
@@ -121,8 +120,7 @@ function Chen2014_kmeans(channel, network)
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
     a = restricted_growth_string(partition)
     Lumberjack.info("Chen2014_kmeans finished.",
-        { :sum_throughput => sum(throughputs),
-          :a => a }
+        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
     )
 
     # Store prelogs for precoding

@@ -66,11 +66,12 @@ function Chen2014_MaxSINR(channel, network; network_sdma_robustness::Bool=true)
             conv_crit = abs(objective[end] - objective[end-1])/abs(objective[end-1])
             if conv_crit < aux_params["stop_crit"] || objective[end] == 0
                 Lumberjack.debug("Chen2014_MaxSINR converged.",
-                    [ :num_iters => iters,
-                      :final_objective => objective[end],
-                      :conv_crit => conv_crit,
-                      :stop_crit => aux_params["stop_crit"],
-                      :max_iters => aux_params["max_iters"] ]
+                    @Compat.Dict(
+                        :num_iters => iters,
+                        :final_objective => objective[end],
+                        :conv_crit => conv_crit,
+                        :stop_crit => aux_params["stop_crit"],
+                        :max_iters => aux_params["max_iters"])
                 )
                 break
             end
@@ -85,11 +86,12 @@ function Chen2014_MaxSINR(channel, network; network_sdma_robustness::Bool=true)
     end
     if iters == aux_params["max_iters"]
         Lumberjack.debug("Chen2014_MaxSINR did NOT converge.",
-            [ :num_iters => iters,
-              :final_objective => objective[end],
-              :conv_crit => conv_crit,
-              :stop_crit => aux_params["stop_crit"],
-              :max_iters => aux_params["max_iters"] ]
+            @Compat.Dict(
+                :num_iters => iters,
+                :final_objective => objective[end],
+                :conv_crit => conv_crit,
+                :stop_crit => aux_params["stop_crit"],
+                :max_iters => aux_params["max_iters"])
         )
     end
 

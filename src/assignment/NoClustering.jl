@@ -9,12 +9,11 @@ function NoClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
     temp_assignment = get_assignment(network)
 
-    a = [0:(I-1)]
+    a = collect(0:(I-1))
     partition = Partition(a)
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
     Lumberjack.info("NoClustering finished.",
-        { :sum_throughput => sum(throughputs),
-          :a => a }
+        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
     )
 
     # Store prelogs for precoding

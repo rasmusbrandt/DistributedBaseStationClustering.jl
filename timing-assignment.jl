@@ -16,7 +16,7 @@ srand(973472333)
 
 ##########################################################################
 # Indoors network
-simulation_params = [
+simulation_params = @Compat.Dict(
     "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
@@ -40,11 +40,11 @@ simulation_params = [
         RandomClustering,
         NoClustering,
     ],
-    "aux_network_params" => [
+    "aux_network_params" => @Compat.Dict(
         "num_coherence_symbols" => 2500,
         "beta_network_sdma" => 0.8,
-    ],
-    "aux_assignment_params" => [
+    ),
+    "aux_assignment_params" => @Compat.Dict(
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
@@ -54,8 +54,8 @@ simulation_params = [
         "CoalitionFormationClustering:search_budget" => 100,
         "CoalitionFormationClustering:use_history" => true,
         "CoalitionFormationClustering:starting_point" => :singletons,
-    ],
-]
+    ),
+)
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],

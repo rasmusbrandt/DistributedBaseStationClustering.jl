@@ -17,7 +17,7 @@ function BranchAndBoundClustering(channel, network)
 
     # Network parameters in symmetric network
     I = get_num_BSs(network); K = get_num_MSs(network)
-    Kc = int(K/I)
+    Kc = convert(Int, K/I)
     M = get_num_BS_antennas(network)[1]; N = get_num_MS_antennas(network)[1]
     d = get_num_streams(network)[1]
     Ps = get_transmit_powers(network); sigma2s = get_receiver_noise_powers(network)
@@ -161,11 +161,12 @@ function BranchAndBoundClustering(channel, network)
     end
 
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_throughput => sum_throughput,
-          :num_bounded_nodes => num_bounded_nodes,
-          :abs_conv_crit => abs_conv_crit,
-          :max_abs_optimality_gap => max_abs_optimality_gap,
-          :a => incumbent_a }
+        @Compat.Dict(
+            :sum_throughput => sum_throughput,
+            :num_bounded_nodes => num_bounded_nodes,
+            :abs_conv_crit => abs_conv_crit,
+            :max_abs_optimality_gap => max_abs_optimality_gap,
+            :a => incumbent_a)
     )
 
     # Store a for next branch and bound run
@@ -246,7 +247,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
 
     # For looping over clusters, we create a pseudo partition, where the
     # unclustered BSs belong to singleton blocks.
-    pseudo_partition_a = Array(Int64, I)
+    pseudo_partition_a = Array(Int, I)
     for i = 1:N_clustered
         pseudo_partition_a[i] = node.a[i]
     end
@@ -260,8 +261,8 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     # This number is given by the closed form in Liu2013. We also store
     # the BSs that are in the 'IA full' clusters, i.e. clusters that cannot
     # accept any more BSs. This is also used in the bound.
-    max_cluster_size = ifloor((M + N - d)/(Kc*d))
-    N_available_IA_slots = Dict{Block,Int64}()
+    max_cluster_size = floor(Int, (M + N - d)/(Kc*d))
+    N_available_IA_slots = Dict{Block,Int}()
     BSs_in_full_clusters = IntSet()
     for block in pseudo_partition.blocks
         N_available_ = max_cluster_size - length(block.elements)
@@ -276,7 +277,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     # Find cluster SDMA prelog optimal cluster size (to be used in prelog bounds)
     num_symbols_cluster_sdma = beta_cluster_sdma*num_coherence_symbols
     cs_opt = min((num_symbols_cluster_sdma - I*(M + Kc*(N + d)))/(2*I*Kc*M), max_cluster_size)
-    cs1 = iceil(cs_opt); cs2 = ifloor(cs_opt) # cs_opt might be fractional so check surrounding integers. The overhead function is unimodal, it's OK.
+    cs1 = ceil(Int, cs_opt); cs2 = floor(Int, cs_opt) # cs_opt might be fractional so check surrounding integers. The overhead function is unimodal, it's OK.
     a1 = symmetric_prelog_cluster_sdma(cs1, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
     a2 = symmetric_prelog_cluster_sdma(cs2, beta_cluster_sdma, num_symbols_cluster_sdma, I, M, Kc, N, d)
     optimal_cluster_size_cluster_sdma = (a1 > a2) ? cs1 : cs2
