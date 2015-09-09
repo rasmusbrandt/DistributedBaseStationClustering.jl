@@ -359,11 +359,17 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         # The bound is now due to picking the N_available_IA_slots_ strongest interferers (that are not clustered)
                         # and assuming that this interference is reducible. This is a bound since we are not ensuring the
                         # disjointness of the clusters here.
-                        for (idx, j) in enumerate(unclustered_BSs)
+                        idx = 1
+                        for j in unclustered_BSs
                             reducible_interference_levels1[idx] = interfering_powers[j,k]
+                            idx += 1
                         end
-                        sort!(reducible_interference_levels1, rev=true)
-                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels1[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels1)
+                        reducible_interference_power = 0.
+                        for idx in 1:(N_unclustered - N_available_IA_slots_)
+                            reducible_interference_power += reducible_interference_levels1[idx]
+                        end
+                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + reducible_interference_power)
                     else
                         # This BS is not clustered.
 
@@ -379,11 +385,17 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
 
                         # We now pick the N_available_IA_slots_ strongest interferers (which do not belong to full clusters),
                         # and assume that this interference is reducible.
-                        for (idx, j) in enumerate(outside_BSs_in_nonfull_clusters)
+                        idx = 1
+                        for j in outside_BSs_in_nonfull_clusters
                             reducible_interference_levels2[idx] = interfering_powers[j,k]
+                            idx += 1
                         end
-                        sort!(reducible_interference_levels2, rev=true)
-                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels2[N_available_IA_slots_+1:end]))
+                        sort!(reducible_interference_levels2)
+                        reducible_interference_power = 0.
+                        for idx in 1:(N_outside_BSs_in_nonfull_clusters - N_available_IA_slots_)
+                            reducible_interference_power += reducible_interference_levels2[idx]
+                        end
+                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + reducible_interference_power)
                     end
                 end
 
