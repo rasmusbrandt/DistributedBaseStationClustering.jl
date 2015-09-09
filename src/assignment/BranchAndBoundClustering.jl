@@ -270,11 +270,9 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     # the BSs that are in the 'IA full' clusters, i.e. clusters that cannot
     # accept any more BSs. This is also used in the bound.
     max_cluster_size = floor(Int, (M + N - d)/(Kc*d))
-    N_available_IA_slots = Dict{Block,Int}()
     BSs_in_full_clusters = IntSet()
     for block in pseudo_partition.blocks
         N_available_ = max_cluster_size - length(block.elements)
-        N_available_IA_slots[block] = N_available_
         if N_available_ <= 0
             union!(BSs_in_full_clusters, block.elements)
         end
@@ -296,7 +294,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     prelog_bounds_network_sdma = zeros(Float64, I*Kc)
     throughput_bounds = zeros(Float64, I*Kc, d)
     for block in pseudo_partition.blocks
-        N_available_IA_slots_ = N_available_IA_slots[block]
+        N_available_IA_slots_ = max_cluster_size - length(block.elements)
 
         # Clusters that are IA overloaded get zero throughput, both for cluster SDMA and for network SDMA.
         if N_available_IA_slots_ >= 0
