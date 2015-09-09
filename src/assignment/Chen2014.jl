@@ -22,7 +22,7 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
 
     # Exhaustive search over partitions
     best_objective = 0.
-    best_partition = Partition([0:(I-1)])
+    best_partition = Partition(collect(0:(I-1)))
     num_sum_throughput_calculations = 0
     for partition in PartitionIterator(I)
         num_sum_throughput_calculations += 1
