@@ -64,7 +64,7 @@ function BranchAndBoundClustering(channel, network)
         end
     end
 
-    # Cluster SDMA spectral efficiencies
+    # Precompute desired powers and cluster SDMA spectral efficiencies
     desired_powers = Array(Float64, I*Kc)
     rates_cluster_sdma = Array(Float64, I*Kc)
     for i = 1:I; for k in served_MS_ids(i, assignment)
@@ -77,9 +77,17 @@ function BranchAndBoundClustering(channel, network)
         end
     end; end
 
+    # Precompute interfering powers
+    interfering_powers = Array(Float64, I, I*Kc)
+    for i = 1:I; for k in served_MS_ids(i, assignment)
+        for j = 1:I
+            interfering_powers[j,k] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+        end
+    end; end
+
     # Perform eager branch and bound
     lower_bound_evolution = Float64[]; upper_bound_evolution = Float64[]; fathoming_evolution = Int[]
-    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+    live = initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
     num_iters = 0; num_bounded_nodes = 0
     abs_conv_crit = 0.; premature_ending = false
     while length(live) > 0
@@ -104,7 +112,7 @@ function BranchAndBoundClustering(channel, network)
 
         fathomed_subtree_size = 0
         for child in branch(parent)
-            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+            bound!(child, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
             num_bounded_nodes += 1
 
             # Is it worthwhile investigating this subtree/leaf more?
@@ -223,10 +231,10 @@ end
 # Initialize the live structure by creating the root node.
 function initialize_live(channel, network, Ps, sigma2s, I, Kc, M, N, d,
     beta_network_sdma, num_coherence_symbols, assignment,
-    E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+    E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
 
     root = BranchAndBoundNode([0], Inf)
-    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+    bound!(root, channel, network, Ps, sigma2s, I, Kc, M, N, d, beta_network_sdma, num_coherence_symbols, assignment, E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
     # Lumberjack.debug("Root created.", { :node => root })
     return [ root ]
 end
@@ -234,7 +242,7 @@ end
 # Bound works by optimistically removing interference for unclustered BSs.
 function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     beta_network_sdma, num_coherence_symbols, assignment,
-    E1_bound_in_rate_bound, desired_powers, rates_cluster_sdma)
+    E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
 
     beta_cluster_sdma = 1 - beta_network_sdma
 
@@ -331,7 +339,7 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                     # All BSs outside my cluster contribute irreducible interference.
                     irreducible_interference_power = 0.
                     for j in outside_all_BSs
-                        irreducible_interference_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                        irreducible_interference_power += interfering_powers[j,k]
                     end
                     rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power)
                 else
@@ -345,14 +353,14 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         # Clustered BSs outside my cluster contribute irreducible interference.
                         irreducible_interference_power = 0.
                         for j in outside_clustered_BSs
-                            irreducible_interference_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                            irreducible_interference_power += interfering_powers[j,k]
                         end
 
                         # The bound is now due to picking the N_available_IA_slots_ strongest interferers (that are not clustered)
                         # and assuming that this interference is reducible. This is a bound since we are not ensuring the
                         # disjointness of the clusters here.
                         for (idx, j) in enumerate(unclustered_BSs)
-                            reducible_interference_levels1[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                            reducible_interference_levels1[idx] = interfering_powers[j,k]
                         end
                         sort!(reducible_interference_levels1, rev=true)
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels1[N_available_IA_slots_+1:end]))
@@ -366,13 +374,13 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         # those BSs contribute irreducible interference.
                         irreducible_interference_power = 0.
                         for j in BSs_in_full_clusters
-                            irreducible_interference_power += channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                            irreducible_interference_power += interfering_powers[j,k]
                         end
 
                         # We now pick the N_available_IA_slots_ strongest interferers (which do not belong to full clusters),
                         # and assume that this interference is reducible.
                         for (idx, j) in enumerate(outside_BSs_in_nonfull_clusters)
-                            reducible_interference_levels2[idx] = channel.large_scale_fading_factor[k,j]*channel.large_scale_fading_factor[k,j]*Ps[j]
+                            reducible_interference_levels2[idx] = interfering_powers[j,k]
                         end
                         sort!(reducible_interference_levels2, rev=true)
                         rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + sum(reducible_interference_levels2[N_available_IA_slots_+1:end]))
@@ -391,13 +399,19 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                 # exp(1/rho)*E1(1/rho) if that is desired. (Note that the
                 # prelogs are bounded above.)
                 if E1_bound_in_rate_bound && !node_is_leaf
-                    throughput_bounds[k,:] =
+                    throughput_bound =
                         prelog_bounds_cluster_sdma[k]*rates_cluster_sdma[k] + # rates_cluster_sdma is already bounded in the calling function
                         prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma, bound=:upper)
+                    for n = 1:d
+                        throughput_bounds[k,n] = throughput_bound
+                    end
                 else
-                    throughput_bounds[k,:] =
+                    throughput_bound =
                         prelog_bounds_cluster_sdma[k]*rates_cluster_sdma[k] +
                         prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma)
+                    for n = 1:d
+                        throughput_bounds[k,n] = throughput_bound
+                    end
                 end
             end; end
         end
