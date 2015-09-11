@@ -41,7 +41,7 @@ PyPlot.rc("figure", figsize=(3.50,1.1), dpi=125)
 
 # Plot it
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
+ax = fig[:add_axes]((0.12,0.24,0.88-0.12,0.95-0.24))
 
 ax[:plot](data["Is"], exhaustive_search_complexity,
     color=colours[:orange], linestyle="-", marker="v", markeredgecolor=colours[:orange], markevery=4,
@@ -53,7 +53,7 @@ ax[:plot](data["Is"], mean(data["results"][:,:,2], 2),
     color=colours[:green], linestyle="-", marker="^", markeredgecolor=colours[:green], markevery=4,
     label="Heuristic")
 ax[:set_xlabel](L"Number of BSs $I$")
-ax[:set_ylabel]("Complexity")
+ax[:set_ylabel]("Average complexity")
 ax[:set_yscale]("log")
 legend = ax[:legend](loc="upper left")
 legend_frame = legend[:get_frame]()

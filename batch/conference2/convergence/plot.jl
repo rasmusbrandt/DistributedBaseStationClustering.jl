@@ -61,7 +61,7 @@ len = length(processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound
 # bounds
 plot_name = "bounds"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
+ax = fig[:add_axes]((0.12,0.24,0.88-0.12,0.95-0.24))
 
 ax[:plot](1:len, processed_data_bounds_mean["BranchAndBoundClustering"]["upper_bound_evolution"],
     color=colours[:blue], linestyle=":", marker="v", markeredgecolor=colours[:blue], markevery=10_000,
@@ -81,7 +81,7 @@ fig[:savefig]("$(sim_name)_$(plot_name).eps")
 # fathom
 plot_name = "fathom"
 fig = PyPlot.figure()
-ax1 = fig[:add_axes]((0.12,0.21,0.90-0.12,0.95-0.21))
+ax1 = fig[:add_axes]((0.12,0.24,0.88-0.12,0.95-0.24))
 
 include("../../../src/assignment/BranchAndBoundClustering.jl")
 tree_size = subtree_size(1, 1, data["simulation_params"]["I"])
@@ -94,7 +94,7 @@ ax1[:set_yscale]("log")
 
 ax2 = ax1[:twinx]()
 line2 = ax2[:plot](1:len, 100*fathomed_subtree_sizes_cum/tree_size, color=colours[:blue], linestyle="--", marker="d", markeredgecolor=colours[:blue], markevery=10_000)
-ax2[:set_ylabel]("\\% of search tree pruned")
+ax2[:set_ylabel]("\\% of tree pruned")
 ax2[:set_ylim](0,100)
 ax2[:set_xlim](1,(1 + 1e-2)*len)
 

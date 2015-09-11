@@ -64,7 +64,7 @@ PyPlot.rc("figure", figsize=(3.50,1.1), dpi=125)
 
 # Plot it
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.23,0.90-0.12,0.95-0.23))
+ax = fig[:add_axes]((0.12,0.24,0.88-0.12,0.95-0.24))
 
 ax[:plot](idp_vals, processed_data_mean["BranchAndBoundClustering"]["throughputs"],
     color=colours[:blue], linestyle="-", marker="o", markeredgecolor=colours[:blue], markevery=3,
