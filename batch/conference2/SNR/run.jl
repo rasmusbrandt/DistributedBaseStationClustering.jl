@@ -6,7 +6,7 @@ using Compat, JLD
 
 # Parameters
 include("../simulation_params.jl")
-const Ndrops = 10
+const Ndrops = 100
 
 simulation_params = [
     "Ndrops" => Ndrops, "Nsim" => Nsim,
