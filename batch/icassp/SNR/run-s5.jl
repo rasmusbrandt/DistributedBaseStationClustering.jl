@@ -2,7 +2,7 @@
 
 srand(549784)
 include("run-base.jl")
-simulation_params["simulation_name"] = "s5"
+simulation_params["simulation_name"] = "SNR-s5"
 
 network =
     setup_random_large_scale_network(simulation_params["I"],
