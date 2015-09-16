@@ -8,7 +8,7 @@ sim_name = "SNR"
 data = load("$(sim_name).jld")
 
 plot_params = [
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "methods" => [
         "BranchAndBoundClustering" => [

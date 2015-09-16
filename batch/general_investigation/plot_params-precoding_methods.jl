@@ -1,7 +1,7 @@
 plot_params = [
     "plot_name" => "",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),

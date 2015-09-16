@@ -50,7 +50,7 @@ markers_assignment = [
 ]
 
 labels_assignment = [
-    :BranchAndBoundClustering => L"Sum throughput optimal $\mathcal{S}$",
+    :BranchAndBoundClustering => L"IIA sum throughput optimal $\mathcal{S}$",
     :CoalitionFormationClustering_AttachOrSupplant => "Coalition formation",
     :CoalitionFormationClustering_Attach => "Coalition formation (attach)",
     :CoalitionFormationClustering_AttachOrSupplant_IgnoreIAFeasibility => "Coalition formation (a-o-s, ignoring IA feas.)",
@@ -62,7 +62,7 @@ labels_assignment = [
 ]
 
 postprocess_params_assignment = [
-    "objective" => :sumrate,
+    "objective" => :sum,
     "methods" => [
         "BranchAndBoundClustering" => [
             ("throughputs",),
@@ -125,7 +125,7 @@ postprocess_params_assignment = [
 ]
 
 postprocess_params_precoding = [
-    "objective" => :sumrate,
+    "objective" => :sum,
     "methods" => [
         "BranchAndBoundClustering" => [
             ("weighted_logdet_rates_full",),
@@ -195,7 +195,7 @@ labels_precoding = [
 ]
 
 postprocess_params_precoding2 = [
-    "objective" => :sumrate,
+    "objective" => :sum,
     "methods" => [
         "RobustIntraclusterWMMSE" => [
             ("weighted_logdet_rates_full",),

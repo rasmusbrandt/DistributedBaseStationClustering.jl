@@ -28,7 +28,7 @@ parsed_args = parse_args(s)
 plot_params_instantaneous_sumrate = [
     "plot_name" => "instantaneous-sumrate",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
@@ -98,7 +98,7 @@ plot_params_instantaneous_sumrate = [
 plot_params_longterm_sumrate = [
     "plot_name" => "longterm-sumrate",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
@@ -367,7 +367,7 @@ plot_params_longterm_avg_cluster_size = [
 plot_params_longterm_num_searches = [
     "plot_name" => "longterm-num_searches",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
