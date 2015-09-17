@@ -33,10 +33,11 @@ simulation_params = [
         "beta_network_sdma" => 0.5,
     ],
     "aux_assignment_params" => [
+        "BranchAndBoundClustering:branching_rule" => :bfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
-        "BranchAndBoundClustering:store_fathomed_subtree_sizes" => true,
+        "BranchAndBoundClustering:store_evolution" => false,
     ],
 ]
 network =

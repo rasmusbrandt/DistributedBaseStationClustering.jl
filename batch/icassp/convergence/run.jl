@@ -23,10 +23,11 @@ simulation_params = [
     "aux_assignment_params" => [
         "max_num_MSs_per_BS" => Kc,
 
+        "BranchAndBoundClustering:branching_rule" => :bfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
-        "BranchAndBoundClustering:store_fathomed_subtree_sizes" => true,
+        "BranchAndBoundClustering:store_evolution" => true,
     ],
 ]
 

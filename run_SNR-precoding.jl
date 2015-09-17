@@ -37,9 +37,11 @@ simulation_params = @Compat.Dict(
         "beta_network_sdma" => 0.8,
     ),
     "aux_assignment_params" => @Compat.Dict(
+        "BranchAndBoundClustering:branching_rule" => :dfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
+        "BranchAndBoundClustering:store_evolution" => false,
     ),
     "aux_precoding_params" => @Compat.Dict(
         "initial_precoders" => "eigendirection",

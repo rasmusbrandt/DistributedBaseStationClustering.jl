@@ -25,14 +25,16 @@ function BranchAndBoundClustering(channel, network)
     aux_params = get_aux_assignment_params(network)
     num_coherence_symbols = get_aux_network_param(network, "num_coherence_symbols")
     beta_network_sdma = get_aux_network_param(network, "beta_network_sdma")
+    @defaultize_param! aux_params "BranchAndBoundClustering:branching_rule" :dfs
+    branching_rule = aux_params["BranchAndBoundClustering:branching_rule"]
     @defaultize_param! aux_params "BranchAndBoundClustering:max_abs_optimality_gap" 0.
     max_abs_optimality_gap = aux_params["BranchAndBoundClustering:max_abs_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:max_rel_optimality_gap" 0.
     max_rel_optimality_gap = aux_params["BranchAndBoundClustering:max_rel_optimality_gap"]
     @defaultize_param! aux_params "BranchAndBoundClustering:E1_bound_in_rate_bound" false
     E1_bound_in_rate_bound = aux_params["BranchAndBoundClustering:E1_bound_in_rate_bound"]
-    @defaultize_param! aux_params "BranchAndBoundClustering:store_fathomed_subtree_sizes" false
-    store_fathomed_subtree_sizes = aux_params["BranchAndBoundClustering:store_fathomed_subtree_sizes"]
+    @defaultize_param! aux_params "BranchAndBoundClustering:store_evolution" false
+    store_evolution = aux_params["BranchAndBoundClustering:store_evolution"]
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
@@ -93,13 +95,24 @@ function BranchAndBoundClustering(channel, network)
     while length(live) > 0
         num_iters += 1
 
-        # Select next node to be processed. We use the best first strategy,
-        # i.e. we pick the live node with the highest (best) upper bound.
-        parent = Base.Collections.heappop!(live, Base.Order.Reverse)
+        # Select next node to be processed.
+        if branching_rule == :bfs
+            # Best first, i.e. the highest (best) upper bound
+            parent = Base.Collections.heappop!(live, Base.Order.Reverse)
+        elseif branching_rule == :dfs
+            # Depth first.
+            parent = pop!(live)
+        end
 
-        # Store bound evolution per iteration
-        push!(lower_bound_evolution, incumbent_sum_throughput)
-        push!(upper_bound_evolution, parent.upper_bound)
+        if store_evolution
+            # Store bound evolution per iteration
+            push!(lower_bound_evolution, incumbent_sum_throughput)
+            if length(live) > 0
+                push!(upper_bound_evolution, max(parent.upper_bound, maximum([ node.upper_bound for node in live ])))
+            else
+                push!(upper_bound_evolution, parent.upper_bound)
+            end
+        end
 
         # Check convergence (parent has the highest upper bound)
         abs_conv_crit = parent.upper_bound - incumbent_sum_throughput
@@ -130,26 +143,30 @@ function BranchAndBoundClustering(channel, network)
                     # Lumberjack.debug("Keeping node since upper bound is above incumbent value.",
                     #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                     # )
-                    Base.Collections.heappush!(live, child, Base.Order.Reverse)
+                    if branching_rule == :bfs
+                        Base.Collections.heappush!(live, child, Base.Order.Reverse)
+                    else
+                        push!(live, child)
+                    end
                 end
             else
                 # Lumberjack.debug("Discarding node since upper bound is below incumbent value.",
                 #     { :node => child, :incumbent_sum_throughput => incumbent_sum_throughput }
                 # )
 
-                if store_fathomed_subtree_sizes
+                if store_evolution
                     fathomed_subtree_size += subtree_size(child, I) - 1 # minus one since we already explored child
                 end
             end
         end
 
-        if store_fathomed_subtree_sizes
+        if store_evolution
             push!(fathoming_evolution, fathomed_subtree_size)
         end
     end
 
     # Add remaining subtrees that were implicitly fathomed
-    if store_fathomed_subtree_sizes
+    if store_evolution
         push!(fathoming_evolution, sum([ subtree_size(node, I) for node in live ]))
     end
 
