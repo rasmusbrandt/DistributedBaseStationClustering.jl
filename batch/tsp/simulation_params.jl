@@ -34,9 +34,11 @@ simulation_params = [
     "aux_assignment_params" => [
         "max_num_MSs_per_BS" => Kc,
 
+        "BranchAndBoundClustering:branching_rule" => :dfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
         "BranchAndBoundClustering:E1_bound_in_rate_bound" => false,
+        "BranchAndBoundClustering:store_evolution" => false,
 
         "CoalitionFormationClustering:search_order" => :lexicographic,
         "CoalitionFormationClustering:stability_type" => :individual,
