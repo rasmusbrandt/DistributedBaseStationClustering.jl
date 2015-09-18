@@ -69,20 +69,31 @@ end
 
 ##########################################################################
 # Hermitian methods used in precoding methods
+
+if VERSION >= v"0.4-pre"
+    macro hermdata(A)
+        return :($A.data)
+    end
+else
+    macro hermdata(A)
+        return :($A.S)
+    end
+end
+
 import Base: +, -, .*
-+(A::Hermitian{Complex128}, B::Hermitian{Complex128}) = Hermitian(A.S + B.S)
++(A::Hermitian{Complex128}, B::Hermitian{Complex128}) = Hermitian(hermdata(A) + hermdata(B))
 +(B::Matrix{Float64}, A::Hermitian{Complex128}) = +(A, B)
-+(A::Hermitian{Complex128}, B::Matrix{Float64}) = A.S + B
-+(A::Hermitian{Complex128}, B::Matrix{Complex128}) = A.S + B
++(A::Hermitian{Complex128}, B::Matrix{Float64}) = hermdata(A) + B
++(A::Hermitian{Complex128}, B::Matrix{Complex128}) = hermdata(A) + B
 
--(A::Hermitian{Complex128}, B::Matrix{Complex128}) = A.S - B
+-(A::Hermitian{Complex128}, B::Matrix{Complex128}) = hermdata(A) - B
 -(B::Array{Complex128, 2}, A::Hermitian{Complex128}) = -(A, B)
--(A::Hermitian{Complex128}, B::Matrix{Float64}) = A.S - B
+-(A::Hermitian{Complex128}, B::Matrix{Float64}) = hermdata(A) - B
 
-.*(a::Float64, B::Hermitian{Complex128}) = Hermitian(a.*B.S)
+.*(a::Float64, B::Hermitian{Complex128}) = Hermitian(a.*hermdata(B))
 
 import Base.logdet, Base.diag
-logdet(A::Hermitian{Complex128}) = logdet(A.S)
-diag(A::Hermitian{Complex128}) = diag(A.S)
+logdet(A::Hermitian{Complex128}) = logdet(hermdata(A))
+diag(A::Hermitian{Complex128}) = diag(hermdata(A))
 
 end

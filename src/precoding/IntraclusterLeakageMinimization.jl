@@ -130,25 +130,25 @@ function update_MSs!(state::IntraclusterLeakageMinimizationState,
         # Intercluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             Fkjl = channel.H[k,j]*state.V[l]
-            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), Phi_full.S)
-            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), Phi_partial_naive.S)
-            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), Phi_partial_robust.S)
+            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_full))
+            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_naive))
+            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_robust))
 
             if l != k
-                Base.LinAlg.BLAS.herk!(Psi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), Psi_full.S)
-                Base.LinAlg.BLAS.herk!(Psi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), Psi_partial_naive.S)
-                Base.LinAlg.BLAS.herk!(Psi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), Psi_partial_robust.S)
+                Base.LinAlg.BLAS.herk!(Psi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Psi_full))
+                Base.LinAlg.BLAS.herk!(Psi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Psi_partial_naive))
+                Base.LinAlg.BLAS.herk!(Psi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Psi_partial_robust))
             end
         end; end
 
         # Intracluster CSI-R (only applicable if we are using spectrum_sharing!)
         if clustering_type == :spectrum_sharing
             for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
-                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Phi_full.S)
+                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), hermdata(Phi_full))
                 Phi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
 
                 if l != k
-                    Base.LinAlg.BLAS.herk!(Psi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), Psi_full.S)
+                    Base.LinAlg.BLAS.herk!(Psi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), hermdata(Psi_full))
                     Psi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
                 end
             end; end
@@ -209,7 +209,7 @@ function update_BSs!(state::IntraclusterLeakageMinimizationState,
         for j = 1:channel.I; for l in served_MS_ids(j, assignment)
             if l in coordinators
                 #Gamma += Hermitian(channel.H[k,i]'*(state.U[k]*state.U[k]')*channel.H[k,i])
-                Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(1.), channel.H[l,i]'*state.U[l], complex(1.), Gamma.S)
+                Base.LinAlg.BLAS.herk!(Gamma.uplo, 'N', complex(1.), channel.H[l,i]'*state.U[l], complex(1.), hermdata(Gamma))
             else
                 # Take out-of-cluster interference into account if we are using
                 # spectrum sharing, and we actually want to be robust against
