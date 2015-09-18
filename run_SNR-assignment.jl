@@ -18,7 +18,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # RandomLargeScaleNetwork
-simulation_params = [
+simulation_params = @compat Dict(
     "simulation_name" => "SNR-assignment_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 4, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
@@ -45,10 +45,10 @@ simulation_params = [
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
     ],
-    "aux_network_params" => [
+    "aux_network_params" => @Compat.Dict(
         "num_coherence_symbols" => 2_700,
-    ],
-    "aux_assignment_params" => [
+    ),
+    "aux_assignment_params" => @Compat.Dict(
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
@@ -61,14 +61,14 @@ simulation_params = [
         "CoalitionFormationClustering_Individual:search_budget" => 10,
         "CoalitionFormationClustering_Individual:search_order" => :greedy,
         "CoalitionFormationClustering_Individual:stability_type" => :contractual,
-    ],
-    "aux_precoding_params" => [
+    ),
+    "aux_precoding_params" => @Compat.Dict(
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
-    ],
+    ),
     "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
-]
+)
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],

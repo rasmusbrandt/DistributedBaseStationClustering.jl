@@ -9,6 +9,7 @@ module IAClustering
 
 using CoordinatedPrecoding
 import Lumberjack, PyCall, Clustering
+using Compat
 
 PyCall.@pyimport scipy.special as scipy_special
 
@@ -65,5 +66,23 @@ let
     Lumberjack.configure(console; mode = "warn")
     file = Lumberjack.add_truck(Lumberjack.LumberjackTruck("default.log", "info"), "default")
 end
+
+##########################################################################
+# Hermitian methods used in precoding methods
+import Base: +, -, .*
++(A::Hermitian{Complex128}, B::Hermitian{Complex128}) = Hermitian(A.S + B.S)
++(B::Matrix{Float64}, A::Hermitian{Complex128}) = +(A, B)
++(A::Hermitian{Complex128}, B::Matrix{Float64}) = A.S + B
++(A::Hermitian{Complex128}, B::Matrix{Complex128}) = A.S + B
+
+-(A::Hermitian{Complex128}, B::Matrix{Complex128}) = A.S - B
+-(B::Array{Complex128, 2}, A::Hermitian{Complex128}) = -(A, B)
+-(A::Hermitian{Complex128}, B::Matrix{Float64}) = A.S - B
+
+.*(a::Float64, B::Hermitian{Complex128}) = Hermitian(a.*B.S)
+
+import Base.logdet, Base.diag
+logdet(A::Hermitian{Complex128}) = logdet(A.S)
+diag(A::Hermitian{Complex128}) = diag(A.S)
 
 end

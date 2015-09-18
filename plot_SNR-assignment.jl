@@ -25,402 +25,401 @@ parsed_args = parse_args(s)
 
 ##########################################################################
 # Plot parameters
-plot_params_instantaneous_sumrate = [
+plot_params_instantaneous_sumrate = @compat Dict(
     "plot_name" => "instantaneous",
 
     "objective" => :sumrate,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Sum rate [bits/s/Hz]",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "ExhaustiveSearchClustering" => [
-            ("weighted_logdet_rates_LB", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("weighted_logdet_rates_LB", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("weighted_logdet_rates_LB", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group")),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("weighted_logdet_rates_LB", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates_LB", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
         "GreedyClustering_Single" => [
-            ("weighted_logdet_rates_LB", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch")),
         ],
 
         "Chen2014_kmeans" => [
-            ("weighted_logdet_rates_LB", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans")),
         ],
 
         "Peters2012_Heuristic" => [
-            ("weighted_logdet_rates_LB", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic")),
         ],
 
 
         "GreedyClustering_Multiple" => [
-            ("weighted_logdet_rates_LB", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
         "RandomClustering" => [
-            ("weighted_logdet_rates_LB", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("weighted_logdet_rates_LB", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("weighted_logdet_rates_LB", @Compat.Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
-plot_params_longterm_sumrate = [
+    )
+)
+plot_params_longterm_sumrate = @compat Dict(
     "plot_name" => "longterm-sumrate",
 
     "objective" => :sumrate,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Sum rate [bits/s/Hz]",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "ExhaustiveSearchClustering" => [
-            ("utilities", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("utilities", @Compat.Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("utilities", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("utilities", @Compat.Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("utilities", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("utilities", @Compat.Dict(:color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group")),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("utilities", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("utilities", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("utilities", @Compat.Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("utilities", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("utilities", @Compat.Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("utilities", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("utilities", @Compat.Dict(:color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch")),
         ],
 
         "Chen2014_kmeans" => [
-            ("utilities", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+            ("utilities", @Compat.Dict(:color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans")),
         ],
 
         "Peters2012_Heuristic" => [
-            ("utilities", [ :color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic" ]),
+            ("utilities", @Compat.Dict(:color => "GoldenRod", :linestyle => "-", :label => "Peters2012_Heuristic")),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("utilities", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("utilities", @Compat.Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
         "RandomClustering" => [
-            ("utilities", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("utilities", @Compat.Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("utilities", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("utilities", @Compat.Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
-plot_params_longterm_num_utility_calculations = [
+    )
+)
+plot_params_longterm_num_utility_calculations = @compat Dict(
     "plot_name" => "longterm-num_utility_calculations",
 
     "objective" => :none,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
         :yscale => "log",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "ExhaustiveSearchClustering" => [
-            ("num_utility_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("num_utility_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("num_utility_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group")),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("num_utility_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("num_utility_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("num_utility_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("num_utility_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
 
         "RandomClustering" => [
-            ("num_utility_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("num_utility_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("num_utility_calculations", @Compat.Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
-plot_params_longterm_num_longterm_rate_calculations = [
+    )
+)
+plot_params_longterm_num_longterm_rate_calculations = @compat Dict(
     "plot_name" => "longterm-num_longterm_rate_calculations",
 
     "objective" => :none,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
         :yscale => "log",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "ExhaustiveSearchClustering" => [
-            ("num_longterm_rate_calculations", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("num_longterm_rate_calculations", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("num_longterm_rate_calculations", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group")),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("num_longterm_rate_calculations", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("num_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("num_longterm_rate_calculations", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("num_longterm_rate_calculations", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
         "RandomClustering" => [
-            ("num_longterm_rate_calculations", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("num_longterm_rate_calculations", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("num_longterm_rate_calculations", @Compat.Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
-plot_params_longterm_num_searches = [
+    )
+)
+plot_params_longterm_num_searches = @compat Dict(
     "plot_name" => "longterm-num_searches",
 
     "objective" => :sumrate,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of utility calculations",
         :yscale => "log",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "CoalitionFormationClustering_Individual" => [
-            ("num_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_searches", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
-    ]
-]
-plot_params_longterm_clusters = [
+    )
+)
+plot_params_longterm_clusters = @compat Dict(
     "plot_name" => "longterm-clusters",
 
     "objective" => :none,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Number of clusters",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "ExhaustiveSearchClustering" => [
-            ("num_clusters", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("num_clusters", @Compat.Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("num_clusters", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("num_clusters", @Compat.Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
 
         "CoalitionFormationClustering_Group" => [
-            ("num_clusters", [ :color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group" ]),
+            ("num_clusters", @Compat.Dict(:color => "ForestGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Group")),
         ],
 
         "CoalitionFormationClustering_Individual" => [
-            ("num_clusters", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_clusters", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
 
 
         "GreedyClustering_Single" => [
-            ("num_clusters", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("num_clusters", @Compat.Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("num_clusters", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("num_clusters", @Compat.Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("num_clusters", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("num_clusters", @Compat.Dict(:color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch")),
         ],
 
         "Chen2014_kmeans" => [
-            ("num_clusters", [ :color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans" ]),
+            ("num_clusters", @Compat.Dict(:color => "DodgerBlue", :linestyle => "--", :label => "Chen2014_kmeans")),
         ],
 
 
         "GrandCoalitionClustering" => [
-            ("num_clusters", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("num_clusters", @Compat.Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
         "RandomClustering" => [
-            ("num_clusters", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("num_clusters", @Compat.Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("num_clusters", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("num_clusters", @Compat.Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
-plot_params_num_searches = [
+    )
+)
+plot_params_num_searches = @compat Dict(
     "plot_name" => "longterm-clusters",
 
     "objective" => :sumrate,
 
-    "figure" => [
+    "figure" => @Compat.Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => @Compat.Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Total number of searches",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => @Compat.Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => @Compat.Dict(
         "CoalitionFormationClustering_Individual" => [
-            ("num_searches", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual" ]),
+            ("num_searches", @Compat.Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Individual")),
         ],
-
-    ]
-]
+    )
+)
 
 ##########################################################################
 # Plot it
