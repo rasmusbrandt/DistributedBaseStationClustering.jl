@@ -21,7 +21,7 @@ function ExhaustiveSearchClustering(channel, network)
     num_utility_calculations = 0
     num_longterm_rate_calculations = sum([ binomial(I,i) for i = 1:I ]) # number of possible distinct clusters whose members need to calculate their longterm rates
     best_objective = 0.; best_utilities = Array(Float64, K, d_max)
-    best_alphas = Array(Float64, K); best_partition = Partition([0:(I-1)])
+    best_alphas = Array(Float64, K); best_partition = Partition(collect(0:(I-1)))
     for partition in PartitionIterator(I)
         num_utility_calculations += K
 
@@ -38,9 +38,9 @@ function ExhaustiveSearchClustering(channel, network)
     end
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
-        { :sum_utility => best_objective,
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => best_objective,
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

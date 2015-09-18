@@ -93,9 +93,9 @@ function BranchAndBoundClustering(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, final_partition)
 
     Lumberjack.info("BranchAndBoundClustering finished.",
-        { :sum_utility => incumbent_sum_utility,
-          :a => incumbent_a }
-    )
+        @compat Dict(
+            :sum_utility => incumbent_sum_utility,
+            :a => incumbent_a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

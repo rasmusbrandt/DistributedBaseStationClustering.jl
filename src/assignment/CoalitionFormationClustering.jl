@@ -102,9 +102,9 @@ function CoalitionFormationClustering_Individual(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]
@@ -150,7 +150,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
 
     # Create all possible deviations for BS i
     BS_not_singleton_coalition_before = length(old_block) > 0 ? true : false # was this BS not in a singleton coalition before?
-    num_new_partitions = length(other_blocks) + int(BS_not_singleton_coalition_before)
+    num_new_partitions = length(other_blocks) + convert(Int, BS_not_singleton_coalition_before)
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_utilities = zeros(Float64, I, num_new_partitions)
     for n = 1:length(other_blocks)
@@ -311,9 +311,9 @@ function CoalitionFormationClustering_Group(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Group finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

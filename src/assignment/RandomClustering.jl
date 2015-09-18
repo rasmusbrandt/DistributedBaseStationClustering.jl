@@ -15,9 +15,9 @@ function RandomClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     # Local RNG
-    local_rng = MersenneTwister(int(time()))
+    local_rng = MersenneTwister(round(Int, time()))
 
-    random_partition = Partition([0:(I-1)]) # start with non-cooperative, if the loop below fails to find an IA feasible solution
+    random_partition = Partition(collect(0:(I-1))) # start with non-cooperative, if the loop below fails to find an IA feasible solution
     random_a = Array(Int, I)
     utilities = zeros(Float64, K, max_d)
     alphas = Array(Float64, K)
@@ -45,9 +45,9 @@ function RandomClustering(channel, network)
     end
 
     Lumberjack.info("RandomClustering finished.",
-        { :sum_utility => sum(utilities),
-          :a => random_a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => random_a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]
@@ -79,7 +79,7 @@ function random_restricted_growth_string(I, local_rng)
             a[1] = 0
         else
             b[i] = 1 + maximum(a[1:(i-1)])
-            a[i] = ifloor((b[i] + 1)*rand(local_rng))
+            a[i] = floor(Int, (b[i] + 1)*rand(local_rng))
         end
     end
     return a

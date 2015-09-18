@@ -26,7 +26,7 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
 
     # Exhaustive search over partitions
     best_objective = 0.
-    best_partition = Partition([0:(I-1)])
+    best_partition = Partition(collect(0:(I-1)))
     num_utility_calculations = 0
     for partition in PartitionIterator(I)
         num_utility_calculations += K
@@ -53,9 +53,9 @@ function Chen2014_LinearObj_ExhaustiveSearch(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, best_partition)
     a = restricted_growth_string(best_partition)
     Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]
@@ -125,9 +125,9 @@ function Chen2014_kmeans(channel, network)
     utilities, alphas, _ = longterm_utilities(channel, network, partition)
     a = restricted_growth_string(partition)
     Lumberjack.info("Chen2014_LinearObj_ExhaustiveSearch finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

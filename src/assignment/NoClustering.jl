@@ -9,13 +9,13 @@ function NoClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
     temp_assignment = get_assignment(network)
 
-    a = [0:(I-1)]
+    a = collect(0:(I-1))
     partition = Partition(a)
     utilities, alphas, _ = longterm_utilities(channel, network, partition)
     Lumberjack.info("NoClustering finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

@@ -79,9 +79,9 @@ function Peters2012_Heuristic(channel, network)
     a = restricted_growth_string(partition)
     objective = sum(utilities)
     Lumberjack.info("Peters2010_Heuristic finished.",
-        { :sum_utility => objective,
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => objective,
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

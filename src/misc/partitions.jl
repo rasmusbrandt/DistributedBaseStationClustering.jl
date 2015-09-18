@@ -30,13 +30,13 @@ function Partition(a::Vector; skip_check::Bool=false)
 
     # Consistency checks
     if !skip_check
-        all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+        all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", @compat Dict(:a => a))
     end
 
     # Build blocks and partition
     blocks = [ Block() for n = 1:num_blocks ]
     for l = 1:I
-        push!(blocks[a[l] + 1], l)
+        push!(blocks[Int(a[l] + 1)], l)
     end
 
     return Partition(Set(blocks))
@@ -67,8 +67,8 @@ function restricted_growth_string(A::Matrix)
     I = size(A, 1)
 
     # Consistency checks
-    A' == A || Lumberjack.error("Tried to create partition from asymmetric assignment matrix.", { :A => A })
-    diag(A) == ones(I) || Lumberjack.error("Elements must belong to their own block.", { :A => A })
+    A' == A || Lumberjack.error("Tried to create partition from asymmetric assignment matrix.", @compat Dict(:A => A))
+    diag(A) == ones(I) || Lumberjack.error("Elements must belong to their own block.", @compat Dict(:A => A))
 
     # Build restricted growth string
     Ac = copy(A)
@@ -81,7 +81,7 @@ function restricted_growth_string(A::Matrix)
         if length(elements) > 0
             # Consistency check
             for j in elements[2:end]
-                find(Ac[j,:] .== 1) == elements || Lumberjack.error("Incorrect structure in assignment matrix.", { :A => Ac })
+                find(Ac[j,:] .== 1) == elements || Lumberjack.error("Incorrect structure in assignment matrix.", @compat Dict(:A => Ac))
             end
 
             # Add all elements to block and increment number of blocks.
@@ -103,7 +103,7 @@ function logical_matrix(a::Vector)
     num_blocks = 1 + a_max
 
     # Consistency checks
-    all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", { :a => a })
+    all(sort(unique(a)) .== 0:a_max) || Lumberjack.error("Restricted growth string may not skip values.", @compat Dict(:a => a))
 
     # Create matrix iteratively
     A = eye(Int, I, I)

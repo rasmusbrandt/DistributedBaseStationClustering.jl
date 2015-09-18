@@ -15,9 +15,9 @@ function GrandCoalitionClustering(channel, network)
     a = zeros(Int, I)
     utilities, alphas, _ = longterm_utilities(channel, network, Partition(a))
     Lumberjack.info("GrandCoalitionClustering finished.",
-        { :sum_utility => sum(utilities),
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => sum(utilities),
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]

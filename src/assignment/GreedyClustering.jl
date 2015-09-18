@@ -103,9 +103,9 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     a = restricted_growth_string(partition_matrix)
     objective = sum(utilities)
     Lumberjack.info("GreedyClustering finished.",
-        { :sum_utility => objective,
-          :a => a }
-    )
+        @compat Dict(
+            :sum_utility => objective,
+            :a => a))
 
     # Store alphas as user priorities for precoding, if desired
     if aux_params["apply_overhead_prelog"]
