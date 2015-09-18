@@ -20,9 +20,9 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 # RandomLargeScaleNetwork
 simulation_params = [
     "simulation_name" => "SNR-assignment_$(start_time)",
-    "I" => 16, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 4, "d" => 1,
     "Ndrops" => 10, "Nsim" => 20,
-    "geography_size" => (250.,250.),
+    "geography_size" => (1300.,1300.),
     "MS_serving_BS_distance" => Nullable{Float64}(),
     "assignment_methods" => [
         # ExhaustiveSearchClustering,
@@ -46,7 +46,7 @@ simulation_params = [
         RobustIntraclusterWMMSE,
     ],
     "aux_network_params" => [
-        "num_coherence_symbols" => 1000,
+        "num_coherence_symbols" => 2_700,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,

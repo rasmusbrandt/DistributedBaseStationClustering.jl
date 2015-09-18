@@ -17,8 +17,9 @@ srand(973472333)
 ##########################################################################
 # Indoors network
 simulation_params = [
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2,
-    "d" => 1,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
+    "geography_size" => (1300.,1300.),
+    "MS_serving_BS_distance" => Nullable{Float64}(),
     "Ntest" => 100,
     "assignment_methods" => [ GrandCoalitionClustering ],
     "precoding_methods" => [
@@ -35,7 +36,7 @@ simulation_params = [
         Eigenprecoding,
     ],
     "aux_network_params" => [
-        "num_coherence_symbols" => 1000,
+        "num_coherence_symbols" => 2_700,
     ],
     "aux_assignment_params" => [
         "clustering_type" => :spectrum_sharing,
@@ -52,6 +53,8 @@ simulation_params = [
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],
-        num_streams=simulation_params["d"])
+        num_streams=simulation_params["d"],
+        geography_size=simulation_params["geography_size"],
+        MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
 timing(network, simulation_params, loop_over=:precoding_methods)
