@@ -1,11 +1,11 @@
 ##########################################################################
-# IAClustering
+# LongtermIAClustering
 #
-# Evaluation environment for the IAClustering project
-# https://gitr.sys.kth.se/rabr5411/IAClustering.jl
+# Evaluation environment for the LongtermIAClustering project
+# https://gitr.sys.kth.se/rabr5411/LongtermIAClustering.jl
 ##########################################################################
 
-module IAClustering
+module LongtermIAClustering
 
 using CoordinatedPrecoding
 using Compat

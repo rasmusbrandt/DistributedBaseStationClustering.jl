@@ -3,19 +3,19 @@ from fabric.api import *
 # Forward SSH keys for github
 env.forward_agent = True
 env.user = 'rabr5411'
-env.code_dir = '/home/rabr5411/sims/IAClustering.jl'
-env.git_url = 'git@gitr.sys.kth.se:rabr5411/IAClustering.jl.git'
+env.code_dir = '/home/rabr5411/sims/LongtermIAClustering.jl'
+env.git_url = 'git@gitr.sys.kth.se:rabr5411/LongtermIAClustering.jl.git'
 
 def gastown():
     env.hosts = 'gastown.156106636.members.btmm.icloud.com'
     env.user = 'rasmus'
-    env.code_dir = '/Users/rasmus/Desktop/sims/IAClustering.jl'
+    env.code_dir = '/Users/rasmus/Desktop/sims/LongtermIAClustering.jl'
 
 def KTHdebsim():
     env.hosts = '130.237.50.52'
     env.user = 'rabrdeb'
     env.port = 1024
-    env.code_dir = '/home/rabrdeb/sims/IAClustering.jl'
+    env.code_dir = '/home/rabrdeb/sims/LongtermIAClustering.jl'
 
 def sim401():
     env.hosts = 'sim401.ee.kth.se'

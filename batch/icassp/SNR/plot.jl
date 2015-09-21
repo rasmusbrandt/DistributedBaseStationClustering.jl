@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
-include("../../../src/IAClustering.jl")
-using IAClustering, CoordinatedPrecoding
+include("../../../src/LongtermIAClustering.jl")
+using LongtermIAClustering, CoordinatedPrecoding
 using Compat, JLD, LaTeXStrings
 
 sim_name = "SNR"

@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
-include("../../../src/IAClustering.jl")
-using IAClustering, CoordinatedPrecoding, Compat
+include("../../../src/LongtermIAClustering.jl")
+using LongtermIAClustering, CoordinatedPrecoding, Compat
 include("../plot_params.jl")
 
 ##########################################################################
