@@ -16,8 +16,8 @@ srand(973472333)
 
 ##########################################################################
 # Indoors network
-simulation_params = @Compat.Dict(
-    "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
+simulation_params = @compat Dict(
+    "I" => 8, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
     "geography_size" => (1500.,1500.),
     "MS_serving_BS_distance" => Nullable(150.),
@@ -40,11 +40,11 @@ simulation_params = @Compat.Dict(
         RandomClustering,
         NoClustering,
     ],
-    "aux_network_params" => @Compat.Dict(
+    "aux_network_params" => Dict(
         "num_coherence_symbols" => 2500,
         "beta_network_sdma" => 0.8,
     ),
-    "aux_assignment_params" => @Compat.Dict(
+    "aux_assignment_params" => Dict(
         "BranchAndBoundClustering:branching_rule" => :dfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,

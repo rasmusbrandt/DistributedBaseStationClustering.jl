@@ -18,7 +18,7 @@ start_time = strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # RandomLargeScaleNetwork
-simulation_params = [
+simulation_params = @compat Dict(
     "simulation_name" => "beta-assignment_$(start_time)",
     "I" => 12, "Kc" => 2, "N" => 2, "M" => 8, "d" => 1,
     "Ndrops" => 10, "Nsim" => 5,
@@ -43,11 +43,11 @@ simulation_params = [
         NoClustering,
     ],
     "precoding_methods" => [ RobustIntraclusterWMMSE, ],
-    "aux_network_params" => [
+    "aux_network_params" => Dict(
         "num_coherence_symbols" => 2500,
         "beta_network_sdma" => 0.8,
-    ],
-    "aux_assignment_params" => [
+    ),
+    "aux_assignment_params" => Dict(
         "BranchAndBoundClustering:branching_rule" => :dfs,
         "BranchAndBoundClustering:max_abs_optimality_gap" => 0.,
         "BranchAndBoundClustering:max_rel_optimality_gap" => 0.,
@@ -59,15 +59,15 @@ simulation_params = [
         "CoalitionFormationClustering:search_budget" => 100,
         "CoalitionFormationClustering:use_history" => true,
         "CoalitionFormationClustering:starting_point" => :singletons,
-    ],
-    "aux_precoding_params" => [
+    ),
+    "aux_precoding_params" => Dict(
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-2,
         "max_iters" => 1000,
-    ],
+    ),
     "independent_variable" => ((n, v) -> set_aux_network_param!(n, v, "beta_network_sdma"), 0:0.05:1),
     "aux_independent_variables" => [ (set_average_SNRs_dB!, [30]), ]
-]
+)
 network =
     setup_random_large_scale_network(simulation_params["I"],
         simulation_params["Kc"], simulation_params["N"], simulation_params["M"],

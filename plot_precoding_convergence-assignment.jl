@@ -25,70 +25,70 @@ parsed_args = parse_args(s)
 
 ##########################################################################
 # Plot parameters
-plot_params = [
+plot_params = @compat Dict(
     "plot_name" => "",
 
     "objective" => :sum,
 
-    "figure" => [
+    "figure" => Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => Dict(
         :xlabel => "Iterations",
         :ylabel => "Sum rate [bits/s/Hz]",
         :ylim => [0, 70],
-    ],
+    ),
 
-    "legend" => [
+    "legend" => Dict(
         :loc => "best",
         :fontsize => 8,
         :ncol => 2,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => Dict(
         "ExhaustiveSearchClustering" => [
-            ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "Coral", :linestyle => "", :marker => ".", :label => "ExhaustiveSearchClustering")),
         ],
 
         "BranchAndBoundClustering" => [
-            ("weighted_logdet_rates_full", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering")),
         ],
 
         "CoalitionFormationClustering_Attach" => [
-            ("weighted_logdet_rates_full", [ :color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "LimeGreen", :linestyle => "-", :label => "CoalitionFormationClustering_Attach")),
         ],
 
         "CoalitionFormationClustering_AttachOrSupplant" => [
-            ("weighted_logdet_rates_full", [ :color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant")),
         ],
 
         "GreedyClustering_Single" => [
-            ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "DarkOrchid", :linestyle => "-", :label => "GreedyClustering_Single")),
         ],
 
         "GreedyClustering_Multiple" => [
-            ("weighted_logdet_rates_full", [ :color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "DarkOrchid", :linestyle => "--", :label => "GreedyClustering_Multiple")),
         ],
 
         "Chen2014_LinearObj_ExhaustiveSearch" => [
-            ("weighted_logdet_rates_full", [ :color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "DodgerBlue", :linestyle => "-", :label => "Chen2014_LinearObj_ExhaustiveSearch")),
         ],
 
         "GrandCoalitionClustering" => [
-            ("weighted_logdet_rates_full", [ :color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "Maroon", :linestyle => "-", :label => "GrandCoalitionClustering")),
         ],
 
         "RandomClustering" => [
-            ("weighted_logdet_rates_full", [ :color => "Khaki", :linestyle => "-", :label => "RandomClustering" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "Khaki", :linestyle => "-", :label => "RandomClustering")),
         ],
 
         "NoClustering" => [
-            ("weighted_logdet_rates_full", [ :color => "Pink", :linestyle => "-", :label => "NoClustering" ]),
+            ("weighted_logdet_rates_full", Dict(:color => "Pink", :linestyle => "-", :label => "NoClustering")),
         ],
-    ]
-]
+    )
+)
 
 ##########################################################################
 # Plot it

@@ -25,62 +25,62 @@ parsed_args = parse_args(s)
 
 ##########################################################################
 # Plot parameters
-plot_params_bounds = [
+plot_params_bounds = @compat Dict(
     "plot_name" => "bounds",
 
     "objective" => :none,
 
-    "figure" => [
+    "figure" => Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => Dict(
         :xlabel => "Iterations",
         :ylabel => "Sum rate [bits/s/Hz]",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => Dict(
         :loc => "best",
         :fontsize => 8,
         :ncol => 2,
-    ],
+    Dict(,
 
-    "methods" => [
+    "methods" => Dict(
         "BranchAndBoundClustering" => [
-            ("upper_bound_evolution", [ :color => "Coral", :linestyle => "--", :label => "BranchAndBoundClustering (UB)" ]),
-            ("lower_bound_evolution", [ :color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering (LB)" ]),
+            ("upper_bound_evolution", Dict(:color => "Coral", :linestyle => "--", :label => "BranchAndBoundClustering (UB)")),
+            ("lower_bound_evolution", Dict(:color => "Coral", :linestyle => "-", :label => "BranchAndBoundClustering (LB)")),
         ],
-    ]
-]
+    )
+)
 
-plot_params_fathom = [
+plot_params_fathom = @compat Dict(
     "plot_name" => "fathom",
 
     "objective" => :none,
 
-    "figure" => [
+    "figure" => Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
-    "axes" => [
+    "axes" => Dict(
         :xlabel => "Iterations",
         :ylabel => "Fathomed subtree sizes",
-    ],
+    ),
 
-    "legend" => [
+    "legend" => Dict(
         :loc => "best",
         :fontsize => 8,
         :ncol => 2,
-    ],
+    ),
 
-    "methods" => [
+    "methods" => Dict(
         "BranchAndBoundClustering" => [
-            ("fathoming_evolution", [ :color => "Coral", :linestyle => "--", :label => "BranchAndBoundClustering" ]),
+            ("fathoming_evolution", Dict(:color => "Coral", :linestyle => "--", :label => "BranchAndBoundClustering")),
         ],
-    ]
-]
+    )
+)
 
 ##########################################################################
 # Plot it
