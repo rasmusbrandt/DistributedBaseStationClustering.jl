@@ -1,11 +1,11 @@
 ##########################################################################
-# LongtermIAClustering
+# DistributedBSClustering
 #
-# Evaluation environment for the LongtermIAClustering project
-# https://gitr.sys.kth.se/rabr5411/LongtermIAClustering.jl
+# Evaluation environment for the DistributedBSClustering project
+# https://gitr.sys.kth.se/rabr5411/DistributedBSClustering.jl
 ##########################################################################
 
-module LongtermIAClustering
+module DistributedBSClustering
 
 using CoordinatedPrecoding
 import Lumberjack, PyCall, Clustering

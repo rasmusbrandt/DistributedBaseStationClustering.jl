@@ -7,8 +7,8 @@
 # precoding methods.
 ##########################################################################
 
-include("src/LongtermIAClustering.jl")
-using LongtermIAClustering, CoordinatedPrecoding
+include("src/DistributedBSClustering.jl")
+using DistributedBSClustering, CoordinatedPrecoding
 using Compat, JLD
 
 ##########################################################################

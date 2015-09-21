@@ -2,8 +2,8 @@
 
 SRAND_SEED = 927272
 
-include(joinpath(dirname(@__FILE__), "../../../../../src/LongtermIAClustering.jl"))
-using LongtermIAClustering, CoordinatedPrecoding
+include(joinpath(dirname(@__FILE__), "../../../../../src/DistributedBSClustering.jl"))
+using DistributedBSClustering, CoordinatedPrecoding
 using Compat, JLD
 
 include(joinpath(dirname(@__FILE__), "../../../simulation_params.jl"))
