@@ -1,3 +1,5 @@
+using LaTeXStrings
+
 raw_idx = 1; mean_idx = 2; var_idx = 3
 
 # 8-class Set1
