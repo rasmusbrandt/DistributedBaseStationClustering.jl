@@ -38,6 +38,9 @@ function BranchAndBoundClustering(channel, network)
 
     # Lumberjack.debug("BranchAndBoundClustering started.")
 
+    # Best upper bound (mainly needed for DFS)
+    best_upper_bound = Inf
+
     # Throughput lower bounds by trying different heuristics.
     incumbent_throughputs = zeros(Float64, K, d)
     incumbent_a = zeros(Int, I)
@@ -99,23 +102,21 @@ function BranchAndBoundClustering(channel, network)
         if branching_rule == :bfs
             # Best first, i.e. the highest (best) upper bound
             parent = Base.Collections.heappop!(live, Base.Order.Reverse)
+            best_upper_bound = parent.upper_bound
         elseif branching_rule == :dfs
             # Depth first.
+            best_upper_bound = maximum([ node.upper_bound for node in live ])
             parent = pop!(live)
         end
 
         if store_evolution
             # Store bound evolution per iteration
             push!(lower_bound_evolution, incumbent_sum_throughput)
-            if length(live) > 0
-                push!(upper_bound_evolution, max(parent.upper_bound, maximum([ node.upper_bound for node in live ])))
-            else
-                push!(upper_bound_evolution, parent.upper_bound)
-            end
+            push!(upper_bound_evolution, best_upper_bound)
         end
 
         # Check convergence (parent has the highest upper bound)
-        abs_conv_crit = parent.upper_bound - incumbent_sum_throughput
+        abs_conv_crit = best_upper_bound - incumbent_sum_throughput
         rel_conv_crit = abs_conv_crit/incumbent_sum_throughput
         if abs_conv_crit <= max_abs_optimality_gap || rel_conv_crit <= max_rel_optimality_gap
             # Lumberjack.debug("Converged.", { :abs_conv_crit => abs_conv_crit, :max_abs_optimality_gap => max_abs_optimality_gap })
