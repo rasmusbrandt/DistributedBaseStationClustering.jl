@@ -44,47 +44,74 @@ fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.15,0.97-0.12,0.96-0.15))
 
 lines = Any[]
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :GrandCoalitionClustering]
-    line = ax[:plot](xvals, yvals_assignment(string(method), plot_val),
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
+    line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,2],
         color=colours_assignment[method],
-        linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+        linestyle="-",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
         label=labels_assignment[method])
     push!(lines, line[1])
+    line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
+        color=colours_assignment[method],
+        linestyle="--",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
+        label=labels_assignment[method])
 end
-ax[:set_ylim]([-1, 40])
-ax[:set_xlabel](L"Frame structure parameter $\beta$")
+ax[:set_ylim]([-1, 70])
+ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")
 legend1 = PyPlot.legend(handles=lines[1:3], loc="upper left")
 legend1_frame = legend1[:get_frame]()
 PyPlot.setp(legend1_frame, linewidth=0.5)
 ax[:add_artist](legend1)
-legend2 = ax[:legend](handles=lines[4:5], bbox_to_anchor=[0.5, 0.15], loc="center")
-legend2_frame = legend2[:get_frame]()
-PyPlot.setp(legend2_frame, linewidth=0.5)
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
-# longterm-sumrate_split
-plot_name = "longterm-sumrate_split"
+# longterm-sumrate_split-bmax
+plot_name = "longterm-sumrate_split-bmax"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.15,0.97-0.12,0.96-0.15))
 
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
-    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma"),
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma")[:,2],
         color=colours_assignment[method],
         linestyle="-",
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
         label=labels_assignment[method])
 end
-for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant]
-    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_cluster_sdma"),
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_cluster_sdma")[:,2],
         color=colours_assignment[method],
         linestyle="--",
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15)
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5)
 end
-ax[:set_ylim]([-1, 40])
-ax[:set_xlabel](L"Frame structure parameter $\beta$")
+# ax[:set_ylim]([-1, 40])
+ax[:set_xlabel]("Signal-to-noise ratio [dB]")
+ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")
+show_legend!(ax, "upper left")
+fig[:savefig]("$(sim_name)_$(plot_name).eps")
+
+##########################################################################
+# longterm-sumrate_split-bmin
+plot_name = "longterm-sumrate_split-bmin"
+fig = PyPlot.figure()
+ax = fig[:add_axes]((0.12,0.15,0.97-0.12,0.96-0.15))
+
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_network_sdma")[:,1],
+        color=colours_assignment[method],
+        linestyle="-",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
+        label=labels_assignment[method])
+end
+for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
+    ax[:plot](xvals, yvals_assignment(string(method), "throughputs_cluster_sdma")[:,1],
+        color=colours_assignment[method],
+        linestyle="--",
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5)
+end
+# ax[:set_ylim]([-1, 40])
+ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")
 show_legend!(ax, "upper left")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
