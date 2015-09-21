@@ -7,8 +7,8 @@
 # cluster assignment method.
 ##########################################################################
 
-include("src/IAClustering.jl")
-using IAClustering, CoordinatedPrecoding
+include("src/LongtermIAClustering.jl")
+using LongtermIAClustering, CoordinatedPrecoding
 using Compat, JLD
 
 ##########################################################################

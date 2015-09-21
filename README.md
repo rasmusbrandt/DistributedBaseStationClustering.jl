@@ -1,3 +1,3 @@
-# IAClustering
-IAClustering is a simulation package for the clustering ideas with
+# LongtermIAClustering
+LongtermIAClustering is a simulation package for the clustering ideas with
 coalitional formation.

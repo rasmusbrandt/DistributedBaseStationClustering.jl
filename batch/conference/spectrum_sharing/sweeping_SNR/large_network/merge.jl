@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
-include(joinpath(dirname(@__FILE__), "../../../../../src/IAClustering.jl"))
-using IAClustering, CoordinatedPrecoding
+include(joinpath(dirname(@__FILE__), "../../../../../src/LongtermIAClustering.jl"))
+using LongtermIAClustering, CoordinatedPrecoding
 using Compat, JLD
 using LaTeXStrings
 
