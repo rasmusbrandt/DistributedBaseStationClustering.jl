@@ -1,4 +1,4 @@
-simulation_params["assignment_methods"] = [ BranchAndBoundClustering, ]
+simulation_params["assignment_methods"] = [ CoalitionFormationClustering_AttachOrSupplant, ]
 
 simulation_params["precoding_methods"] = [
     RobustIntraclusterWMMSE,
