@@ -43,13 +43,11 @@ ax[:plot](data["Is"], num_searches2,
     label=labels_assignment[:CoalitionFormationClustering_Attach])
 
 for (idx, It) in enumerate(data["Is"])
-    if mod(idx, 2) == 1
-        ax[:text](It, num_searches1[idx]-0.3, @sprintf("%.1f", throughputs1[idx]), fontdict=@compat Dict(:size => 5))
-        ax[:text](It, num_searches2[idx]-0.3, @sprintf("%.1f", throughputs2[idx]), fontdict=@compat Dict(:size => 5))
-    end
+    ax[:text](It, num_searches1[idx]-0.3, @sprintf("%.1f", throughputs1[idx]), fontdict=@compat Dict(:size => 5))
+    ax[:text](It, num_searches2[idx]-0.3, @sprintf("%.1f", throughputs2[idx]), fontdict=@compat Dict(:size => 5))
 end
 
-ax[:set_xlim]([0, 32])
+ax[:set_xlim]([0, 50])
 ax[:set_ylim]([0, 8])
 ax[:set_xlabel](L"Number of cells $I$")
 ax[:set_ylabel](L"Average number of searches $\eta_i$")

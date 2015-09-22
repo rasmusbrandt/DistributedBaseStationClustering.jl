@@ -12,7 +12,7 @@ include(joinpath(dirname(@__FILE__), "../simulation_params-I.jl"))
 simulation_params["Ndrops"] = 1
 simulation_params["Nsim"] = 1
 
-const Is = 1:32
+const Is = 2:4:50
 const Ndrops = 1000
 
 srand(725242)
