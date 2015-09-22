@@ -7,7 +7,7 @@ const v_kmh = 30 # km/h
 const v = v_kmh*(1e3/3600) # m/s
 const fd = v/(λ*Wc)
 const num_coherence_symbols = 1/(2*fd)
-const beta_network_sdma = 0.66
+const beta_network_sdma = 0.65
 
 const design_ISD = 500
 const BS_density = sqrt(3)/2*design_ISD^2 # BSs per m^2, for hexagonal cells
