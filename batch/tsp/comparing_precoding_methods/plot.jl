@@ -41,24 +41,37 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 plot_name = "instantaneous-sumrate"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
+ax[:plot](xvals, yvals_precoding("RobustIntraclusterWMMSE", "weighted_logdet_rates_full"),
+    color=colours_precoding[:RobustIntraclusterWMMSE],
+    linestyle="-",
+    marker=markers_precoding[:RobustIntraclusterWMMSE], markeredgecolor=colours_precoding[:RobustIntraclusterWMMSE], markevery=5,
+    label="Robust WMMSE (ICI aware)")
+ax[:plot](xvals, yvals_precoding("RobustIntraclusterWMMSE", "weighted_logdet_rates_partial"),
+    color=colours_precoding[:RobustIntraclusterWMMSE],
+    linestyle="--",
+    marker=markers_precoding[:RobustIntraclusterWMMSE], markeredgecolor=colours_precoding[:RobustIntraclusterWMMSE], markevery=5,
+    label="Robust WMMSE (ICI oblivious)")
+ax[:plot](xvals, yvals_precoding("RobustChen2014_MaxSINR", "weighted_logdet_rates_full"),
+    color=colours_precoding[:RobustChen2014_MaxSINR],
+    linestyle="-",
+    marker=markers_precoding[:RobustChen2014_MaxSINR], markeredgecolor=colours_precoding[:RobustChen2014_MaxSINR], markevery=5,
+    label="Robust MaxSINR [x] (ICI aware)")
+ax[:plot](xvals, yvals_precoding("RobustChen2014_MaxSINR", "weighted_logdet_rates_partial"),
+    color=colours_precoding[:RobustChen2014_MaxSINR],
+    linestyle="--",
+    marker=markers_precoding[:RobustChen2014_MaxSINR], markeredgecolor=colours_precoding[:RobustChen2014_MaxSINR], markevery=5,
+    label="Robust MaxSINR [x] (ICI oblivious)")
+ax[:plot](xvals, yvals_precoding("NaiveIntraclusterWMMSE", "weighted_logdet_rates_full"),
+    color=colours_precoding[:NaiveIntraclusterWMMSE],
+    linestyle="-",
+    marker=markers_precoding[:NaiveIntraclusterWMMSE], markeredgecolor=colours_precoding[:NaiveIntraclusterWMMSE], markevery=5,
+    label="Naive WMMSE (ICI aware)")
+ax[:plot](xvals, yvals_precoding("NaiveIntraclusterWMMSE", "weighted_logdet_rates_partial"),
+    color=colours_precoding[:NaiveIntraclusterWMMSE],
+    linestyle="--",
+    marker=markers_precoding[:NaiveIntraclusterWMMSE], markeredgecolor=colours_precoding[:NaiveIntraclusterWMMSE], markevery=5,
+    label="Naive WMMSE (ICI oblivious)")
 
-for method in [:RobustIntraclusterWMMSE, :RobustChen2014_MaxSINR]
-    if method == :RobustIntraclusterWMMSE
-        label_base = "Robust WMMSE"
-    elseif method == :RobustChen2014_MaxSINR
-        label_base = "Robust MaxSINR"
-    end
-    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_full"),
-        color=colours_precoding[method],
-        linestyle="-",
-        marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
-        label=string(label_base, " (ICI aware)"))
-    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_partial"),
-        color=colours_precoding[method],
-        linestyle="--",
-        marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
-        label=string(label_base, " (ICI oblivious)"))
-end
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("Sum throughput [bits/s/Hz]")
