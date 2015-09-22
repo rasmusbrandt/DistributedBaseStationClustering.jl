@@ -16,14 +16,14 @@ data = load("$(sim_name).jld")
 
 # Defaults
 PyPlot.rc("lines", linewidth=1., markersize=3, markeredgewidth=0.5)
-PyPlot.rc("font", size=8, family="serif", serif="Computer Modern Sans Serif")
+PyPlot.rc("font", size=7, family="serif", serif="Computer Modern Sans Serif")
 PyPlot.rc("text", usetex=true)
 PyPlot.rc("text.latex", preamble="\\usepackage{amsmath}")
-PyPlot.rc("axes", linewidth=0.5, labelsize=8)
-PyPlot.rc("xtick", labelsize=8)
-PyPlot.rc("ytick", labelsize=8)
+PyPlot.rc("axes", linewidth=0.5, labelsize=7)
+PyPlot.rc("xtick", labelsize=6)
+PyPlot.rc("ytick", labelsize=6)
 PyPlot.rc("legend", fancybox=true, fontsize=6)
-PyPlot.rc("figure", figsize=(3.50,2.16), dpi=125)
+PyPlot.rc("figure", figsize=(3.2,2), dpi=300)
 
 # Legend creation helper
 show_legend!(ax, loc="lower center") = begin
@@ -40,7 +40,7 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 # instantaneous-sumrate
 plot_name = "instantaneous-sumrate"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
+ax = fig[:add_axes]((0.13,0.15,0.98-0.13,0.96-0.15))
 ax[:plot](xvals, yvals_precoding("RobustIntraclusterWMMSE", "weighted_logdet_rates_full"),
     color=colours_precoding[:RobustIntraclusterWMMSE],
     linestyle="-",

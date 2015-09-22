@@ -15,20 +15,20 @@ data = load("$(sim_name).jld")
 
 # Defaults
 PyPlot.rc("lines", linewidth=1., markersize=3, markeredgewidth=0.5)
-PyPlot.rc("font", size=8, family="serif", serif="Computer Modern Sans Serif")
+PyPlot.rc("font", size=7, family="serif", serif="Computer Modern Sans Serif")
 PyPlot.rc("text", usetex=true)
 PyPlot.rc("text.latex", preamble="\\usepackage{amsmath}")
-PyPlot.rc("axes", linewidth=0.5, labelsize=8)
-PyPlot.rc("xtick", labelsize=8)
-PyPlot.rc("ytick", labelsize=8)
+PyPlot.rc("axes", linewidth=0.5, labelsize=7)
+PyPlot.rc("xtick", labelsize=6)
+PyPlot.rc("ytick", labelsize=6)
 PyPlot.rc("legend", fancybox=true, fontsize=6)
-PyPlot.rc("figure", figsize=(3.50,2.16), dpi=125)
+PyPlot.rc("figure", figsize=(3.2,2), dpi=300)
 
 ##########################################################################
 # longterm-num_searches
 plot_name = "longterm-num_searches"
 fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
+ax = fig[:add_axes]((0.13,0.15,0.98-0.13,0.96-0.15))
 
 num_searches1 = mean(data["results_searches"][:,:,1], 2)
 num_searches2 = mean(data["results_searches"][:,:,2], 2)
