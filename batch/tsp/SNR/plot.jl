@@ -66,7 +66,7 @@ ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :Chen2014_kmeans, :GrandCoalitionClustering]
-    line = ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
+    line = ax[:plot](xvals, yvals_precoding(string(method), plot_val),
                      color=colours_assignment[method],
                      linestyle=linestyles_assignment[method],
                      marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
@@ -80,7 +80,7 @@ legend1 = PyPlot.legend(handles=lines[1:3], loc="upper left")
 legend1_frame = legend1[:get_frame]()
 PyPlot.setp(legend1_frame, linewidth=0.5)
 ax[:add_artist](legend1)
-legend2 = ax[:legend](handles=lines[4:7], bbox_to_anchor=[0.5, 0.05], loc="lower left")
+legend2 = ax[:legend](handles=lines[4:6], bbox_to_anchor=[0.5, 0.05], loc="lower left")
 legend2_frame = legend2[:get_frame]()
 PyPlot.setp(legend2_frame, linewidth=0.5)
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
