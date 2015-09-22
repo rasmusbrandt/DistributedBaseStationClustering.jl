@@ -42,7 +42,7 @@ simulation_params = [
 
         "CoalitionFormationClustering:search_order" => :lexicographic,
         "CoalitionFormationClustering:stability_type" => :individual,
-        "CoalitionFormationClustering:search_budget" => 100,
+        "CoalitionFormationClustering:search_budget" => 100_000,
         "CoalitionFormationClustering:use_history" => true,
         "CoalitionFormationClustering:starting_point" => :singletons,
     ],

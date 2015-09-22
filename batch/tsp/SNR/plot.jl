@@ -45,52 +45,17 @@ ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :GrandCoalitionClustering]
-    if method == :CoalitionFormationClustering_AttachOrSupplant
-        line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,2],
-            color=colours_assignment[method],
-            linestyle="-",
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=latexstring("Coalition form. (\$b_i = \\infty\$)"))
-        line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
-            color=colours_assignment[method],
-            linestyle="--",
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=latexstring("Coalition form. (\$b_i = 5\$)"))
-    else
-        line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
-            color=colours_assignment[method],
-            linestyle=linestyles_assignment[method],
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=labels_assignment[method])
-    end
+   line = ax[:plot](xvals, yvals_assignment(string(method), plot_val),
+                    color=colours_assignment[method],
+                    linestyle=linestyles_assignment[method],
+                    marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
+                    label=labels_assignment[method])
     push!(lines, line[1])
 end
 ax[:set_ylim]([-1, 60])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")
 show_legend!(ax, "upper left")
-fig[:savefig]("$(sim_name)_$(plot_name).eps")
-
-##########################################################################
-# longterm-num_searches
-plot_name = "longterm-num_searches"; plot_val = "num_searches"
-fig = PyPlot.figure()
-ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
-
-method = :CoalitionFormationClustering_AttachOrSupplant
-ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,2],
-    color=colours_assignment[method],
-    linestyle="-",
-    marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-    label=latexstring("$(labels_assignment[method]) (\$b_i = \\infty\$)"))
-ax[:plot](xvals, (1/I)*yvals_assignment(string(method), plot_val)[:,1],
-    color=colours_assignment[method],
-    linestyle="--",
-    marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-    label=latexstring("$(labels_assignment[method]) (\$b_i = 5\$)"))
-ax[:set_xlabel]("Signal-to-noise ratio [dB]")
-ax[:set_ylabel](L"Average number of searches $\eta_i$")
-show_legend!(ax, "upper right")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
@@ -101,27 +66,12 @@ ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic, :NoClustering, :Chen2014_kmeans, :GrandCoalitionClustering]
-    if method == :CoalitionFormationClustering_AttachOrSupplant
-        line1 = ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,2],
-            color=colours_assignment[method],
-            linestyle="-",
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=latexstring("$(labels_assignment[method]) (\$b_i = \\infty\$)"))
-        line2 = ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
-            color=colours_assignment[method],
-            linestyle="--",
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=latexstring("$(labels_assignment[method]) (\$b_i = 5\$)"))
-        push!(lines, line1[1])
-        push!(lines, line2[1])
-    else
-        line = ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
-            color=colours_assignment[method],
-            linestyle=linestyles_assignment[method],
-            marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-            label=labels_assignment[method])
-        push!(lines, line[1])
-    end
+    line = ax[:plot](xvals, yvals_precoding(string(method), plot_val)[:,1],
+                     color=colours_assignment[method],
+                     linestyle=linestyles_assignment[method],
+                     marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
+                     label=labels_assignment[method])
+    push!(lines, line[1])
 end
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")

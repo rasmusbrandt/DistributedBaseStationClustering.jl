@@ -38,7 +38,7 @@ yvals_precoding(method, plot_val) = data["processed_precoding_results"][mean_idx
 
 ##########################################################################
 # instantaneous-sumrate
-plot_name = "instantaneous-sumrate"; plot_val = "weighted_logdet_rates_full"
+plot_name = "instantaneous-sumrate"
 fig = PyPlot.figure()
 ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
@@ -48,12 +48,12 @@ for method in [:RobustIntraclusterWMMSE, :RobustChen2014_MaxSINR]
     elseif method == :RobustChen2014_MaxSINR
         label_base = "Robust MaxSINR"
     end
-    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_full")[:,2],
+    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_full"),
         color=colours_precoding[method],
         linestyle="-",
         marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
         label=string(label_base, " (ICI aware)"))
-    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_partial")[:,2],
+    ax[:plot](xvals, yvals_precoding(string(method), "weighted_logdet_rates_partial"),
         color=colours_precoding[method],
         linestyle="--",
         marker=markers_precoding[method], markeredgecolor=colours_precoding[method], markevery=5,
