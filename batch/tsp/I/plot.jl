@@ -37,10 +37,10 @@ throughputs2 = mean(data["results_throughputs"][:,:,2], 2)
 
 ax[:plot](data["Is"], num_searches1,
     color=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], markevery=2,
-    label="Coalition formation (attach-or-supplant)")
+    label=labels_assignment[:CoalitionFormationClustering_AttachOrSupplant])
 ax[:plot](data["Is"], num_searches2,
     color=colours_assignment[:CoalitionFormationClustering_Attach], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_Attach], markevery=2,
-    label="Coalition formation (attach-only)")
+    label=labels_assignment[:CoalitionFormationClustering_Attach])
 
 for (idx, It) in enumerate(data["Is"])
     if mod(idx, 2) == 1

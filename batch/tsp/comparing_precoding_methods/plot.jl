@@ -65,12 +65,12 @@ ax[:plot](xvals, yvals_precoding("NaiveIntraclusterWMMSE", "weighted_logdet_rate
     color=colours_precoding[:NaiveIntraclusterWMMSE],
     linestyle="-",
     marker=markers_precoding[:NaiveIntraclusterWMMSE], markeredgecolor=colours_precoding[:NaiveIntraclusterWMMSE], markevery=5,
-    label="Naive WMMSE (ICI aware)")
+    label="Naive WMMSE [x] (ICI aware)")
 ax[:plot](xvals, yvals_precoding("NaiveIntraclusterWMMSE", "weighted_logdet_rates_partial"),
     color=colours_precoding[:NaiveIntraclusterWMMSE],
     linestyle="--",
     marker=markers_precoding[:NaiveIntraclusterWMMSE], markeredgecolor=colours_precoding[:NaiveIntraclusterWMMSE], markevery=5,
-    label="Naive WMMSE (ICI oblivious)")
+    label="Naive WMMSE [x] (ICI oblivious)")
 
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")

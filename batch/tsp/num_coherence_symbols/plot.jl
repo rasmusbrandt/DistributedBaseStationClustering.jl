@@ -45,18 +45,11 @@ ax = fig[:add_axes]((0.12,0.15,0.98-0.12,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :CoalitionFormationClustering_Attach, :NoClustering, :GrandCoalitionClustering]
-    if method == :CoalitionFormationClustering_AttachOrSupplant
-        label = "Coalition formation (attach-or-supplant)"
-    elseif method == :CoalitionFormationClustering_Attach
-        label = "Coalition formation (attach)"
-    else
-        label = labels_assignment[method]
-    end
     line = ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
         marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
-        label=label)
+        label=labels_assignment[method])
     push!(lines, line[1])
 end
 ax[:set_ylim]([-1, 40])
