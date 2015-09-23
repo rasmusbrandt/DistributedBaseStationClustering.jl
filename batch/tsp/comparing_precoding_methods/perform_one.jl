@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
-include(joinpath(dirname(@__FILE__), "../../../src/DistributedBSClustering.jl"))
-using CoordinatedPrecoding, DistributedBSClustering
+include(joinpath(dirname(@__FILE__), "../../../src/DistributedBaseStationClustering.jl"))
+using CoordinatedPrecoding, DistributedBaseStationClustering
 using Compat, JLD, ArgParse
 Lumberjack.remove_truck("default")
 

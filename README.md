@@ -1,11 +1,11 @@
-# LongtermDistributedBSClustering.jl
+# LongtermDistributedBaseStationClustering.jl
 
-LongtermDistributedBSClustering.jl is a Julia package which provides the code
+LongtermDistributedBaseStationClustering.jl is a Julia package which provides the code
 for reproducibility of the results in
 
 ## Usage
 Make sure that Julia 0.3.11 or later is installed. At the julia prompt, install
-the package by running `Pkg.checkout("https://github.com/rasmusbrandt/LongtermDistributedBSClustering.jl")`.
+the package by running `Pkg.checkout("https://github.com/rasmusbrandt/LongtermDistributedBaseStationClustering.jl")`.
 
 The scripts in the root folder can now be used for investigation of the algorithms.
 The scripts in the `batch` folder can be used to reproduce the figures from the papers.

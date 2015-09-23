@@ -6,8 +6,8 @@
 # Plots beta curves, comparing different cluster assignment methods.
 ##########################################################################
 
-include("src/DistributedBSClustering.jl")
-using DistributedBSClustering, CoordinatedPrecoding
+include("src/DistributedBaseStationClustering.jl")
+using DistributedBaseStationClustering, CoordinatedPrecoding
 
 ##########################################################################
 # Load data

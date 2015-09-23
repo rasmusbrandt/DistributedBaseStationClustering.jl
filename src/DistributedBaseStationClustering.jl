@@ -1,11 +1,11 @@
 ##########################################################################
-# DistributedBSClustering
+# DistributedBaseStationClustering
 #
-# Evaluation environment for the DistributedBSClustering project
-# https://gitr.sys.kth.se/rabr5411/DistributedBSClustering.jl
+# Evaluation environment for the DistributedBaseStationClustering project
+# https://gitr.sys.kth.se/rabr5411/DistributedBaseStationClustering.jl
 ##########################################################################
 
-module DistributedBSClustering
+module DistributedBaseStationClustering
 
 using CoordinatedPrecoding
 using Compat
