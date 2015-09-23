@@ -364,17 +364,17 @@ plot_params_longterm_num_searches = @compat Dict(
     "figure" => Dict(
         :figsize => (8,5),
         :dpi => 125,
-    ],
+    ),
 
     "axes" => Dict(
         :xlabel => "Transmit power [dBm]",
         :ylabel => "Total number of searches",
-    ],
+    ),
 
     "legend" => Dict(
         :loc => "best",
         :fontsize => 10,
-    ],
+    ),
 
     "methods" => Dict(
         "CoalitionFormationClustering_Attach" => [
@@ -384,7 +384,7 @@ plot_params_longterm_num_searches = @compat Dict(
         "CoalitionFormationClustering_AttachOrSupplant" => [
             ("num_searches", Dict(:color => "DarkGreen", :linestyle => "-", :label => "CoalitionFormationClustering_AttachOrSupplant")),
         ],
-    ]
+    )
 )
 
 ##########################################################################
