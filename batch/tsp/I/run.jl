@@ -8,17 +8,13 @@ using Compat, JLD
 include(joinpath(dirname(@__FILE__), "../simulation_params.jl"))
 include(joinpath(dirname(@__FILE__), "../simulation_params-I.jl"))
 
-# Ndrops are simulated below
-simulation_params["Ndrops"] = 1
-simulation_params["Nsim"] = 1
+srand(7315242)
 
 const Is = 2:4:50
-const Ndrops = 1000
+simulation_params["Ndrops"] *= 10 # no run.sh
 
-srand(725242)
-
-results_searches = zeros(Float64, length(Is), Ndrops, 2)
-results_throughputs = zeros(Float64, length(Is), Ndrops, 2)
+results_searches = zeros(Float64, length(Is), simulation_params["Ndrops"], 2)
+results_throughputs = zeros(Float64, length(Is), simulation_params["Ndrops"], 2)
 for (idx, It) in enumerate(Is)
     network =
         setup_random_large_scale_network(It,
@@ -27,14 +23,12 @@ for (idx, It) in enumerate(Is)
             geography_size=(sqrt(It*BS_density), sqrt(It*BS_density)),
             MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
-    for ii_Ndrop = 1:Ndrops
-        _, raw_assignment_results =
-            simulate(network, simulation_params, loop_over=:assignment_methods)
-        results_searches[idx, ii_Ndrop, 1] = mean(raw_assignment_results[1]["CoalitionFormationClustering_AttachOrSupplant"]["num_searches"])
-        results_searches[idx, ii_Ndrop, 2] = mean(raw_assignment_results[1]["CoalitionFormationClustering_Attach"]["num_searches"])
-        results_throughputs[idx, ii_Ndrop, 1] = sum(raw_assignment_results[1]["CoalitionFormationClustering_AttachOrSupplant"]["throughputs"])
-        results_throughputs[idx, ii_Ndrop, 2] = sum(raw_assignment_results[1]["CoalitionFormationClustering_Attach"]["throughputs"])
-    end
+    _, raw_assignment_results =
+        simulate(network, simulation_params, loop_over=:assignment_methods)
+    results_searches[idx, :, 1] = [ mean(raw_assignment_results[ii_Ndrop]["CoalitionFormationClustering_AttachOrSupplant"]["num_searches"]) for ii_Ndrop = 1:simulation_params["Ndrops"] ]
+    results_searches[idx, :, 2] = [ mean(raw_assignment_results[ii_Ndrop]["CoalitionFormationClustering_Attach"]["num_searches"]) for ii_Ndrop = 1:simulation_params["Ndrops"] ]
+    results_throughputs[idx, :, 1] = [ sum(raw_assignment_results[ii_Ndrop]["CoalitionFormationClustering_AttachOrSupplant"]["throughputs"]) for ii_Ndrop = 1:simulation_params["Ndrops"] ]
+    results_throughputs[idx, :, 2] = [ sum(raw_assignment_results[ii_Ndrop]["CoalitionFormationClustering_Attach"]["throughputs"]) for ii_Ndrop = 1:simulation_params["Ndrops"] ]
 end
 
 println("-- Saving results")
