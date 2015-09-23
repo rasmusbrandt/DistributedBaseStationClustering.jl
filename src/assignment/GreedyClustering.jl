@@ -37,7 +37,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
         end
 
         # Sum interference from BS j to MSs served by BS i
-        F[i,j] = sum([ log2((channel.large_scale_fading_factor[k,j]^2)*Ps[j]/sigma2s[k]) for k in served_MS_ids(i, temp_cell_assignment) ])
+        F[i,j] = sum([ log2(1 + (channel.large_scale_fading_factor[k,j]^2)*Ps[j]/sigma2s[k]) for k in served_MS_ids(i, temp_cell_assignment) ])
     end; end
 
     # Greedily build clusters based on strongest sum interference between cells
