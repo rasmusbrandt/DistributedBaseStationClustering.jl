@@ -36,22 +36,26 @@ throughputs1 = mean(data["results_throughputs"][:,:,1], 2)
 throughputs2 = mean(data["results_throughputs"][:,:,2], 2)
 
 ax[:plot](data["Is"], num_searches1,
-    color=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], markevery=2,
+    color=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_AttachOrSupplant], markevery=1,
     label=labels_assignment[:CoalitionFormationClustering_AttachOrSupplant])
 ax[:plot](data["Is"], num_searches2,
-    color=colours_assignment[:CoalitionFormationClustering_Attach], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_Attach], markevery=2,
+    color=colours_assignment[:CoalitionFormationClustering_Attach], linestyle="-", marker="o", markeredgecolor=colours_assignment[:CoalitionFormationClustering_Attach], markevery=1,
     label=labels_assignment[:CoalitionFormationClustering_Attach])
+ax[:plot](1:9, 0:8, "k:") # -1 since no searches are needed for I = 1
+ax[:annotate]("Linear growth", xy=(7, 5), xytext=(17, 7), arrowprops=(@compat Dict(:facecolor => "black", :arrowstyle => "->")), horizontalalignment="center", fontsize=6)
 
-for (idx, It) in enumerate(data["Is"])
-    ax[:text](It, num_searches1[idx]-0.3, @sprintf("%.1f", throughputs1[idx]), fontdict=@compat Dict(:size => 5))
-    ax[:text](It, num_searches2[idx]-0.3, @sprintf("%.1f", throughputs2[idx]), fontdict=@compat Dict(:size => 5))
+for (idx, It) in enumerate(data["Is"][1:end-1])
+    if idx == 1; continue; end
+    ax[:text](It, num_searches1[idx]-0.5, @sprintf("%.1f", throughputs1[idx]), fontdict=@compat Dict(:size => 5))
+    ax[:text](It, num_searches2[idx]-0.5, @sprintf("%.1f", throughputs2[idx]), fontdict=@compat Dict(:size => 5))
 end
 
 ax[:set_xlim]([0, 50])
+ax[:set_xticks]([2, 10, 20, 30, 40, 50])
 ax[:set_ylim]([0, 8])
 ax[:set_xlabel](L"Number of cells $I$")
 ax[:set_ylabel](L"Average number of searches $\eta_i$")
-legend = ax[:legend](loc="upper left")
+legend = ax[:legend](loc="upper left", bbox_to_anchor=(0.18, 0.4))
 legend_frame = legend[:get_frame]()
 PyPlot.setp(legend_frame, linewidth=0.5)
 fig[:savefig]("$(sim_name)_$(plot_name).eps")

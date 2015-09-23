@@ -45,11 +45,16 @@ ax = fig[:add_axes]((0.13,0.15,0.98-0.13,0.96-0.15))
 
 lines = Any[]
 for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOrSupplant, :Peters2012_Heuristic]
+    if method == :CoalitionFormationClustering_AttachOrSupplant
+        label = "Coalition form. (attach-or-supplant)"
+    else
+        label = label=labels_assignment[method]
+    end
     line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,2],
         color=colours_assignment[method],
         linestyle="-",
         marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
-        label=labels_assignment[method])
+        label=label)
     push!(lines, line[1])
     line = ax[:plot](xvals, yvals_assignment(string(method), plot_val)[:,1],
         color=colours_assignment[method],
@@ -57,6 +62,9 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOr
         marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=5,
         label=labels_assignment[method])
 end
+ax[:annotate](L"$\beta = 0.65$", xy=(5, 10), xytext=(0, 20), arrowprops=(@compat Dict(:facecolor => "black", :arrowstyle => "->")), horizontalalignment="center")
+ax[:annotate](L"$\beta = 0$", xy=(25, 18), xytext=(30, 7), arrowprops=(@compat Dict(:facecolor => "black", :arrowstyle => "->")), horizontalalignment="center")
+
 ax[:set_ylim]([-1, 70])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")

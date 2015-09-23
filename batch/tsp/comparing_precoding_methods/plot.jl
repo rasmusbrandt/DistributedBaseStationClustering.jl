@@ -22,15 +22,8 @@ PyPlot.rc("text.latex", preamble="\\usepackage{amsmath}")
 PyPlot.rc("axes", linewidth=0.5, labelsize=7)
 PyPlot.rc("xtick", labelsize=6)
 PyPlot.rc("ytick", labelsize=6)
-PyPlot.rc("legend", fancybox=true, fontsize=6)
+PyPlot.rc("legend", fancybox=true, fontsize=5)
 PyPlot.rc("figure", figsize=(3.2,2), dpi=300)
-
-# Legend creation helper
-show_legend!(ax, loc="lower center") = begin
-    legend = ax[:legend](loc=loc)
-    legend_frame = legend[:get_frame]()
-    PyPlot.setp(legend_frame, linewidth=0.5)
-end
 
 # Extract the values easily
 xvals = data["simulation_params"]["independent_variable"][2]
@@ -75,5 +68,7 @@ ax[:plot](xvals, yvals_precoding("NaiveIntraclusterWMMSE", "weighted_logdet_rate
 ax[:set_ylim]([-2, 100])
 ax[:set_xlabel]("Signal-to-noise ratio [dB]")
 ax[:set_ylabel]("Sum throughput [bits/s/Hz]")
-show_legend!(ax, "lower right")
+legend = ax[:legend](loc="lower right", numpoints=1)
+legend_frame = legend[:get_frame]()
+PyPlot.setp(legend_frame, linewidth=0.5)
 fig[:savefig]("$(sim_name)_$(plot_name).eps")

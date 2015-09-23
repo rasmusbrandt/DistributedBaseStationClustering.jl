@@ -22,7 +22,7 @@ PyPlot.rc("text.latex", preamble="\\usepackage{amsmath}")
 PyPlot.rc("axes", linewidth=0.5, labelsize=7)
 PyPlot.rc("xtick", labelsize=6)
 PyPlot.rc("ytick", labelsize=6)
-PyPlot.rc("legend", fancybox=true, fontsize=6)
+PyPlot.rc("legend", fancybox=true, fontsize=5)
 PyPlot.rc("figure", figsize=(3.2,2), dpi=300)
 
 # Legend creation helper
@@ -55,13 +55,13 @@ end
 ax[:set_ylim]([-1, 40])
 ax[:set_xlabel]("MS speed [km/h]")
 ax[:set_ylabel]("IIA sum throughput [bits/s/Hz]")
-legend1 = PyPlot.legend(handles=lines[1:3], loc="upper right")
+legend1 = PyPlot.legend(handles=lines[1:5], loc="upper left", bbox_to_anchor=(0.15, 0.30))
 legend1_frame = legend1[:get_frame]()
 PyPlot.setp(legend1_frame, linewidth=0.5)
 ax[:add_artist](legend1)
-legend2 = ax[:legend](handles=lines[4:5], bbox_to_anchor=[0.5, 0.15], loc="center")
-legend2_frame = legend2[:get_frame]()
-PyPlot.setp(legend2_frame, linewidth=0.5)
+# legend2 = ax[:legend](handles=lines[4:5], bbox_to_anchor=[0.5, 0.15], loc="center")
+# legend2_frame = legend2[:get_frame]()
+# PyPlot.setp(legend2_frame, linewidth=0.5)
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
@@ -86,10 +86,11 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOr
         marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
         label=label)
 end
-ax[:set_ylim]([-0.5, 4.5])
+ax[:set_ylim]([0., 4.5])
+ax[:set_yticks]([0, 1, 2, 3, 4])
 ax[:set_xlabel]("MS speed [km/h]")
 ax[:set_ylabel]("Average coalition size")
-show_legend!(ax, "lower left")
+show_legend!(ax, "upper right")
 fig[:savefig]("$(sim_name)_$(plot_name).eps")
 
 ##########################################################################
@@ -116,6 +117,10 @@ for method in [:GrandCoalitionClustering, :CoalitionFormationClustering_AttachOr
         marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=10,
         label=label)
 end
+
+ax[:annotate]("Loss of CSI feasibility", xy=(12, 3), xytext=(45, 20), arrowprops=(@compat Dict(:facecolor => "black", :arrowstyle => "->")), horizontalalignment="center", fontsize=6)
+ax[:annotate]("", xy=(78 , 3), xytext=(55, 16), arrowprops=(@compat Dict(:facecolor => "black", :arrowstyle => "->")), horizontalalignment="left", fontsize=7)
+
 ax[:set_ylim]([-2, 120])
 ax[:set_xlabel]("MS speed [km/h]")
 ax[:set_ylabel]("WMMSE sum throughp. [bits/s/Hz]")
