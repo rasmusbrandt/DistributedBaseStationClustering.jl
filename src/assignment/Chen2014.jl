@@ -105,7 +105,7 @@ function Chen2014_kmeans(channel, network)
     else
         W_eigen = eigfact(W)
         largest_eigenvalues = sortperm(real(W_eigen.values), rev=true)
-        X = W_eigen.vectors[:,largest_eigenvalues[1:N_A]]
+        X = real(W_eigen.vectors[:,largest_eigenvalues[1:N_A]])
         kmeans_clusters = Clustering.kmeans(X', N_A)
 
         # Convert to partition matrix
