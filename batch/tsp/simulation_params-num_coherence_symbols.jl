@@ -1,4 +1,4 @@
-const vs_kmh = linspace(0, 90, 91) # km/h
+const vs_kmh = linspace(0, 90, 46) # km/h
 const vs = vs_kmh*(1e3/3600) # m/s
 
 const fds = vs/(λ*Wc)
