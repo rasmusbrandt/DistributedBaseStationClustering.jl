@@ -11,7 +11,7 @@ include(joinpath(dirname(@__FILE__), "../simulation_params-I.jl"))
 srand(7315242)
 
 const Is = 2:4:50
-simulation_params["Ndrops"] *= 10 # no run.sh
+simulation_params["Ndrops"] *= 100 # no run.sh
 
 results_searches = zeros(Float64, length(Is), simulation_params["Ndrops"], 2)
 results_throughputs = zeros(Float64, length(Is), simulation_params["Ndrops"], 2)

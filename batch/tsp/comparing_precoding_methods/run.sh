@@ -1,6 +1,6 @@
 #!/bin/bash
 
-seeds=(26717 93365 50261 21138 66869 27791 12175 69683 410 57971)
+seeds=`cat ../seeds.txt`
 
 rm -r previous; mkdir previous
 mv *.eps *.jld *.pdf *.log previous
