@@ -13,10 +13,10 @@ function GrandCoalitionClustering(channel, network)
     LargeScaleFadingCellAssignment!(channel, network)
 
     a = zeros(Int, I)
-    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, Partition(a))
+    throughputs, throughputs_split, _, prelogs =
+        longterm_throughputs(channel, network, Partition(a))
     Lumberjack.info("GrandCoalitionClustering finished.",
-        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
-    )
+        @compat Dict(:sum_throughput => sum(throughputs), :a => a))
 
     # Store prelogs for precoding
     set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")

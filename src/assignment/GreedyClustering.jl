@@ -94,8 +94,7 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     a = restricted_growth_string(partition_matrix)
     objective = sum(throughputs)
     Lumberjack.info("GreedyClustering finished.",
-        @Compat.Dict(:sum_throughput => objective, :a => a)
-    )
+        @compat Dict(:sum_throughput => objective, :a => a))
 
     # Store prelogs for precoding
     set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")

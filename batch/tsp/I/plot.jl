@@ -1,6 +1,5 @@
 #!/usr/bin/env julia
 
-include(joinpath(dirname(@__FILE__), "../../../src/DistributedBaseStationClustering.jl"))
 using CoordinatedPrecoding, DistributedBaseStationClustering
 using Compat, JLD, LaTeXStrings
 

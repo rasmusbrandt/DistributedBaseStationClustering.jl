@@ -43,8 +43,7 @@ function RandomClustering(channel, network)
     end
 
     Lumberjack.info("RandomClustering finished.",
-        @Compat.Dict(:sum_throughput => sum(throughputs), :a => random_a)
-    )
+        @compat Dict(:sum_throughput => sum(throughputs), :a => random_a))
 
     # Store prelogs for precoding
     set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")

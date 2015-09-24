@@ -11,10 +11,10 @@ function NoClustering(channel, network)
 
     a = collect(0:(I-1))
     partition = Partition(a)
-    throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, partition)
+    throughputs, throughputs_split, _, prelogs =
+        longterm_throughputs(channel, network, partition)
     Lumberjack.info("NoClustering finished.",
-        @Compat.Dict(:sum_throughput => sum(throughputs), :a => a)
-    )
+        @compat Dict(:sum_throughput => sum(throughputs), :a => a))
 
     # Store prelogs for precoding
     set_aux_network_param!(network, prelogs[1], "prelogs_cluster_sdma")

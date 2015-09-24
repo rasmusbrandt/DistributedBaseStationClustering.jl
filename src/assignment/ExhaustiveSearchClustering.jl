@@ -38,11 +38,9 @@ function ExhaustiveSearchClustering(channel, network)
     end
     a = restricted_growth_string(best_partition)
     Lumberjack.info("ExhaustiveSearchClustering finished.",
-        @Compat.Dict(
-            :sum_throughput => best_sum_throughput,
-            :num_sum_throughput_calculations => num_sum_throughput_calculations,
-            :a => a)
-    )
+        @compat Dict(:sum_throughput => best_sum_throughput,
+                     :num_sum_throughput_calculations => num_sum_throughput_calculations,
+                     :a => a))
 
     # Store prelogs for precoding
     set_aux_network_param!(network, best_prelogs[1], "prelogs_cluster_sdma")

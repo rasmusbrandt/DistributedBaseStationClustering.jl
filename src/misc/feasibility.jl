@@ -18,7 +18,7 @@ function is_IA_feasible(network, partition::Partition)
 end
 
 # Returns true if IA is feasible for this block
-function is_IA_feasible(network, block::Block)
+function is_IA_feasible(network, block)
     # Check if we can use these results
     check_Liu2013_applicability(network)
 

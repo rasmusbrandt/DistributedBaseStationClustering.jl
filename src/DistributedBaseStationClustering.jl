@@ -39,26 +39,25 @@ export
 
 include("misc/combinations.jl")
 include("misc/expint.jl")
-include("misc/partitions.jl")
 include("misc/feasibility.jl")
 include("misc/subsets.jl")
 include("misc/utilities.jl")
 
 include("assignment/assignment.jl")
 include("assignment/BranchAndBoundClustering.jl")
-include("assignment/Chen2014.jl")
 include("assignment/CoalitionFormationClustering.jl")
 include("assignment/ExhaustiveSearchClustering.jl")
 include("assignment/GrandCoalitionClustering.jl")
 include("assignment/GreedyClustering.jl")
-include("assignment/NoClustering.jl")
-include("assignment/Peters2012.jl")
 include("assignment/RandomClustering.jl")
+include("assignment/NoClustering.jl")
+include("assignment/Chen2014.jl")
+include("assignment/Peters2012.jl")
 
 include("precoding/precoding.jl")
-include("precoding/Chen2014_MaxSINR.jl")
-include("precoding/IntraclusterWMMSE.jl")
 include("precoding/NoPrecoding.jl")
+include("precoding/IntraclusterWMMSE.jl")
+include("precoding/Chen2014.jl")
 
 ##########################################################################
 # Logging defaults
@@ -68,4 +67,4 @@ let
     file = Lumberjack.add_truck(Lumberjack.LumberjackTruck("default.log", "info"), "default")
 end
 
-end
+end # module

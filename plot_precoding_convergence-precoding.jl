@@ -6,8 +6,7 @@
 # Plots convergence curves, comparing different precoding methods.
 ##########################################################################
 
-include("src/DistributedBaseStationClustering.jl")
-using DistributedBaseStationClustering, CoordinatedPrecoding
+using CoordinatedPrecoding, DistributedBaseStationClustering
 
 ##########################################################################
 # Load data

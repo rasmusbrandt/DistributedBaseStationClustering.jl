@@ -7,8 +7,7 @@
 # precoding method.
 ##########################################################################
 
-include("src/DistributedBaseStationClustering.jl")
-using DistributedBaseStationClustering, CoordinatedPrecoding
+using CoordinatedPrecoding, DistributedBaseStationClustering
 using Compat, JLD
 
 ##########################################################################
