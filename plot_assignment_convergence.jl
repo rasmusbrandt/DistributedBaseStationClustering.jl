@@ -43,7 +43,7 @@ plot_params_bounds = @compat Dict(
         :loc => "best",
         :fontsize => 8,
         :ncol => 2,
-    Dict(,
+    ),
 
     "methods" => Dict(
         "BranchAndBoundClustering" => [

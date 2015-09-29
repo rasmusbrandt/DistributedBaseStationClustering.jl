@@ -115,7 +115,7 @@ function BranchAndBoundClustering(channel, network)
             push!(upper_bound_evolution, best_upper_bound)
         end
 
-        # Check convergence (parent has the highest upper bound)
+        # Check convergence
         abs_conv_crit = best_upper_bound - incumbent_sum_throughput
         rel_conv_crit = abs_conv_crit/incumbent_sum_throughput
         if abs_conv_crit <= max_abs_optimality_gap || rel_conv_crit <= max_rel_optimality_gap
@@ -180,7 +180,7 @@ function BranchAndBoundClustering(channel, network)
     final_partition = Partition(incumbent_a)
     throughputs, throughputs_split, _, prelogs = longterm_throughputs(channel, network, final_partition)
 
-    # Verify that our local throughput calculation makes sens
+    # Verify that our local throughput calculation makes sense
     sum_throughput = sum(throughputs)
     if abs(sum_throughput - incumbent_sum_throughput) > 1e-10
         Lumberjack.error("Something is wrong in the bound.")
@@ -312,12 +312,11 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     prelog_bounds_network_sdma = zeros(Float64, I*Kc)
     throughput_bounds = zeros(Float64, I*Kc, d)
     for block in pseudo_partition.blocks
-        N_available_IA_slots_ = max_cluster_size - length(block.elements)
+        cluster_size = length(block.elements)
+        N_available_IA_slots_ = max_cluster_size - cluster_size
 
         # Clusters that are IA overloaded get zero throughput, both for cluster SDMA and for network SDMA.
         if N_available_IA_slots_ >= 0
-            cluster_size = length(block.elements)
-
             # For the prelog bound, we want the number of BSs in this cluster
             # to be close to the optimal number.
             if cluster_size < optimal_cluster_size_cluster_sdma

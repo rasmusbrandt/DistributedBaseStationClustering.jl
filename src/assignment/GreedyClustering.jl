@@ -17,7 +17,6 @@ GreedyClustering_Multiple(channel, network) =
 
 function GreedyClustering(channel, network; merge_multiple::Bool=false)
     I = get_num_BSs(network); K = get_num_MSs(network)
-    aux_params = get_aux_assignment_params(network)
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
