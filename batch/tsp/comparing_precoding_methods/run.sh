@@ -12,7 +12,7 @@ do
 done
 
 echo "Merging..."
-./merge.jl precoding_methods-seed*.jld
+./merge.jl
 
 echo "Plotting..."
 ./plot.jl
