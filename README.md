@@ -1,7 +1,7 @@
 # DistributedBaseStationClustering.jl
 
 **DistributedBaseStationClustering.jl** is the simulation environment for
-> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, To appear. *Best Student Paper Award Finalist*,
+> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, To appear. **Best Student Paper Award Finalist**,
 
 and
 
