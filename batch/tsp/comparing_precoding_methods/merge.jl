@@ -3,7 +3,7 @@
 using CoordinatedPrecoding, DistributedBaseStationClustering
 using Compat, JLD
 
-include(joinpath(dirname(@__FILE__), "../plot_params-final.jl"))
+include(joinpath(dirname(@__FILE__), "../plot_params-precoding_methods.jl"))
 
 ##########################################################################
 # Load data
@@ -24,7 +24,6 @@ raw_precoding_results = CoordinatedPrecoding.MultipleSimulationResults(Nseeds*as
 for (file_idx, file_name) in enumerate(file_names)
     println("Loading from $(file_name)")
     data = load(file_name)
-    raw_assignment_results.simulation_results[(file_idx - 1)*Ndrops + 1:file_idx*Ndrops, :, :, :] = data["raw_assignment_results"].simulation_results
     raw_precoding_results.simulation_results[(file_idx - 1)*Ndrops + 1:file_idx*Ndrops, :, :, :] = data["raw_precoding_results"].simulation_results
     data = []
 end
@@ -35,5 +34,4 @@ simulation_params["Ndrops"] *= Nseeds
 println("-- Saving merged results")
 save("$(sim_name).jld",
      "simulation_params", simulation_params,
-     "processed_assignment_results", postprocess(raw_assignment_results, simulation_params, postprocess_params_assignment),
-     "processed_precoding_results", postprocess(raw_precoding_results, simulation_params, postprocess_params_precoding))
+     "processed_precoding_results", postprocess(raw_precoding_results, simulation_params, plot_params))
