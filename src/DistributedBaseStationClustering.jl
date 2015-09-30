@@ -35,7 +35,10 @@ export
     # precoding
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE,
-    NoPrecoding
+    NoPrecoding,
+
+    # misc
+    exp_times_E1
 
 include("misc/combinations.jl")
 include("misc/expint.jl")
