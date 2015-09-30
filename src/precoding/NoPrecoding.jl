@@ -8,10 +8,10 @@ function NoPrecoding(channel, network)
     ds = get_num_streams(network); max_d = maximum(ds)
     aux_params = get_aux_precoding_params(network)
 
-    utilities = Array(Float64, K, max_d, aux_params["max_iters"])
+    utilities = Array(Float64, K, max_d, 1)
 
-    z1 = zeros(Float64, aux_params["max_iters"])
-    z2 = zeros(Float64, K, max_d, aux_params["max_iters"])
+    z1 = zeros(Float64, 1)
+    z2 = zeros(Float64, K, max_d, 1)
 
     results = PrecodingResults()
     if aux_params["output_protocol"] == :all_iterations
