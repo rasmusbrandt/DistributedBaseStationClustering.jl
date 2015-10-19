@@ -153,7 +153,7 @@ function update_MSs!(state::Chen2014_MaxSINRState, channel::SinglecarrierChannel
         F_cluster_sdma = channel.H[k,i]*state.V_cluster_sdma[k]
 
         # Optimal (MMSE) receiver and MSE
-        Ummse_cluster_sdma = inv(eigfact(Hermitian(Phi_cluster_sdma_full)))*F_cluster_sdma
+        Ummse_cluster_sdma = inv(eigfact(hermitianize!(Phi_cluster_sdma_full)))*F_cluster_sdma
         state.E_cluster_sdma_full[k] = Diagonal(min(1, abs(diag((eye(ds[k]) - Ummse_cluster_sdma'*F_cluster_sdma)))))
 
         # Actual (per-stream) receiver
@@ -168,9 +168,9 @@ function update_MSs!(state::Chen2014_MaxSINRState, channel::SinglecarrierChannel
         F_network_sdma = channel.H[k,i]*state.V_network_sdma[k]
 
         # Optimal (MMSE) receivers
-        Ummse_network_sdma_full = inv(eigfact(Hermitian(Phi_network_sdma_full)))*F_network_sdma
+        Ummse_network_sdma_full = inv(eigfact(hermitianize!(Phi_network_sdma_full)))*F_network_sdma
         state.E_network_sdma_full[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - Ummse_network_sdma_full'*F_network_sdma))))
-        Ummse_network_sdma_robust = inv(eigfact(Hermitian(Phi_network_sdma_partial_robust)))*F_network_sdma
+        Ummse_network_sdma_robust = inv(eigfact(hermitianize!(Phi_network_sdma_partial_robust)))*F_network_sdma
         state.E_network_sdma_partial[k] = Diagonal(min(1, abs(diag(eye(ds[k]) - Ummse_network_sdma_robust'*F_network_sdma))))
 
         # Actual (per-stream) receivers

@@ -187,7 +187,7 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         F_cluster_sdma = channel.H[k,i]*state.V_cluster_sdma[k]
 
         # Optimal (MMSE) receiver
-        state.U_cluster_sdma[k] = inv(eigfact(Hermitian(Phi_cluster_sdma_full)))*F_cluster_sdma
+        state.U_cluster_sdma[k] = inv(eigfact(hermitianize!(Phi_cluster_sdma_full)))*F_cluster_sdma
 
         # MMSE and optimal weight
         state.E_cluster_sdma_full[k] = Diagonal(min(1, abs(diag((eye(ds[k]) - state.U_cluster_sdma[k]'*F_cluster_sdma)))))
@@ -199,9 +199,9 @@ function update_MSs!(state::IntraclusterWMMSEState, channel::SinglecarrierChanne
         F_network_sdma = channel.H[k,i]*state.V_network_sdma[k]
 
         # Receivers
-        U_network_sdma_full   = inv(eigfact(Hermitian(Phi_network_sdma_full)))*F_network_sdma
-        U_network_sdma_naive  = inv(eigfact(Hermitian(Phi_network_sdma_partial_naive)))*F_network_sdma
-        U_network_sdma_robust = inv(eigfact(Hermitian(Phi_network_sdma_partial_robust)))*F_network_sdma
+        U_network_sdma_full   = inv(eigfact(hermitianize!(Phi_network_sdma_full)))*F_network_sdma
+        U_network_sdma_naive  = inv(eigfact(hermitianize!(Phi_network_sdma_partial_naive)))*F_network_sdma
+        U_network_sdma_robust = inv(eigfact(hermitianize!(Phi_network_sdma_partial_robust)))*F_network_sdma
 
         # MSEs and optimal weight
         state.E_network_sdma_full[k]    = Diagonal(min(1, abs(diag(eye(ds[k]) - U_network_sdma_full'*F_network_sdma))))
@@ -286,7 +286,7 @@ function optimal_mu(i, Gamma, U, Z, prelogs, channel::SinglecarrierChannel, Ps, 
         FFh = F*F'
         bis_M += FFh
     end
-    Gamma_eigen = eigfact(Hermitian(Gamma)); Gamma_eigen_values = abs(Gamma_eigen.values)
+    Gamma_eigen = eigfact(hermitianize!(Gamma)); Gamma_eigen_values = abs(Gamma_eigen.values)
     bis_JMJ_diag = abs(diag(Gamma_eigen.vectors'*bis_M*Gamma_eigen.vectors))
     bis_length = channel.Ms[i]
 

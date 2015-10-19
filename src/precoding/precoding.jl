@@ -15,3 +15,12 @@ function calculate_weighted_logdet_rates(state, prelogs_cluster_sdma, prelogs_ne
 
     return weighted_logdet_rates_cluster_sdma_full, weighted_logdet_rates_network_sdma_full, weighted_logdet_rates_network_sdma_partial
 end
+
+# This helper is needed in 0.4, since the diagonals must necessarily be reals.
+function hermitianize!(M)
+    n = Base.LinAlg.chksquare(M)
+    for i = 1:n
+        M[i,i] = real(M[i,i])
+    end
+    Hermitian(M)
+end
