@@ -146,7 +146,6 @@ function deviate!(state::CoalitionFormationClustering_State, i, I, K,
     new_partitions = Array(Partition, num_new_partitions)
     deviated_BS_throughputs = zeros(Float64, I, num_new_partitions)
     swapees = zeros(Int, num_new_partitions)
-    local n
 
     # Deviations where BS i joins an existing coalition
     for n = 1:length(other_blocks)
@@ -169,6 +168,7 @@ function deviate!(state::CoalitionFormationClustering_State, i, I, K,
     end
 
     # Deviations where BS i swaps with somebody in a full coalition
+    n = length(other_blocks)
     if swap_allowed
         for swapee_block in other_blocks
             # Two singletons should never swap
