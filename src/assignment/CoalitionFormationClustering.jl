@@ -68,7 +68,7 @@ function CoalitionFormationClustering_Individual(channel, network)
 
     # Initial coalition structure
     if starting_point == :grand
-        initial_partition = Partition(zeros(I))
+        initial_partition = Partition(zeros(Int, I))
     elseif starting_point == :singletons
         initial_partition = Partition(collect(0:(I-1)))
     end
