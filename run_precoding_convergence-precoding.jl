@@ -7,8 +7,8 @@
 # cluster assignment method.
 ##########################################################################
 
-include("src/DistributedBSClustering.jl")
-using DistributedBSClustering, CoordinatedPrecoding
+include("src/DistributedBaseStationClustering.jl")
+using DistributedBaseStationClustering, CoordinatedPrecoding
 using Compat, JLD
 
 ##########################################################################

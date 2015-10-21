@@ -1,11 +1,11 @@
 ##########################################################################
-# DistributedBSClustering
+# DistributedBaseStationClustering
 #
-# Evaluation environment for the DistributedBSClustering project
-# https://gitr.sys.kth.se/rabr5411/DistributedBSClustering.jl
+# Evaluation environment for the DistributedBaseStationClustering project
+# https://gitr.sys.kth.se/rabr5411/DistributedBaseStationClustering.jl
 ##########################################################################
 
-module DistributedBSClustering
+module DistributedBaseStationClustering
 
 using CoordinatedPrecoding
 import Lumberjack, PyCall, Clustering
@@ -38,7 +38,6 @@ export
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE
 
 include("misc/combinations.jl")
-include("misc/partitions.jl")
 include("misc/feasibility.jl")
 include("misc/subsets.jl")
 include("misc/utilities.jl")
