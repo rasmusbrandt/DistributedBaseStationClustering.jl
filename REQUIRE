@@ -1,6 +1,10 @@
+julia 0.3
+
 CoordinatedPrecoding
-Lumberjack
-PyCall
-HDF5
+
 ArgParse
+JLD
+Lumberjack
+
 Clustering
+Polynomials
