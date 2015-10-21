@@ -7,7 +7,6 @@
 # precoding methods.
 ##########################################################################
 
-include("src/DistributedBaseStationClustering.jl")
 using DistributedBaseStationClustering, CoordinatedPrecoding
 using Compat, JLD
 
@@ -40,16 +39,16 @@ simulation_params = @compat Dict(
         Shi2011_WMMSE,
         Eigenprecoding,
     ],
-    "aux_network_params" => @Compat.Dict(
+    "aux_network_params" => Dict(
         "num_coherence_symbols" => 2_700,
     ),
-    "aux_assignment_params" => @Compat.Dict(
+    "aux_assignment_params" => Dict(
         "clustering_type" => :spectrum_sharing,
         "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
         "replace_E1_utility_with_lower_bound" => false,
     ),
-    "aux_precoding_params" => @Compat.Dict(
+    "aux_precoding_params" => Dict(
         "initial_precoders" => "eigendirection",
         "stop_crit" => 1e-3,
         "max_iters" => 1000,

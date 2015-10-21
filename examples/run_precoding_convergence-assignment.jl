@@ -1,28 +1,34 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# timing-assignment.jl
+# run_precoding_convergence-assignment.jl
 #
-# Timing for cluster assignment methods
+# Convergence, comparing different cluster assignment methods for the same
+# precoding method.
 ##########################################################################
 
-include("src/DistributedBaseStationClustering.jl")
 using DistributedBaseStationClustering, CoordinatedPrecoding
 using Compat, JLD
 
 ##########################################################################
-# General settings
-srand(973472333)
+# Custom logging
+Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
 
 ##########################################################################
-# Indoors network
+# General settings
+srand(83196723)
+start_time = strftime("%Y%m%dT%H%M%S", time())
+
+##########################################################################
+# RandomLargeScaleNetwork
 simulation_params = @compat Dict(
+    "simulation_name" => "precoding_convergence-assignment_$(start_time)",
     "I" => 8, "Kc" => 1, "N" => 2, "M" => 4, "d" => 1,
+    "Ndrops" => 10, "Nsim" => 20,
     "geography_size" => (1300.,1300.),
     "MS_serving_BS_distance" => Nullable{Float64}(),
-    "Ntest" => 100,
     "assignment_methods" => [
-        ExhaustiveSearchClustering,
+        # ExhaustiveSearchClustering,
         BranchAndBoundClustering,
 
         CoalitionFormationClustering_Group,
@@ -32,25 +38,38 @@ simulation_params = @compat Dict(
         GreedyClustering_Multiple,
 
         Chen2014_LinearObj_ExhaustiveSearch,
+        # Peters2012_Heuristic,
 
         GrandCoalitionClustering,
         RandomClustering,
         NoClustering,
     ],
-    "aux_network_params" => @Compat.Dict(
+    "precoding_methods" => [
+        RobustIntraclusterWMMSE,
+    ],
+    "aux_network_params" => Dict(
         "num_coherence_symbols" => 2_700,
     ),
-    "aux_assignment_params" => @Compat.Dict(
+    "aux_assignment_params" => Dict(
         "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => false,
+        "apply_overhead_prelog" => true,
         "IA_infeasible_negative_inf_utility" => true,
         "replace_E1_utility_with_lower_bound" => false,
 
-        "CoalitionFormationClustering_Group:max_merge_size" => 4,
+        "CoalitionFormationClustering_Group:max_merge_size" => 3,
         "CoalitionFormationClustering_Group:search_order" => :greedy,
-        "CoalitionFormationClustering_Individual:search_budget" => 100,
+        "CoalitionFormationClustering_Individual:search_budget" => 10,
         "CoalitionFormationClustering_Individual:search_order" => :greedy,
+        "CoalitionFormationClustering_Individual:stability_type" => :contractual,
     ),
+    "aux_precoding_params" => Dict(
+        "initial_precoders" => "eigendirection",
+        "stop_crit" => 0.,
+        "max_iters" => 20,
+    ),
+    "aux_independent_variables" => [
+        (set_transmit_powers_dBm!, [-30, -10]),
+    ]
 )
 network =
     setup_random_large_scale_network(simulation_params["I"],
@@ -59,4 +78,10 @@ network =
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
-timing(network, simulation_params, loop_over=:assignment_methods)
+raw_results =
+    simulate_precoding_convergence(network, simulation_params, loop_over=:assignment_methods)
+
+println("-- Saving $(simulation_params["simulation_name"]) results")
+save("$(simulation_params["simulation_name"]).jld",
+     "simulation_params", clean_simulation_params_for_jld(simulation_params),
+     "raw_results", raw_results)

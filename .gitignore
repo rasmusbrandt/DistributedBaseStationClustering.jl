@@ -2,4 +2,5 @@
 *.pdf
 *.eps
 *.mem
-support/.ipynb_checkpoints/
+*.pyc
+.ipynb_checkpoints/

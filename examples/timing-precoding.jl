@@ -1,36 +1,26 @@
 #!/usr/bin/env julia
 
 ##########################################################################
-# run_precoding_convergence-precoding.jl
+# timing-precoding.jl
 #
-# Convergence, comparing different precoding methods for the same
-# cluster assignment method.
+# Timing for cluster precoding methods
 ##########################################################################
 
-include("src/DistributedBaseStationClustering.jl")
 using DistributedBaseStationClustering, CoordinatedPrecoding
 using Compat, JLD
 
 ##########################################################################
-# Custom logging
-Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
-
-##########################################################################
 # General settings
-srand(83196723)
-start_time = strftime("%Y%m%dT%H%M%S", time())
+srand(973472333)
 
 ##########################################################################
-# RandomLargeScaleNetwork
+# Indoors network
 simulation_params = @compat Dict(
-    "simulation_name" => "precoding_convergence-precoding_$(start_time)",
-    "I" => 8, "Kc" => 1, "N" => 2, "M" => 4, "d" => 1,
-    "Ndrops" => 10, "Nsim" => 20,
+    "I" => 8, "Kc" => 1, "N" => 2, "M" => 2, "d" => 1,
     "geography_size" => (1300.,1300.),
     "MS_serving_BS_distance" => Nullable{Float64}(),
-    "assignment_methods" => [
-        BranchAndBoundClustering,
-    ],
+    "Ntest" => 100,
+    "assignment_methods" => [ GrandCoalitionClustering ],
     "precoding_methods" => [
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
@@ -44,23 +34,20 @@ simulation_params = @compat Dict(
         Shi2011_WMMSE,
         Eigenprecoding,
     ],
-    "aux_network_params" => @Compat.Dict(
+    "aux_network_params" => Dict(
         "num_coherence_symbols" => 2_700,
     ),
-    "aux_assignment_params" => @Compat.Dict(
+    "aux_assignment_params" => Dict(
         "clustering_type" => :spectrum_sharing,
-        "apply_overhead_prelog" => true,
+        "apply_overhead_prelog" => false,
         "IA_infeasible_negative_inf_utility" => true,
         "replace_E1_utility_with_lower_bound" => false,
     ),
-    "aux_precoding_params" => @Compat.Dict(
+    "aux_precoding_params" => Dict(
         "initial_precoders" => "eigendirection",
         "stop_crit" => 0.,
-        "max_iters" => 20,
+        "max_iters" => 100,
     ),
-    "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-30, -10]),
-    ]
 )
 network =
     setup_random_large_scale_network(simulation_params["I"],
@@ -69,10 +56,4 @@ network =
         geography_size=simulation_params["geography_size"],
         MS_serving_BS_distance=simulation_params["MS_serving_BS_distance"])
 
-raw_results =
-    simulate_precoding_convergence(network, simulation_params, loop_over=:precoding_methods)
-
-println("-- Saving $(simulation_params["simulation_name"]) results")
-save("$(simulation_params["simulation_name"]).jld",
-     "simulation_params", clean_simulation_params_for_jld(simulation_params),
-     "raw_results", raw_results)
+timing(network, simulation_params, loop_over=:precoding_methods)
