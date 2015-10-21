@@ -13,7 +13,7 @@ using Compat, JLD
 ##########################################################################
 # General settings
 srand(725242)
-start_time = strftime("%Y%m%dT%H%M%S", time())
+start_time = @compat Libc.strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # RandomLargeScaleNetwork

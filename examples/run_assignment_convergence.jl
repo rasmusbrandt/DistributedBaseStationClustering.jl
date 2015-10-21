@@ -16,7 +16,7 @@ Lumberjack.add_truck(Lumberjack.LumberjackTruck("debug.log", "debug"), "debug")
 ##########################################################################
 # General settings
 srand(83196723)
-start_time = strftime("%Y%m%dT%H%M%S", time())
+start_time = @compat Libc.strftime("%Y%m%dT%H%M%S", time())
 
 ##########################################################################
 # RandomLargeScaleNetwork
