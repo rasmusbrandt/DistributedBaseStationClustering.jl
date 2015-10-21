@@ -103,7 +103,7 @@ function Chen2014_kmeans(channel, network)
     W = Chen2014_W_matrix(channel, network)
 
     # k-means clustering on W
-    N_A = iceil(I/Lmax)
+    N_A = ceil(Int, I/Lmax)
     if N_A == 1
         # Grand coalition feasible, so no need to perform kmeans
         partition_matrix[:] = 1

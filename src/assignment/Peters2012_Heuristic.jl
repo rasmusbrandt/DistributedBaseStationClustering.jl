@@ -26,7 +26,7 @@ function Peters2012_Heuristic(channel, network)
         DoFo[L] = orthogonal_prelog_factor(network, tmp_block)*floor((N + M)*L/(L+1))
     end
     _, idx = findmax(DoFo)
-    P = iceil(I/(1:I)[idx]) # number of partitions
+    P = ceil(Int, I/(1:I)[idx]) # number of partitions
 
     # Greedily build clusters based on rate approximation
     unclustered_BSs = IntSet(1:I) # K_A in paper
