@@ -43,7 +43,7 @@ function CoalitionFormationClustering_Common(channel, network, swap_allowed; ign
 
     # Initial coalition structure
     if starting_point == :grand
-        initial_partition = Partition(zeros(I))
+        initial_partition = Partition(Int, zeros(I))
     elseif starting_point == :singletons
         initial_partition = Partition(collect(0:(I-1)))
     end
