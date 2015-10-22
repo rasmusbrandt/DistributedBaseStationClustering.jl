@@ -45,6 +45,7 @@ type CoalitionFormationClustering_IndividualState
     num_searches::Vector{Int}
     num_utility_calculations::Int
     num_longterm_rate_calculations::Int
+    movie_state::MovieState
 end
 
 function CoalitionFormationClustering_Individual(channel, network)
@@ -56,11 +57,13 @@ function CoalitionFormationClustering_Individual(channel, network)
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:stability_type" :individual
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:use_history" true
     @defaultize_param! aux_params "CoalitionFormationClustering_Individual:starting_point" :grand
+    @defaultize_param! aux_params "CoalitionFormationClustering_Individual:prepare_movie" false
     search_budget = aux_params["CoalitionFormationClustering_Individual:search_budget"]
     search_order = aux_params["CoalitionFormationClustering_Individual:search_order"]
     stability_type = aux_params["CoalitionFormationClustering_Individual:stability_type"]
     use_history = aux_params["CoalitionFormationClustering_Individual:use_history"]
     starting_point = aux_params["CoalitionFormationClustering_Individual:starting_point"]
+    prepare_movie = aux_params["CoalitionFormationClustering_Individual:prepare_movie"]
 
     # Perform cell selection
     LargeScaleFadingCellAssignment!(channel, network)
@@ -74,7 +77,17 @@ function CoalitionFormationClustering_Individual(channel, network)
     end
     initial_BS_utilities = longterm_BS_utilities(channel, network, initial_partition, temp_cell_assignment, I)
     initial_num_searches = zeros(Int, I)
-    state = CoalitionFormationClustering_IndividualState(initial_partition, initial_BS_utilities, [ Set{IntSet}() for i = 1:I ], initial_num_searches, K, K)
+    state = CoalitionFormationClustering_IndividualState(
+                initial_partition,
+                initial_BS_utilities,
+                [ Set{IntSet}() for i = 1:I ],
+                initial_num_searches,
+                K,
+                K,
+                MovieState())
+    if prepare_movie
+        push_event!(state.movie_state, :accept, "Initial coalition structure.", 0, [], [], initial_partition, initial_BS_utilities)
+    end
 
     # Let each BS deviate, and stop when no BS deviates (individual-based stability)
     deviation_performed = trues(I) # temporary, to enter the loop
@@ -96,9 +109,10 @@ function CoalitionFormationClustering_Individual(channel, network)
         deviation_performed = falses(I)
         for i in ordered_BS_list
             deviation_performed[i] = deviate!(state, i, I, K, search_budget,
-                stability_type, use_history, channel, network, temp_cell_assignment)
+                stability_type, use_history, prepare_movie, channel, network, temp_cell_assignment)
         end
     end
+    push_event!(state.movie_state, :accepted_by_all, "Individual stability achieved.", 0, [], [], state.partition, state.BS_utilities)
     utilities, alphas, _ = longterm_utilities(channel, network, state.partition)
     a = restricted_growth_string(state.partition)
     Lumberjack.info("CoalitionFormationClustering_Individual finished.",
@@ -123,13 +137,17 @@ function CoalitionFormationClustering_Individual(channel, network)
     results["num_searches"] = state.num_searches
     results["num_utility_calculations"] = state.num_utility_calculations
     results["num_longterm_rate_calculations"] = state.num_longterm_rate_calculations
+    if prepare_movie
+        results["movie_state"] = state.movie_state
+    end
     return results
 end
 
 # Lets BS i deviate in the individual stability model.
 # Returns true if it did deviate, otherwise false.
 function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
-    search_budget, stability_type, use_history, channel, network, cell_assignment)
+    search_budget, stability_type, use_history, prepare_movie,
+    channel, network, cell_assignment)
 
     # First check that we have not exceeded our search budget
     if state.num_searches[i] >= search_budget
@@ -196,6 +214,7 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
     # Preliminary Nash stability check. No need to try to deviate unless
     # BS i improves in its utility.
     if !any(deviated_BS_utilities[i,:] .> state.BS_utilities[i])
+        push_event!(state.movie_state, :accept, "Cell $i does not want to leave its current coalition.", i, [], [], state.partition, state.BS_utilities)
         return false
     end
 
@@ -221,8 +240,21 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
 
         # Check if the existing members of this coalition allow BS i to join
         # (this check includes BS i, unnecessarily)
-        BSs_in_new_block = collect(my_block.elements)
+        BSs_in_new_block = collect(my_block.elements); BSs_in_new_block_except_me = setdiff(BSs_in_new_block, IntSet(i))
         BSs_in_old_block = collect(old_block.elements)
+        if prepare_movie
+            # Nash criterion
+            if deviated_BS_utilities[i,sort_idx] > state.BS_utilities[i]
+                # History set
+                if !use_history || !in(IntSet(BSs_in_new_block), state.history[i])
+                    if length(BSs_in_new_block_except_me) == 0
+                        push_event!(state.movie_state, :ask, "Cell $i wants to leave for its singleton coalition.", i, [], [], state.partition, state.BS_utilities)
+                    else
+                        push_event!(state.movie_state, :ask, "Cell $i wants to join coalition $BSs_in_new_block_except_me.", i, BSs_in_new_block_except_me, [], state.partition, state.BS_utilities)
+                    end
+                end
+            end
+        end
         if individual_stability(deviated_BS_utilities[:,sort_idx], state.BS_utilities, i, BSs_in_new_block, BSs_in_old_block, state.history[i], stability_type, use_history)
             # Let BS i join this coalition
             state.partition = new_partitions[sort_idx]
@@ -231,7 +263,24 @@ function deviate!(state::CoalitionFormationClustering_IndividualState, i, I, K,
             # Add coalition to history
             push!(state.history[i], IntSet(BSs_in_new_block))
 
+            if prepare_movie
+                push_event!(state.movie_state, :accepted_by_all, "Cell $i was accepted by all.", i, BSs_in_new_block_except_me, trues(BSs_in_new_block_except_me), state.partition, state.BS_utilities)
+            end
+
             return true
+        elseif prepare_movie
+            # Nash criterion
+            if deviated_BS_utilities[i,sort_idx] > state.BS_utilities[i]
+                # History set
+                if !use_history || !in(IntSet(BSs_in_new_block), state.history[i])
+                    answers = deviated_BS_utilities[BSs_in_new_block_except_me,sort_idx] .>= state.BS_utilities[BSs_in_new_block_except_me]
+                    if all(answers .== false)
+                        push_event!(state.movie_state, :rejected_by_all, "Cell $i was rejected by all.", i, BSs_in_new_block_except_me, answers, state.partition, state.BS_utilities)
+                    else
+                        push_event!(state.movie_state, :mixed_response, "Cell $i was rejected by $(BSs_in_new_block_except_me[!answers]) but accepted by $(BSs_in_new_block_except_me[answers]).", i, BSs_in_new_block_except_me, answers, state.partition, state.BS_utilities)
+                    end
+                end
+            end
         end
     end
     return false

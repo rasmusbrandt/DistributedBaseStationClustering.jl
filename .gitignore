@@ -3,4 +3,6 @@
 *.eps
 *.mem
 *.pyc
+*.png
+*.mp4
 .ipynb_checkpoints/

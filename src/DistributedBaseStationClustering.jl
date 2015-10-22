@@ -8,7 +8,7 @@
 module DistributedBaseStationClustering
 
 using CoordinatedPrecoding
-import Lumberjack, PyCall, Clustering
+import Lumberjack, PyCall, PyPlot, Clustering
 using Compat
 
 PyCall.@pyimport scipy.special as scipy_special
@@ -36,12 +36,16 @@ export
     RobustChen2014_MaxSINR, NaiveChen2014_MaxSINR,
     RobustIntraclusterLeakageMinimization, NaiveIntraclusterLeakageMinimization,
     RobustIntraclusterWMMSE, NaiveIntraclusterWMMSE,
-    NoPrecoding
+    NoPrecoding,
+
+    # misc
+    generate_movie
 
 include("misc/combinations.jl")
 include("misc/feasibility.jl")
 include("misc/subsets.jl")
 include("misc/utilities.jl")
+include("misc/movie.jl")
 
 include("assignment/assignment.jl")
 include("assignment/BranchAndBoundClustering.jl")
