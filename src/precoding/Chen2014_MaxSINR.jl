@@ -121,15 +121,15 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         # Intercluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             Fkjl = channel.H[k,j]*state.V[l]
-            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_full))
-            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_naive))
-            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_robust))
+            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_full))
+            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_partial_naive))
+            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_partial_robust))
         end; end
 
         # Intracluster CSI-R (only applicable if we are using spectrum_sharing!)
         if clustering_type == :spectrum_sharing
             for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
-                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), hermdata(Phi_full))
+                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), @hermdata(Phi_full))
                 Phi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
             end; end
         end
@@ -141,7 +141,7 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         if robustness
             for n = 1:ds[k]
                 Psi_plus_n = Hermitian(
-                    Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(hermdata(Phi_partial_robust))),
+                    Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(@hermdata(Phi_partial_robust))),
                     Phi_partial_robust.uplo)
                 u = Psi_plus_n\channel.H[k,i]*state.V[k][:,n]
                 state.U[k][:,n] = u/norm(u,2)
@@ -149,7 +149,7 @@ function update_MSs!(state::Chen2014_MaxSINRState,
         else
             for n = 1:ds[k]
                 Psi_plus_n = Hermitian(
-                    Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(hermdata(Phi_partial_naive))),
+                    Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(-1.), channel.H[k,i]*state.V[k][:,n], complex(1.), copy(@hermdata(Phi_partial_naive))),
                     Phi_partial_naive.uplo)
                 u = Psi_plus_n\channel.H[k,i]*state.V[k][:,n]
                 state.U[k][:,n] = u/norm(u,2)

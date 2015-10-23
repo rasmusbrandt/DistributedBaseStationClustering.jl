@@ -29,3 +29,31 @@ function calculate_weighted_logdet_rates(state, alphas)
 
     return weighted_logdet_rates_full, weighted_logdet_rates_partial, weighted_logdet_rates_LB
 end
+
+##########################################################################
+# Hermitian methods used in precoding methods
+if VERSION >= v"0.4"
+    macro hermdata(A)
+        return :($A.data)
+    end
+else
+    macro hermdata(A)
+        return :($A.S)
+    end
+end
+
+import Base: +, -, .*
++(A::Hermitian{Complex128}, B::Hermitian{Complex128}) = Hermitian(@hermdata(A) + @hermdata(B))
++(B::Matrix{Float64}, A::Hermitian{Complex128}) = +(A, B)
++(A::Hermitian{Complex128}, B::Matrix{Float64}) = @hermdata(A) + B
++(A::Hermitian{Complex128}, B::Matrix{Complex128}) = @hermdata(A) + B
+
+-(A::Hermitian{Complex128}, B::Matrix{Complex128}) = @hermdata(A) - B
+-(B::Array{Complex128, 2}, A::Hermitian{Complex128}) = -(A, B)
+-(A::Hermitian{Complex128}, B::Matrix{Float64}) = @hermdata(A) - B
+
+.*(a::Float64, B::Hermitian{Complex128}) = Hermitian(a.*@hermdata(B))
+
+import Base.logdet, Base.diag
+logdet(A::Hermitian{Complex128}) = logdet(@hermdata(A))
+diag(A::Hermitian{Complex128}) = diag(@hermdata(A))

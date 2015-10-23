@@ -149,15 +149,15 @@ function update_MSs!(state::IntraclusterWMMSEState,
         # Intercluster CSI-R
         for j in coordinators; for l in served_MS_ids(j, assignment)
             Fkjl = channel.H[k,j]*state.V[l]
-            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_full))
-            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_naive))
-            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), hermdata(Phi_partial_robust))
+            Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_full))
+            Base.LinAlg.BLAS.herk!(Phi_partial_naive.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_partial_naive))
+            Base.LinAlg.BLAS.herk!(Phi_partial_robust.uplo, 'N', complex(1.), Fkjl, complex(1.), @hermdata(Phi_partial_robust))
         end; end
 
         # Intracluster CSI-R (only applicable if we are using spectrum_sharing!)
         if clustering_type == :spectrum_sharing
             for j in setdiff(IntSet(1:channel.I), coordinators); for l in served_MS_ids(j, assignment)
-                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), hermdata(Phi_full))
+                Base.LinAlg.BLAS.herk!(Phi_full.uplo, 'N', complex(1.), channel.H[k,j]*state.V[l], complex(1.), @hermdata(Phi_full))
                 Phi_partial_robust += Hermitian(complex(channel.large_scale_fading_factor[k,j]^2*Ps[j]*eye(channel.Ns[k])))
             end; end
         end
@@ -244,7 +244,7 @@ function optimal_mu(i, Gamma, state::IntraclusterWMMSEState,
     bis_M = Hermitian(complex(zeros(channel.Ms[i], channel.Ms[i])))
     for k in served_MS_ids(i, assignment)
         #bis_M += Hermitian(alphas[k]^2*channel.H[k,i]'*(state.U[k]*(state.Z[k]*state.Z[k]')*state.U[k]')*channel.H[k,i])
-        Base.LinAlg.BLAS.herk!(bis_M.uplo, 'N', complex(1.), channel.H[k,i]'*state.U[k]*state.Z[k]*alphas[k], complex(1.), hermdata(bis_M))
+        Base.LinAlg.BLAS.herk!(bis_M.uplo, 'N', complex(1.), channel.H[k,i]'*state.U[k]*state.Z[k]*alphas[k], complex(1.), @hermdata(bis_M))
     end
     Gamma_eigen = eigfact(Gamma); Gamma_eigen_values = abs(Gamma_eigen.values)
     bis_JMJ_diag = abs(diag(Gamma_eigen.vectors'*bis_M*Gamma_eigen.vectors))
