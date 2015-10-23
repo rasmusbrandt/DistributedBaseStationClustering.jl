@@ -26,7 +26,7 @@ labels = [
 ]
 
 postprocess_params_assignment = [
-    "objective" => :sumrate,
+    "objective" => :sum,
     "methods" => [
         "ExhaustiveSearchClustering" => [
             ("utilities",),
@@ -62,7 +62,7 @@ postprocess_params_assignment = [
 ]
 
 postprocess_params_precoding = [
-    "objective" => :sumrate,
+    "objective" => :sum,
     "methods" => [
         "ExhaustiveSearchClustering" => [
             ("weighted_logdet_rates_LB",),

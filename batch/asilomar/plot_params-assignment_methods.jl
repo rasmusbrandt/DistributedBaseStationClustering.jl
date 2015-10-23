@@ -1,7 +1,7 @@
 plot_params_instantaneous_full_sumrate = [
     "plot_name" => "instantaneous-full",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
@@ -75,7 +75,7 @@ plot_params_instantaneous_full_sumrate = [
 plot_params_instantaneous_partial_sumrate = [
     "plot_name" => "instantaneous-partial",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
@@ -149,7 +149,7 @@ plot_params_instantaneous_partial_sumrate = [
 plot_params_instantaneous_LB_sumrate = [
     "plot_name" => "instantaneous-LB",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),
@@ -223,7 +223,7 @@ plot_params_instantaneous_LB_sumrate = [
 plot_params_longterm_sumrate = [
     "plot_name" => "longterm-sumrate",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => [
         :figsize => (8,5),

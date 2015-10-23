@@ -27,7 +27,7 @@ parsed_args = parse_args(s)
 plot_params = @compat Dict(
     "plot_name" => "",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => Dict(
         :figsize => (8,5),

@@ -27,7 +27,7 @@ parsed_args = parse_args(s)
 plot_params_instantaneous_sumrate = @compat Dict(
     "plot_name" => "instantaneous",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => Dict(
         :figsize => (8,5),
@@ -101,7 +101,7 @@ plot_params_instantaneous_sumrate = @compat Dict(
 plot_params_longterm_sumrate = @compat Dict(
     "plot_name" => "longterm-sumrate",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => Dict(
         :figsize => (8,5),
@@ -300,7 +300,7 @@ plot_params_longterm_num_longterm_rate_calculations = @compat Dict(
 plot_params_longterm_num_searches = @compat Dict(
     "plot_name" => "longterm-num_searches",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => Dict(
         :figsize => (8,5),
@@ -396,7 +396,7 @@ plot_params_longterm_clusters = @compat Dict(
 plot_params_num_searches = @compat Dict(
     "plot_name" => "longterm-clusters",
 
-    "objective" => :sumrate,
+    "objective" => :sum,
 
     "figure" => Dict(
         :figsize => (8,5),
