@@ -1,6 +1,8 @@
 *.jld
 *.pdf
 *.eps
+*.png
+*.mp4
 *.mem
-*.pyc
 *.ipynb_checkpoints/
+fabfile.*
