@@ -19,10 +19,10 @@ It provides all the simulation code and scripts required to reproduce the figure
 The scripts in the root directory can be used for exploratory simulations.
 
 ## Journal paper results
-The results in the journal paper are available in the `batch/tsp` subdirectory on the `master` branch.
+The results in the journal paper are available in the `batch/tsp` subdirectory on the `master` branch. The code in this branch is compatible with both Julia 0.3 and 0.4.
 
 ## Asilomar paper results
-The results in the Asilomar conference paper are available in the `batch/asilomar` subdirectory on the `asilomar2015_version` branch.
+The results in the Asilomar conference paper are available in the `batch/asilomar` subdirectory on the `asilomar2015_version` branch. Since this branch is older, its code is only compatible with Julia 0.3.
 
 ### Software Dependencies
 [CoordinatedPrecoding.jl][CoordinatedPrecodingJL] is used as a supporting framework for the simulations.
