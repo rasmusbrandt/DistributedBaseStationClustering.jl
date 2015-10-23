@@ -429,7 +429,7 @@ plot_params_longterm_num_clusters = [
 plot_params_longterm_num_searches = [
     "plot_name" => "longterm-num_searches",
 
-    "objective" => :avgrate,
+    "objective" => :mean,
 
     "figure" => [
         :figsize => (8,5),
