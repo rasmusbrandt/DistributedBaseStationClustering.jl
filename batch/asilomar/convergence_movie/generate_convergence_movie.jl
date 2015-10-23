@@ -34,7 +34,7 @@ simulation_params = @compat Dict(
         "CoalitionFormationClustering_Individual:search_budget" => 100,
         "CoalitionFormationClustering_Individual:search_order" => :lexicographic,
         "CoalitionFormationClustering_Individual:stability_type" => :individual,
-        "CoalitionFormationClustering_Individual:starting_point" => :singletons,
+        "CoalitionFormationClustering_Individual:starting_point" => :grand,
         "CoalitionFormationClustering_Individual:use_history" => true,
         "CoalitionFormationClustering_Individual:prepare_movie" => true,
     ),
@@ -57,4 +57,4 @@ try
     mkdir(dir)
 end
 movie_state = raw_assignment_results[1]["CoalitionFormationClustering_Individual"]["movie_state"]
-generate_movie(network, movie_state, dir, output_filename)
+generate_movie(network, movie_state, dir, output_filename, 1.5)

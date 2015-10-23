@@ -24,7 +24,7 @@ function push_event!(ms::MovieState, event_type, desc, acting_BS, other_involved
     push!(ms.BS_utilities_evolution, BS_utilities)
 end
 
-function generate_movie(network, movie_state, dir, output_filename)
+function generate_movie(network, movie_state, dir, output_filename, frame_rate)
     I = get_num_BSs(network); K = get_num_MSs(network)
 
     PyPlot.rc("lines", linewidth=1., markersize=3, markeredgewidth=0.5)
@@ -142,7 +142,7 @@ function generate_movie(network, movie_state, dir, output_filename)
     end
 
     # Generate movie with ffmpeg
-    run(`ffmpeg -r 1 -i $dir/%03d.png -pix_fmt yuv420p -vb 20M $output_filename.mp4`)
+    run(`ffmpeg -r $frame_rate -i $dir/%03d.png -pix_fmt yuv420p -vb 20M $output_filename.mp4`)
     run(`open $output_filename.mp4`)
 end
 
