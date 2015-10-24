@@ -212,11 +212,11 @@ function BranchAndBoundClustering(channel, network)
     results["throughputs_cluster_sdma"] = throughputs_split[1]
     results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = incumbent_a
-    results["num_clusters"] = reshape(1 + maximum(incumbent_a), 1, 1)
-    results["avg_cluster_size"] = reshape(avg_cluster_size(incumbent_a), 1, 1)
-    results["num_iters"] = reshape(num_iters, 1, 1)
-    results["num_bounded_nodes"] = reshape(num_bounded_nodes, 1, 1)
-    results["num_sum_throughput_calculations"] = reshape(num_bounded_nodes, 1, 1)
+    results["num_clusters"] = reshape([1 + maximum(incumbent_a)], 1, 1)
+    results["avg_cluster_size"] = reshape([avg_cluster_size(incumbent_a)], 1, 1)
+    results["num_iters"] = reshape([num_iters], 1, 1)
+    results["num_bounded_nodes"] = reshape([num_bounded_nodes], 1, 1)
+    results["num_sum_throughput_calculations"] = reshape([num_bounded_nodes], 1, 1)
     results["lower_bound_evolution"] = reshape(lower_bound_evolution, (1, 1, length(lower_bound_evolution)))
     results["upper_bound_evolution"] = reshape(upper_bound_evolution, (1, 1, length(upper_bound_evolution)))
     results["fathoming_evolution"] = reshape(fathoming_evolution, (1, 1, length(fathoming_evolution)))

@@ -58,9 +58,9 @@ function RandomClustering(channel, network)
     results["throughputs_cluster_sdma"] = throughputs_split[1]
     results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = random_a
-    results["num_clusters"] = reshape(1 + maximum(random_a), 1, 1)
-    results["avg_cluster_size"] = reshape(avg_cluster_size(random_a), 1, 1)
-    results["num_sum_throughput_calculations"] = reshape(num_sum_throughput_calculations, 1, 1)
+    results["num_clusters"] = reshape([1 + maximum(random_a)], 1, 1)
+    results["avg_cluster_size"] = reshape([avg_cluster_size(random_a)], 1, 1)
+    results["num_sum_throughput_calculations"] = reshape([num_sum_throughput_calculations], 1, 1)
     return results
 end
 
