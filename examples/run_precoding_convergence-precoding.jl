@@ -58,7 +58,7 @@ simulation_params = @compat Dict(
         "max_iters" => 20,
     ),
     "aux_independent_variables" => [
-        (set_transmit_powers_dBm!, [-30, -10]),
+        (set_transmit_powers_dBm!, [-20, 0]),
     ]
 )
 network =

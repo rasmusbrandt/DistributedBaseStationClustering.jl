@@ -66,7 +66,7 @@ simulation_params = @compat Dict(
         "stop_crit" => 1e-3,
         "max_iters" => 1000,
     ),
-    "independent_variable" => (set_transmit_powers_dBm!, -50:10:0),
+    "independent_variable" => (set_transmit_powers_dBm!, -10:5:60 - 10*log10(600)),
 )
 network =
     setup_random_large_scale_network(simulation_params["I"],
