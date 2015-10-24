@@ -108,8 +108,8 @@ function GreedyClustering(channel, network; merge_multiple::Bool=false)
     results["throughputs_cluster_sdma"] = throughputs_split[1]
     results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
-    results["num_clusters"] = 1 + maximum(a)
-    results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_sum_throughput_calculations"] = num_sum_throughput_calculations
+    results["num_clusters"] = reshape(1 + maximum(a), 1, 1)
+    results["avg_cluster_size"] = reshape(avg_cluster_size(a), 1, 1)
+    results["num_sum_throughput_calculations"] = reshape(num_sum_throughput_calculations, 1, 1)
     return results
 end

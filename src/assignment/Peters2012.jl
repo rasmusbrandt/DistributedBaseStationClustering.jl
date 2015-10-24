@@ -103,9 +103,9 @@ function Peters2012_Heuristic(channel, network)
     results["throughputs_cluster_sdma"] = throughputs_split[1]
     results["throughputs_network_sdma"] = throughputs_split[2]
     results["a"] = a
-    results["num_clusters"] = 1 + maximum(a)
-    results["avg_cluster_size"] = avg_cluster_size(a)
-    results["num_iters"] = num_iters
+    results["num_clusters"] = reshape(1 + maximum(a), 1, 1)
+    results["avg_cluster_size"] = reshape(avg_cluster_size(a), 1, 1)
+    results["num_iters"] = reshape(num_iters, 1, 1)
     return results
 end
 
