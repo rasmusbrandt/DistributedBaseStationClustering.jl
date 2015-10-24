@@ -262,6 +262,10 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     beta_network_sdma, num_coherence_symbols, assignment,
     E1_bound_in_rate_bound, desired_powers, interfering_powers, rates_cluster_sdma)
 
+    # Preallocate some memory
+    scratch = Array(Float64, I)
+    aggregated = fill(0., 2)
+
     beta_cluster_sdma = 1 - beta_network_sdma
 
     # The BSs are grouped based on their position in the graph. If they are put
@@ -274,12 +278,12 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
     # For looping over clusters, we create a pseudo partition, where the
     # unclustered BSs belong to singleton blocks.
     pseudo_partition_a = Array(Int, I)
-    for i = 1:N_clustered
-        pseudo_partition_a[i] = node.a[i]
+    @simd for i = 1:N_clustered
+        @inbounds pseudo_partition_a[i] = node.a[i]
     end
     m = 1 + maximum(node.a)
-    for i = (N_clustered+1):I
-        pseudo_partition_a[i] = m + (i - N_clustered - 1)
+    @simd for i = (N_clustered+1):I
+        @inbounds pseudo_partition_a[i] = m + (i - N_clustered - 1)
     end
     pseudo_partition = Partition(pseudo_partition_a, skip_check=true)
 
@@ -342,21 +346,18 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
             outside_clustered_BSs = setdiff(clustered_BSs, block.elements)
             outside_BSs_in_nonfull_clusters = setdiff(BSs_in_nonfull_clusters, block.elements)
             N_outside_BSs_in_nonfull_clusters = length(outside_BSs_in_nonfull_clusters)
-            reducible_interference_levels2 = Array(Float64, N_outside_BSs_in_nonfull_clusters)
 
             # Get appropriate bounds for all MSs in this cluster.
             for i in block.elements; for k in served_MS_ids(i, assignment)
+                @inbounds aggregated[1] = 0.; @inbounds aggregated[2] = 0.
+
                 # Leaves get true values, other nodes get bound.
                 if node_is_leaf
                     # True prelog.
                     prelog_bounds_cluster_sdma[k] = leaf_prelog_cluster_sdma
 
                     # All BSs outside my cluster contribute irreducible interference.
-                    irreducible_interference_power = 0.
-                    for j in outside_all_BSs
-                        irreducible_interference_power += interfering_powers[j,k]
-                    end
-                    rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power)
+                    sum_irreducible_interference_power!(aggregated, k, outside_all_BSs, interfering_powers)
                 else
                     # The bounds depends on if this BS is clustered or not.
                     if i <= N_clustered
@@ -366,25 +367,13 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
                         prelog_bounds_cluster_sdma[k] = clustered_BS_prelog_bound_cluster_sdma
 
                         # Clustered BSs outside my cluster contribute irreducible interference.
-                        irreducible_interference_power = 0.
-                        for j in outside_clustered_BSs
-                            irreducible_interference_power += interfering_powers[j,k]
-                        end
+                        sum_irreducible_interference_power!(aggregated, k, outside_clustered_BSs, interfering_powers)
 
                         # The bound is now due to picking the N_available_IA_slots_ strongest interferers (that are not clustered)
                         # and assuming that this interference is reducible. This is a bound since we are not ensuring the
                         # disjointness of the clusters here.
-                        idx = 1
-                        for j in unclustered_BSs
-                            reducible_interference_levels1[idx] = interfering_powers[j,k]
-                            idx += 1
-                        end
-                        sort!(reducible_interference_levels1)
-                        reducible_interference_power = 0.
-                        for idx in 1:(N_unclustered - N_available_IA_slots_)
-                            reducible_interference_power += reducible_interference_levels1[idx]
-                        end
-                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + reducible_interference_power)
+                        sum_reducible_interference_power!(aggregated, k, unclustered_BSs, N_unclustered - N_available_IA_slots_,
+                                                          interfering_powers, sub(scratch, 1:N_unclustered))
                     else
                         # This BS is not clustered.
 
@@ -393,51 +382,42 @@ function bound!(node, channel, network, Ps, sigma2s, I, Kc, M, N, d,
 
                         # I cannot joint any BS that belong to a full cluster, so
                         # those BSs contribute irreducible interference.
-                        irreducible_interference_power = 0.
-                        for j in BSs_in_full_clusters
-                            irreducible_interference_power += interfering_powers[j,k]
-                        end
+                        sum_irreducible_interference_power!(aggregated, k, BSs_in_full_clusters, interfering_powers)
 
                         # We now pick the N_available_IA_slots_ strongest interferers (which do not belong to full clusters),
                         # and assume that this interference is reducible.
-                        idx = 1
-                        for j in outside_BSs_in_nonfull_clusters
-                            reducible_interference_levels2[idx] = interfering_powers[j,k]
-                            idx += 1
-                        end
-                        sort!(reducible_interference_levels2)
-                        reducible_interference_power = 0.
-                        for idx in 1:(N_outside_BSs_in_nonfull_clusters - N_available_IA_slots_)
-                            reducible_interference_power += reducible_interference_levels2[idx]
-                        end
-                        rho_network_sdma = desired_powers[k]/(sigma2s[k] + irreducible_interference_power + reducible_interference_power)
+                        sum_reducible_interference_power!(aggregated, k, outside_BSs_in_nonfull_clusters, N_outside_BSs_in_nonfull_clusters - N_available_IA_slots_,
+                                                          interfering_powers, sub(scratch, 1:N_outside_BSs_in_nonfull_clusters))
                     end
                 end
+                @inbounds rho_network_sdma = desired_powers[k]/(sigma2s[k] + sum(aggregated))
 
                 # Network SDMA is either zero (CSI acquisition infeasible)
                 # or fixed to the beta constant.
-                if prelog_bounds_cluster_sdma[k] == 0.
-                    prelog_bounds_network_sdma[k] = 0.
-                else
-                    prelog_bounds_network_sdma[k] = beta_network_sdma
+                @inbounds begin
+                    if prelog_bounds_cluster_sdma[k] == 0.
+                        prelog_bounds_network_sdma[k] = 0.
+                    else
+                        prelog_bounds_network_sdma[k] = beta_network_sdma
+                    end
                 end
 
                 # Finally, we can also bound the calculation of
                 # exp(1/rho)*E1(1/rho) if that is desired. (Note that the
                 # prelogs are bounded above.)
                 if E1_bound_in_rate_bound && !node_is_leaf
-                    throughput_bound =
+                    @inbounds throughput_bound =
                         prelog_bounds_cluster_sdma[k]*rates_cluster_sdma[k] + # rates_cluster_sdma is already bounded in the calling function
                         prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma, bound=:upper)
-                    for n = 1:d
-                        throughput_bounds[k,n] = throughput_bound
+                    @simd for n = 1:d
+                        @inbounds throughput_bounds[k,n] = throughput_bound
                     end
                 else
                     throughput_bound =
                         prelog_bounds_cluster_sdma[k]*rates_cluster_sdma[k] +
                         prelog_bounds_network_sdma[k]*exp_times_E1(rho_network_sdma)
-                    for n = 1:d
-                        throughput_bounds[k,n] = throughput_bound
+                    @simd for n = 1:d
+                        @inbounds throughput_bounds[k,n] = throughput_bound
                     end
                 end
             end; end
@@ -466,6 +446,24 @@ function branch(parent)
     end
 
     return children
+end
+
+function sum_irreducible_interference_power!(aggregated, k, from_BSs, interfering_powers)
+    for j in from_BSs
+        @inbounds aggregated[1] += interfering_powers[j,k]
+    end
+end
+
+function sum_reducible_interference_power!(aggregated, k, from_BSs, N_available, interfering_powers, scratch)
+    idx = 1
+    for j in from_BSs
+        @inbounds scratch[idx] = interfering_powers[j,k]
+        idx += 1
+    end
+    sort!(scratch)
+    @simd for idx in 1:N_available
+        @inbounds aggregated[2] += scratch[idx]
+    end
 end
 
 # Special case of the cluster SDMA prelog used a lot in the bound.
