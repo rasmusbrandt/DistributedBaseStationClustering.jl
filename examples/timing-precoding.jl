@@ -26,9 +26,6 @@ simulation_params = @compat Dict(
         RobustIntraclusterWMMSE,
         NaiveIntraclusterWMMSE,
 
-        RobustIntraclusterLeakageMinimization,
-        NaiveIntraclusterLeakageMinimization,
-
         RobustChen2014_MaxSINR,
         NaiveChen2014_MaxSINR,
     ],
