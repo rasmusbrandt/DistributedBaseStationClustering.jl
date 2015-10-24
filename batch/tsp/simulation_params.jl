@@ -1,3 +1,5 @@
+using Compat
+
 # Default values
 const fc = 2e9 # GHz
 const Wc = 300e3 # kHz
@@ -24,14 +26,14 @@ const Nsim = 10
 const stop_crit = 1e-2
 const max_iters = 1000
 
-simulation_params = [
+simulation_params = @compat Dict(
     "Ndrops" => Ndrops, "Nsim" => Nsim,
     "I" => I, "Kc" => Kc,
     "M" => M, "N" => N, "d" => d,
     "geography_size" => (geography_width, geography_width),
     "MS_serving_BS_distance" => MS_serving_BS_distance,
     "aux_network_params" => Dict{ASCIIString, Any}(),
-    "aux_assignment_params" => [
+    "aux_assignment_params" => Dict(
         "max_num_MSs_per_BS" => Kc,
 
         "BranchAndBoundClustering:branching_rule" => :dfs,
@@ -45,10 +47,10 @@ simulation_params = [
         "CoalitionFormationClustering:search_budget" => 100_000,
         "CoalitionFormationClustering:use_history" => true,
         "CoalitionFormationClustering:starting_point" => :singletons,
-    ],
-    "aux_precoding_params" => [
+    ),
+    "aux_precoding_params" => Dict(
         "initial_precoders" => "eigendirection",
         "stop_crit" => stop_crit,
         "max_iters" => max_iters,
-    ],
-]
+    ),
+)

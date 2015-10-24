@@ -1,9 +1,9 @@
-using LaTeXStrings
+using LaTeXStrings, Compat
 
 raw_idx = 1; mean_idx = 2; var_idx = 3
 
 # 8-class Set1
-colours = [
+colours = @compat Dict(
     :red => "#e41a1c",
     :blue => "#377eb8",
     :green => "#4daf4a",
@@ -12,10 +12,10 @@ colours = [
     :yellow => "#ffff33",
     :brown => "#a65628",
     :pink => "#f781bf",
-]
+)
 
 # ASSIGNMENT
-colours_assignment = [
+colours_assignment = @compat Dict(
     :BranchAndBoundClustering => colours[:red],
     :CoalitionFormationClustering_AttachOrSupplant => colours[:blue],
     :CoalitionFormationClustering_Attach => colours[:green],
@@ -25,9 +25,9 @@ colours_assignment = [
     :RandomClustering => colours[:yellow],
     :GrandCoalitionClustering => colours[:brown],
     :NoClustering => colours[:orange],
-]
+)
 
-linestyles_assignment = [
+linestyles_assignment = @compat Dict(
     :BranchAndBoundClustering => "-",
     :CoalitionFormationClustering_AttachOrSupplant => "-",
     :CoalitionFormationClustering_Attach => "-",
@@ -37,9 +37,9 @@ linestyles_assignment = [
     :RandomClustering => "-",
     :GrandCoalitionClustering => "-",
     :NoClustering => "-"
-]
+)
 
-markers_assignment = [
+markers_assignment = @compat Dict(
     :BranchAndBoundClustering => "*",
     :CoalitionFormationClustering_AttachOrSupplant => "o",
     :CoalitionFormationClustering_Attach => "o",
@@ -49,9 +49,9 @@ markers_assignment = [
     :RandomClustering => "s",
     :GrandCoalitionClustering => "v",
     :NoClustering => "^"
-]
+)
 
-labels_assignment = [
+labels_assignment = @compat Dict(
     :BranchAndBoundClustering => L"IIA sum throughput optimal $\mathcal{S}$",
     :CoalitionFormationClustering_AttachOrSupplant => "Coalition formation (attach-or-supplant)",
     :CoalitionFormationClustering_Attach => "Coalition formation (attach-only)",
@@ -61,11 +61,11 @@ labels_assignment = [
     :RandomClustering => "Random coalitions",
     :GrandCoalitionClustering => "Grand coalition",
     :NoClustering => "Singleton coalitions"
-]
+)
 
-postprocess_params_assignment = [
+postprocess_params_assignment = @compat Dict(
     "objective" => :sum,
-    "methods" => [
+    "methods" => Dict(
         "BranchAndBoundClustering" => [
             ("throughputs",),
             ("throughputs_cluster_sdma",),
@@ -123,12 +123,12 @@ postprocess_params_assignment = [
             ("throughputs_network_sdma",),
             ("avg_cluster_size",),
         ],
-    ]
-]
+    )
+)
 
-postprocess_params_precoding = [
+postprocess_params_precoding = @compat Dict(
     "objective" => :sum,
-    "methods" => [
+    "methods" => Dict(
         "BranchAndBoundClustering" => [
             ("weighted_logdet_rates_full",),
         ],
@@ -164,41 +164,41 @@ postprocess_params_precoding = [
         "NoClustering" => [
             ("weighted_logdet_rates_full",),
         ],
-    ]
-]
+    )
+)
 
 # PRECODING
-colours_precoding = [
+colours_precoding = @compat Dict(
     :RobustIntraclusterWMMSE => colours[:blue],
     :NaiveIntraclusterWMMSE => colours[:green],
     :RobustChen2014_MaxSINR => colours[:pink],
     :NaiveChen2014_MaxSINR => colours[:brown],
-]
+)
 
-linestyles_precoding = [
+linestyles_precoding = @compat Dict(
     :RobustIntraclusterWMMSE => "-",
     :NaiveIntraclusterWMMSE => "-",
     :RobustChen2014_MaxSINR => "-",
     :NaiveChen2014_MaxSINR => "-",
-]
+)
 
-markers_precoding = [
+markers_precoding = @compat Dict(
     :RobustIntraclusterWMMSE => "*",
     :NaiveIntraclusterWMMSE => "o",
     :RobustChen2014_MaxSINR => "v",
     :NaiveChen2014_MaxSINR => "^",
-]
+)
 
-labels_precoding = [
+labels_precoding = @compat Dict(
     :RobustIntraclusterWMMSE => "Robust Intracluster WMMSE",
     :NaiveIntraclusterWMMSE => "Naive Intracluster WMMSE",
     :RobustChen2014_MaxSINR => "Robust MaxSINR [x]",
     :NaiveChen2014_MaxSINR => "Naive MaxSINR [y]",
-]
+)
 
-postprocess_params_precoding2 = [
+postprocess_params_precoding2 = @compat Dict(
     "objective" => :sum,
-    "methods" => [
+    "methods" => Dict(
         "RobustIntraclusterWMMSE" => [
             ("weighted_logdet_rates_full",),
             ("weighted_logdet_rates_partial",)
@@ -218,5 +218,5 @@ postprocess_params_precoding2 = [
             ("weighted_logdet_rates_full",),
             ("weighted_logdet_rates_partial",)
         ],
-    ]
-]
+    )
+)
