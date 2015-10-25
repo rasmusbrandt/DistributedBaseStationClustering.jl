@@ -47,7 +47,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOr
     line = ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=10,
         label=labels_assignment[method])
     push!(lines, line[1])
 end
@@ -82,7 +82,7 @@ for method in [:BranchAndBoundClustering, :CoalitionFormationClustering_AttachOr
     ax[:plot](xvals, yvals_assignment(string(method), plot_val),
         color=colours_assignment[method],
         linestyle=linestyles_assignment[method],
-        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=15,
+        marker=markers_assignment[method], markeredgecolor=colours_assignment[method], markevery=10,
         label=label)
 end
 ax[:set_ylim]([0., 4.5])
