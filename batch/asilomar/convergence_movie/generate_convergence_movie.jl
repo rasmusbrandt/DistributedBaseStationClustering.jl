@@ -3,7 +3,7 @@
 using DistributedBaseStationClustering, CoordinatedPrecoding
 using Compat, JLD
 
-SEED = 7231936
+SEED = 231936
 srand(SEED)
 
 simulation_params = @compat Dict(
@@ -57,4 +57,4 @@ try
     mkdir(dir)
 end
 movie_state = raw_assignment_results[1]["CoalitionFormationClustering_Individual"]["movie_state"]
-generate_movie(network, movie_state, dir, output_filename, 1.5)
+generate_movie(network, movie_state, dir, output_filename, 1)

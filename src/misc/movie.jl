@@ -68,6 +68,7 @@ function generate_movie(network, movie_state, dir, output_filename, frame_rate)
                 ms = 6
             end
             line_BS = ax_map[:plot](pos.x, pos.y; marker="o", color=col, markeredgecolor="k", markerfacecolor=col, markersize=ms, linewidth=0, label="BS")
+            ax_map[:text](pos.x + 20, pos.y + 20, "BS $i")
         end
         # local line_MS
         # for k = 1:K
