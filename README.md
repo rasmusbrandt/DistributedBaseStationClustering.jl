@@ -25,11 +25,11 @@ This source code is licensed under the [GPLv2][gplv2] license. If you in any way
 use this code for research that results in publications, please cite our
 original article. The following [Bibtex][bibtex] entry can be used.
 ```
-@Article{Brandt2016bpreparation,
-  Title                    = {Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation},
+@Article{Brandt2015accepted,
+  Title                    = {Interference Alignment-Aided Base Station Clustering using Coalition Formation},
   Author                   = {Rasmus Brandt and Rami Mochaourab and Mats Bengtsson},
-  Journal                  = {In preparation},
-  Year                     = {2016}
+  Journal                  = {Accepted to Asilomar 2015},
+  Year                     = {2015}
 }
 ```
 
