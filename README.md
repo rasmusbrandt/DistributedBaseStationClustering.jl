@@ -1,7 +1,9 @@
 # DistributedBaseStationClustering.jl
 
 **DistributedBaseStationClustering.jl** is the simulation environment for
-> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, To appear. **2nd Prize, Student Paper Contest**.
+> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, 2015, pp. 1087-1091. **2nd Prize, Student Paper Contest**,
+and
+> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Distributed Long-Term Base Station Clustering in \\Cellular Networks using Coalition Formation", _IEEE Trans. Signal Inf. Process. Netw._, In press.
 
 It provides all the simulation code and scripts required to reproduce the figures from the papers.
 
@@ -16,6 +18,9 @@ The scripts in the root directory can be used for exploratory simulations.
 
 ## Asilomar paper results
 The results in the Asilomar conference paper are available in the `batch/asilomar` subdirectory on the `asilomar2015` branch. Since this branch is older, its code is only compatible with Julia 0.3.
+
+## TSIPN paper results
+The results in the TSIPN journal paper are available in the `batch/tsp` subdirectory on the `tsipn2016` branch.
 
 ### Software Dependencies
 [CoordinatedPrecoding.jl][CoordinatedPrecodingJL] is used as a supporting framework for the simulations.
