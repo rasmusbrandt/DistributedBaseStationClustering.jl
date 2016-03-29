@@ -28,13 +28,22 @@ The results in the TSIPN journal paper are available in the `batch/tsp` subdirec
 ## License and referencing
 This source code is licensed under the [GPLv2][gplv2] license. If you in any way
 use this code for research that results in publications, please cite our
-original article. The following [Bibtex][bibtex] entry can be used.
+original article. The following [Bibtex][bibtex] entries can be used.
 ```
-@Article{Brandt2015accepted,
+@InProceedings{Brandt2015,
   Title                    = {Interference Alignment-Aided Base Station Clustering using Coalition Formation},
   Author                   = {Rasmus Brandt and Rami Mochaourab and Mats Bengtsson},
-  Journal                  = {Accepted to Asilomar 2015},
+  Booktitle                = {Proc. Asilomar Conf. Signals, Systems, Computers},
+  Pages                    = {1087--1091},
   Year                     = {2015}
+}
+
+@Article{Brandt2016,
+  Title                    = {Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation"},
+  Author                   = {Rasmus Brandt and Rami Mochaourab and Mats Bengtsson},
+  Journal                  = {{IEEE} Trans. Signal Inform. Process. Netw.},
+  Year                     = {2016},
+  Note                     = {Accepted}
 }
 ```
 
