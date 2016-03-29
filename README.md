@@ -1,11 +1,9 @@
 # DistributedBaseStationClustering.jl
 
 **DistributedBaseStationClustering.jl** is the simulation environment for
-> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, To appear. **Best Student Paper Award Finalist**,
-
+> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Interference Alignment-Aided Base Station Clustering using Coalition Formation", _Asilomar Conf. Signals, Systems, Computers (Asilomar'15)_, 2015, pp. 1087-1091. **2nd Prize, Student Paper Contest**,
 and
-
-> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation", _IEEE Trans. Signal Process._, Submitted.
+> [R. Brandt][rabr5411], [R. Mochaourab][ramimo] and [M. Bengtsson][matben], "Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation", _IEEE Trans. Signal Inf. Process. Netw._, In press.
 
 It provides all the simulation code and scripts required to reproduce the figures from the papers.
 
@@ -18,11 +16,11 @@ It provides all the simulation code and scripts required to reproduce the figure
 
 The scripts in the root directory can be used for exploratory simulations.
 
-## Journal paper results
-The results in the journal paper are available in the `batch/tsp` subdirectory on the `tsp2016` branch. The code in this branch is compatible with both Julia 0.3 and 0.4.
-
 ## Asilomar paper results
 The results in the Asilomar conference paper are available in the `batch/asilomar` subdirectory on the `asilomar2015` branch. Since this branch is older, its code is only compatible with Julia 0.3.
+
+## TSIPN paper results
+The results in the TSIPN journal paper are available in the `batch/tsp` subdirectory on the `tsipn2016` branch.
 
 ### Software Dependencies
 [CoordinatedPrecoding.jl][CoordinatedPrecodingJL] is used as a supporting framework for the simulations.
@@ -30,13 +28,22 @@ The results in the Asilomar conference paper are available in the `batch/asiloma
 ## License and referencing
 This source code is licensed under the [GPLv2][gplv2] license. If you in any way
 use this code for research that results in publications, please cite our
-original article. The following [Bibtex][bibtex] entry can be used.
+original article. The following [Bibtex][bibtex] entries can be used.
 ```
-@Article{Brandt2016bpreparation,
-  Title                    = {Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation},
+@InProceedings{Brandt2015,
+  Title                    = {Interference Alignment-Aided Base Station Clustering using Coalition Formation},
   Author                   = {Rasmus Brandt and Rami Mochaourab and Mats Bengtsson},
-  Journal                  = {In preparation},
-  Year                     = {2016}
+  Booktitle                = {Proc. Asilomar Conf. Signals, Systems, Computers},
+  Pages                    = {1087--1091},
+  Year                     = {2015}
+}
+
+@Article{Brandt2016,
+  Title                    = {Distributed Long-Term Base Station Clustering in Cellular Networks using Coalition Formation"},
+  Author                   = {Rasmus Brandt and Rami Mochaourab and Mats Bengtsson},
+  Journal                  = {{IEEE} Trans. Signal Inform. Process. Netw.},
+  Year                     = {2016},
+  Note                     = {Accepted}
 }
 ```
 
